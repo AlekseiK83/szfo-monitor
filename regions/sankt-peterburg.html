@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Санкт-Петербург — Мониторинг СЗФО</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+       background: #f6f2ea; color: #1a1a1a; line-height: 1.55; min-height: 100vh; }
+.shell { max-width: 940px; margin: 0 auto; padding: 32px 20px 60px; }
+.nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
+.nav a { color: #7d1e2a; text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+.nav .sep { color: #ccc; }
+
+.report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+          padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
+               margin-bottom: 26px; }
+.report-head h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 500;
+                  color: #5c1620; margin-bottom: 8px; }
+.period { font-size: 14px; color: #6b6b6b; }
+.report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+                margin-bottom: 26px; }
+.stat { text-align: center; padding: 16px 12px; background: #faf7f0;
+        border-radius: 8px; border: 1px solid #eee6d3; }
+.stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
+              line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.region-block { margin-bottom: 26px; }
+.region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
+                 border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
+.marker { color: #b8860b; font-size: 12px; }
+.region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                    color: #5c1620; flex: 1; }
+.region-header .count { font-size: 13px; color: #6b6b6b; }
+.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                               color: #5c1620; text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { text-decoration: underline; }
+.award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
+.award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
+               text-transform: uppercase; margin-bottom: 8px; }
+.awardee { padding: 6px 0 8px; border-bottom: 1px dotted #e8e2d5; }
+.awardee:last-child { border-bottom: none; }
+.fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
+.position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
+.decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
+.decree a { color: #7d1e2a; text-decoration: none; }
+.decree a:hover { text-decoration: underline; }
+
+.no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
+.report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
+                 text-align: center; font-size: 12px; color: #6b6b6b; }
+.report-footer a { color: #7d1e2a; text-decoration: none; }
+
+/* ── Панель фильтров по региону ─── */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
+              padding: 12px 14px; background: #faf7f0;
+              border: 1px solid #eee6d3; border-radius: 8px; }
+.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                            letter-spacing: 0.5px; align-self: center;
+                            padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
+              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
+              transition: all .12s; }
+.filter-btn:hover { background: #fdf6e3; }
+.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
+                     background: rgba(184,134,11,0.15); color: #7d1e2a;
+                     font-size: 11px; border-radius: 999px; }
+.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Навигация регионов на главной ─── */
+.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+              padding: 18px 22px; margin-bottom: 20px; }
+.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                     letter-spacing: 0.5px; margin-bottom: 10px; }
+.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
+               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
+               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
+.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
+                      background: rgba(184,134,11,0.15); color: #7d1e2a;
+                      font-size: 11px; border-radius: 999px;
+                      font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Лента награждённых на странице региона ─── */
+.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
+                 padding: 14px 18px; margin-bottom: 10px; }
+.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
+                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-date a { color: #b8860b; text-decoration: none; }
+.timeline-date a:hover { text-decoration: underline; }
+.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
+.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-item .position { font-size: 13px; color: #6b6b6b; }
+.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+
+@media (max-width: 640px) {
+  .shell { padding: 20px 14px; }
+  .report { padding: 26px 20px; }
+  .report-stats { grid-template-columns: 1fr; }
+  .filter-bar { padding: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="nav">
+    <a href="../index.html">← Все дайджесты</a>
+  </div>
+  <div class="report">
+    <div class="report-head">
+      <h1>Санкт-Петербург</h1>
+      <div class="period">Награждённые за всё время: 37 ·
+        период с 04.08.2026 по 20.07.2026</div>
+    </div>
+    
+    <div class="region-nav">
+      <div class="title">Другие регионы СЗФО</div>
+      <div class="pills"><a class="region-pill active" href="sankt-peterburg.html">Санкт-Петербург<span class="badge">37</span></a><a class="region-pill" href="leningradskaya-oblast.html">Ленинградская область<span class="badge">1</span></a><a class="region-pill" href="arhangelskaya-oblast.html">Архангельская область<span class="badge">7</span></a><a class="region-pill" href="vologodskaya-oblast.html">Вологодская область<span class="badge">2</span></a><a class="region-pill" href="kaliningradskaya-oblast.html">Калининградская область<span class="badge">4</span></a><a class="region-pill" href="murmanskaya-oblast.html">Мурманская область<span class="badge">2</span></a><a class="region-pill" href="respublika-kareliya.html">Республика Карелия<span class="badge">5</span></a><a class="region-pill" href="respublika-komi.html">Республика Коми<span class="badge">5</span></a><a class="region-pill" href="novgorodskaya-oblast.html">Новгородская область<span class="badge">9</span></a></div>
+    </div>
+    
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/20.07.2026.html">20.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Ковальчука Юрия Валентиновича</div>
+          <div class="position">общественного деятеля, город Санкт-Петербург.</div>
+          <div class="decree">Указ № 495 от 20.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/20.07.2026.html">20.07.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Баранову Ивану Яковлевичу</div>
+          <div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div>
+          <div class="decree">Указ № 495 от 20.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/20.07.2026.html">20.07.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Джусоеву Тамерлану Мелитоновичу</div>
+          <div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного — автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div>
+          <div class="decree">Указ № 495 от 20.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/20.07.2026.html">20.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Михайловского Семена Ильича</div>
+          <div class="position">ректора федерального государственного бюджетного образовательного учреждения высшего образования &quot;Санкт-Петербургская академия художеств имени Ильи Репина&quot;.</div>
+          <div class="decree">Указ № 495 от 20.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ДРУЖБЫ</div>
+          <div class="fio">Княгинина Владимира Николаевича</div>
+          <div class="position">вице-губернатора Санкт-Петербурга</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ДРУЖБЫ</div>
+          <div class="fio">Пучнина Алексея Сергеевича</div>
+          <div class="position">президента Научно-исследовательского фонда права &quot;Практика&quot; имени Б.Н.Чичерина, город Санкт-Петербург.</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Китина Евгения Александровича</div>
+          <div class="position">заместителя директора Северо-Западного института управления - филиала федерального государственного бюджетного образовательного учреждения высшего образования &quot;Российская академия народного хозяйства и государственной службы при Президенте Российской Федерации</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Шаркова Андрея Анатольевича</div>
+          <div class="position">артиста федерального государственного бюджетного учреждения культуры &quot;Российский государственный академический Большой драматический театр имени Г.А.Товстоногова&quot;, город Санкт-Петербург коллектив — государственного бюджетного — учреждения Республики Крым  &quot;Вос</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Кузнецову Людмилу Васильевну</div>
+          <div class="position">помощника режиссера федерального государственного бюджетного учреждения культуры &quot;Российский государственный академический Большой драматический театр имени Г.А.Товстоногова&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ СТРОИТЕЛЬ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Левиту Игорю Михайловичу</div>
+          <div class="position">первому заместителю генерального директора публичного акционерного общества &quot;Группа ЛСР&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/13.07.2026.html">13.07.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ СТРОИТЕЛЬ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Прокопенко Петру Петровичу</div>
+          <div class="position">бригадиру (освобожденному) дистанции капитального ремонта Службы пути Санкт-Петербургского государственного унитарного предприятия &quot;Петербургский метрополитен&quot;</div>
+          <div class="decree">Указ № 488 от 13.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Орлову Олегу Юрьевичу</div>
+          <div class="position">заведующему отделением Санкт-Петербургского государственного бюджетного учреждения здравоохранения &quot;Городская больница Святой преподобномученицы Елизаветы&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Раджабовой Замире Ахмед-Гаджиевне</div>
+          <div class="position">заведующей отделением федерального государственного бюджетного учреждения &quot;Национальный медицинский исследовательский центр онкологии имени Н.Н.Петрова&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Садовниковой Наталии Николаевне</div>
+          <div class="position">заведующей отделением федерального государственного бюджетного образовательного учреждения высшего образования &quot;Санкт-Петербургский государственный педиатрический медицинский университет&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Кремкову Андрею Владимировичу</div>
+          <div class="position">заместителю главного врача — Санкт-Петербургского государственного бюджетного учреждения здравоохранения &quot;Городская станция скорой медицинской помощи&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ДРУЖБЫ</div>
+          <div class="fio">Сазонову Марию Ивановну</div>
+          <div class="position">почетного президента Нотариальной палаты Санкт-Петербурга</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ДРУЖБЫ</div>
+          <div class="fio">Кузьмина Сергея Трофимовича</div>
+          <div class="position">специалиста по взаимодействию с общественными организациями ветеранов администрации Красносельского района Санкт-Петербурга.</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ПОЧЕТА</div>
+          <div class="fio">Исаченко Леонида Ивановича</div>
+          <div class="position">город Санкт-Петербург</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ПОЧЕТА</div>
+          <div class="fio">Мезенкова Владимира Ивановича</div>
+          <div class="position">город Санкт-Петербург</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ПОЧЕТА</div>
+          <div class="fio">Найду Василия Григорьевича</div>
+          <div class="position">председателя совета местной общественной организации Союза &quot;Чернобыль-Квант&quot; Калининского района Санкт-Петербурга.</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Левицкому Алексею Григорьевичу</div>
+          <div class="position">профессору кафедры федерального государственного бюджетного образовательного учреждения высшего образования &quot;Национальный государственный Университет физической культуры, спорта и — здоровья имени П.Ф.Лесгафта, Санкт-Петербург&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Сергееву Геннадию Александровичу</div>
+          <div class="position">заведующему кафедрой федерального государственного бюджетного образовательного учреждения высшего образования &quot;Национальный государственный Университет физической культуры, спорта и здоровья имени П.Ф.Лесгафта, Санкт-Петербург&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Павлову Варвару Сергеевну</div>
+          <div class="position">артистку федерального государственного бюджетного учреждения культуры &quot;Российский государственный академический Большой драматический театр имени Г.А.Товстоногова&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Третьякову Марию Игоревну</div>
+          <div class="position">художника-скульптора, члена региональной творческой общественной организации &quot;Санкт-Петербургский Союз художников&quot;</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/12.08.2026.html">12.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Барановой Татьяне Александровне</div>
+          <div class="position">заведующей отделом федерального государственного бюджетного учреждения культуры &quot;Государственный Эрмитаж&quot;, город Санкт-Петербург.</div>
+          <div class="decree">Указ № 580 от 12.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/09.07.2026.html">09.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ПИРОГОВА</div>
+          <div class="fio">Боикова Алексея Александровича</div>
+          <div class="position">главного врача Санкт-Петербургского государственного бюджетного учреждения здравоохранения &quot;Городская станция скорой медицинской помощи&quot;</div>
+          <div class="decree">Указ № 476 от 09.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/09.07.2026.html">09.07.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ДРУЖБЫ</div>
+          <div class="fio">Хасанова Марса Магнавиевича</div>
+          <div class="position">директора по науке департамента по добыче публичного акционерного общества &quot;Газпром нефть&quot;, город Санкт-Петербург.</div>
+          <div class="decree">Указ № 476 от 09.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/09.07.2026.html">09.07.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Гердта Александра Теодоровича</div>
+          <div class="position">начальника цеха акционерного общества &quot;Завод &quot;Красный Выборжец&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 476 от 09.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/09.07.2026.html">09.07.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div>
+          <div class="fio">Нагорного Родиона Александровича</div>
+          <div class="position">— директора по стратегическим проектам общества с — ограниченной ответственностью &quot;Газпром энергохолдинг&quot;, город Санкт-Петербург</div>
+          <div class="decree">Указ № 476 от 09.07.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ОРДЕНОМ ПОЧЕТА</div>
+          <div class="fio">Москвину Тамару Николаевну</div>
+          <div class="position">главного тренера автономной некоммерческой организации &quot;Спортивный клуб фигурного катания Тамары Москвиной&quot;, город Санкт-Петербург.</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Сатыго Елене Александровне</div>
+          <div class="position">заведующей кафедрой федерального государственного бюджетного образовательного учреждения высшего образования &quot;Северо-Западный государственный медицинский университет имени И.И.Мечникова&quot;, город Санкт-Петербург. &quot;ЗАСЛУЖЕННЫЙ РАБОТНИК ЗДРАВООХРАНЕНИЯ РОССИЙСКОЙ </div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Бекирова Эльдара Викторовича</div>
+          <div class="position">первого заместителя директора - художественного руководителя Санкт-Петербургского государственного бюджетного учреждения культуры &quot;Большой концертный зал &quot;Октябрьский&quot;</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div>
+          <div class="fio">Едомского Михаила Александровича</div>
+          <div class="position">художника-скульптора, члена региональной творческой общественной организации &quot;Санкт-Петербургский Союз художников&quot;</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Зайцеву Ивану Федоровичу</div>
+          <div class="position">артисту балета Санкт-Петербургского государственного бюджетного учреждения культуры &quot;Санкт-Петербургский государственный академический театр оперы и балета им. М.П.Мусоргского - Михайловский театр&quot;</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Соловьеву Александру Александровичу</div>
+          <div class="position">музыкальному руководителю Санкт-Петербургского государственного бюджетного учреждения культуры “Санкт-Петербургский государственный академический театр оперы и балета им. М.П.Мусоргского - Михайловский театр&quot;. &quot;ЗАСЛУЖЕННЫЙ РАБОТНИК КУЛЬТУРЫ РОССИЙСКОЙ ФЕДЕРАЦИ</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Артюшкиной Екатерине Анатольевне</div>
+          <div class="position">генеральному директору Санкт-Петербургского государственного бюджетного учреждения культуры &quot;Петербург-концерт&quot;</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/04.08.2026.html">04.08.2026</a>
+          </div>
+          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+          <div class="fio">Касаткиной Елене Юрьевне</div>
+          <div class="position">директору Санкт-Петербургского — государственного бюджетного — учреждения дополнительного образования &quot;Детская школа искусств имени М.А.Балакирева&quot;</div>
+          <div class="decree">Указ № 548 от 04.08.2026</div>
+        </div>
+    <div class="report-footer">
+      Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

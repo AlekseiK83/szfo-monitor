@@ -1,0 +1,62 @@
+name: Ежедневный дайджест СЗФО
+
+on:
+  # Каждый день в 09:00 по Москве (06:00 UTC)
+  schedule:
+    - cron: '0 6 * * *'
+  # Ручной запуск через веб-интерфейс GitHub
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Дата в формате YYYY-MM-DD (пусто = вчера)'
+        required: false
+        default: ''
+
+# Разрешаем workflow пушить в репозиторий
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Установка системных пакетов
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y tesseract-ocr tesseract-ocr-rus poppler-utils
+          tesseract --version
+          tesseract --list-langs | grep rus && echo "✓ Русская модель есть"
+
+      - name: Установка Python-зависимостей
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Генерация дайджеста
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            python generate.py --date "${{ github.event.inputs.date }}"
+          else
+            python generate.py
+          fi
+
+      - name: Коммит и push изменений
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/ index.html
+          if git diff --cached --quiet; then
+            echo "Изменений нет — коммит не создаётся"
+          else
+            git commit -m "Дайджест за $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

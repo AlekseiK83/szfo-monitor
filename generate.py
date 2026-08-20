@@ -5,10 +5,11 @@
     python generate.py --date 2026-08-12  # за конкретную дату
 
 Выход:
-    reports/YYYY-MM-DD.html               # красивый отчёт за день
+    reports/YYYY-MM-DD.html               # отчёт за день (с JS-фильтром по региону)
     reports/YYYY-MM-DD.json               # сырые данные
     reports/index.json                    # список обработанных дат
-    index.html                            # главная страница со списком
+    regions/<slug>.html                   # лента награждённых по каждому региону (за всё время)
+    index.html                            # главная страница со списком дат + навигация регионов
 """
 import argparse
 import json
@@ -32,6 +33,7 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "SZFO-Monitor/1.0 (public monitoring)"})
 
 REPORTS_DIR = Path("reports")
+REGIONS_DIR = Path("regions")
 INDEX_JSON = REPORTS_DIR / "index.json"
 
 
@@ -192,60 +194,62 @@ def parse_awardees(raw_text, decree_ref):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# РЕГИОНЫ СЗФО
+# РЕГИОНЫ СЗФО + СЛУГИ ДЛЯ URL
 # ═══════════════════════════════════════════════════════════════════════
 SZFO_REGIONS = [
-    ("Санкт-Петербург", [
+    ("Санкт-Петербург", "sankt-peterburg", [
         r"санкт[-\s]петербург[а-я]*",
         r"г\.?\s*с[.\-]\s*петербург[а-я]*",
         r"\bспб\b",
     ]),
-    ("Ленинградская область", [
+    ("Ленинградская область", "leningradskaya-oblast", [
         r"ленинградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
     ]),
-    ("Архангельская область", [
+    ("Архангельская область", "arhangelskaya-oblast", [
         r"архангельск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"г\.?\s*архангельск[а-я]*",
         r"\bархангельск(?:а|у|е|ом|ий|ого|ому|им)\b",
     ]),
-    ("Вологодская область", [
+    ("Вологодская область", "vologodskaya-oblast", [
         r"вологодск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"\bвологд(?:а|ы|у|е|ой)\b",
     ]),
-    ("Калининградская область", [
+    ("Калининградская область", "kaliningradskaya-oblast", [
         r"калининградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"\bкалининград(?:а|у|е|ом)?\b",
     ]),
-    ("Мурманская область", [
+    ("Мурманская область", "murmanskaya-oblast", [
         r"мурманск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"\bмурманск(?:а|у|е|ом)?\b",
     ]),
-    ("Республика Карелия", [
+    ("Республика Карелия", "respublika-kareliya", [
         r"республик[аеиу]\s+карели[яеию]",
         r"\bкарели[яеию]\b",
     ]),
-    ("Псковская область", [
+    ("Псковская область", "pskovskaya-oblast", [
         r"псковск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"\bпсков(?:а|у|е|ом)?\b",
     ]),
-    ("Республика Коми", [
+    ("Республика Коми", "respublika-komi", [
         r"республик[аеиу]\s+коми",
     ]),
-    ("Новгородская область", [
+    ("Новгородская область", "novgorodskaya-oblast", [
         r"новгородск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"велик(?:ий|ого|ому|им|ом)\s+новгород[а-я]*",
     ]),
 ]
 SZFO_COMPILED = [
-    (name, [re.compile(p, re.IGNORECASE) for p in patterns])
-    for name, patterns in SZFO_REGIONS
+    (name, slug, [re.compile(p, re.IGNORECASE) for p in patterns])
+    for name, slug, patterns in SZFO_REGIONS
 ]
+REGION_SLUG = {name: slug for name, slug, _ in SZFO_REGIONS}
+REGION_ORDER = [name for name, _, _ in SZFO_REGIONS]
 
 
 def match_region(text):
     if not text:
         return None
-    for name, patterns in SZFO_COMPILED:
+    for name, _slug, patterns in SZFO_COMPILED:
         if any(p.search(text) for p in patterns):
             return name
     return None
@@ -289,7 +293,7 @@ def run_pipeline(date_str):
                 doc_szfo += 1
         print(f"  извлечено {len(parsed)}, из СЗФО: {doc_szfo}", flush=True)
 
-    # Группировка
+    # Группировка по регионам
     by_region = {}
     for a in all_szfo:
         r = by_region.setdefault(a["region"], {"count": 0, "awards": {}})
@@ -297,7 +301,7 @@ def run_pipeline(date_str):
         r["awards"].setdefault(a["award"], []).append(a)
 
     regions = []
-    for name, _ in SZFO_REGIONS:
+    for name in REGION_ORDER:
         if name in by_region:
             r = by_region[name]
             regions.append({
@@ -320,7 +324,7 @@ def run_pipeline(date_str):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# HTML-РЕНДЕР ОТЧЁТА ЗА ДЕНЬ
+# CSS
 # ═══════════════════════════════════════════════════════════════════════
 BASE_CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -331,6 +335,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .nav a { color: #7d1e2a; text-decoration: none; }
 .nav a:hover { text-decoration: underline; }
 .nav .sep { color: #ccc; }
+
 .report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
           padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 .report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
@@ -339,19 +344,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                   color: #5c1620; margin-bottom: 8px; }
 .period { font-size: 14px; color: #6b6b6b; }
 .report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-                margin-bottom: 34px; }
+                margin-bottom: 26px; }
 .stat { text-align: center; padding: 16px 12px; background: #faf7f0;
         border-radius: 8px; border: 1px solid #eee6d3; }
 .stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
               line-height: 1; margin-bottom: 6px; }
 .stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+
 .region-block { margin-bottom: 26px; }
 .region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
                  border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
 .marker { color: #b8860b; font-size: 12px; }
 .region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
                     color: #5c1620; flex: 1; }
-.count { font-size: 13px; color: #6b6b6b; }
+.region-header .count { font-size: 13px; color: #6b6b6b; }
+.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                               color: #5c1620; text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { text-decoration: underline; }
 .award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
 .award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
                text-transform: uppercase; margin-bottom: 8px; }
@@ -360,18 +369,72 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
 .position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
 .decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
+.decree a { color: #7d1e2a; text-decoration: none; }
+.decree a:hover { text-decoration: underline; }
+
 .no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
 .report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
                  text-align: center; font-size: 12px; color: #6b6b6b; }
 .report-footer a { color: #7d1e2a; text-decoration: none; }
+
+/* ── Панель фильтров по региону ─── */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
+              padding: 12px 14px; background: #faf7f0;
+              border: 1px solid #eee6d3; border-radius: 8px; }
+.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                            letter-spacing: 0.5px; align-self: center;
+                            padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
+              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
+              transition: all .12s; }
+.filter-btn:hover { background: #fdf6e3; }
+.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
+                     background: rgba(184,134,11,0.15); color: #7d1e2a;
+                     font-size: 11px; border-radius: 999px; }
+.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Навигация регионов на главной ─── */
+.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+              padding: 18px 22px; margin-bottom: 20px; }
+.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                     letter-spacing: 0.5px; margin-bottom: 10px; }
+.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
+               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
+               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
+.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
+                      background: rgba(184,134,11,0.15); color: #7d1e2a;
+                      font-size: 11px; border-radius: 999px;
+                      font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Лента награждённых на странице региона ─── */
+.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
+                 padding: 14px 18px; margin-bottom: 10px; }
+.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
+                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-date a { color: #b8860b; text-decoration: none; }
+.timeline-date a:hover { text-decoration: underline; }
+.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
+.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-item .position { font-size: 13px; color: #6b6b6b; }
+.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+
 @media (max-width: 640px) {
   .shell { padding: 20px 14px; }
   .report { padding: 26px 20px; }
   .report-stats { grid-template-columns: 1fr; }
+  .filter-bar { padding: 10px; }
 }
 """
 
 
+# ═══════════════════════════════════════════════════════════════════════
+# HTML: страница ОДНОГО ДНЯ (с JS-фильтром по регионам)
+# ═══════════════════════════════════════════════════════════════════════
 def render_report_html(d):
     esc = html_module.escape
     display_date = format_display_date(d["date"])
@@ -383,15 +446,31 @@ def render_report_html(d):
         stats_html += f'<div class="stat"><div class="stat-value">{val}</div>' \
                       f'<div class="stat-label">{lbl}</div></div>'
 
+    # Панель фильтров — только регионы, которые есть в этом отчёте, + кнопка «Все»
+    filter_html = ""
     regions_html = ""
-    if not d["regions"]:
-        regions_html = '<div class="no-results">За выбранную дату награждённых ' \
-                       'из регионов СЗФО не найдено</div>'
-    else:
+    if d["regions"]:
+        filter_buttons = [
+            '<button class="filter-btn active" data-region="all">Все<span class="badge">'
+            + str(d["stats"]["szfo"]) + '</span></button>'
+        ]
         for r in d["regions"]:
-            regions_html += f'<div class="region-block">' \
+            slug = REGION_SLUG[r["name"]]
+            filter_buttons.append(
+                f'<button class="filter-btn" data-region="{slug}">{esc(r["name"])}'
+                f'<span class="badge">{r["count"]}</span></button>'
+            )
+        filter_html = f'''
+        <div class="filter-bar">
+          <span class="filter-label">Регион:</span>
+          {"".join(filter_buttons)}
+        </div>'''
+
+        for r in d["regions"]:
+            slug = REGION_SLUG[r["name"]]
+            regions_html += f'<div class="region-block" data-region="{slug}">' \
                             f'<div class="region-header"><span class="marker">▸</span>' \
-                            f'<h2>{esc(r["name"])}</h2>' \
+                            f'<a class="region-link" href="../regions/{slug}.html">{esc(r["name"])}</a>' \
                             f'<span class="count">{r["count"]}</span></div>'
             for a in r["awards"]:
                 regions_html += f'<div class="award-group">' \
@@ -406,6 +485,25 @@ def render_report_html(d):
                                     f'{esc(p_["decree"]["date"])}</div></div>'
                 regions_html += '</div>'
             regions_html += '</div>'
+    else:
+        regions_html = '<div class="no-results">За выбранную дату награждённых ' \
+                       'из регионов СЗФО не найдено</div>'
+
+    filter_js = """
+    <script>
+    (function(){
+      const btns = document.querySelectorAll('.filter-btn');
+      const blocks = document.querySelectorAll('.region-block');
+      btns.forEach(btn => btn.addEventListener('click', () => {
+        const target = btn.dataset.region;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        blocks.forEach(block => {
+          block.style.display = (target === 'all' || block.dataset.region === target) ? '' : 'none';
+        });
+      }));
+    })();
+    </script>"""
 
     return f"""<!DOCTYPE html>
 <html lang="ru">
@@ -426,6 +524,7 @@ def render_report_html(d):
       <div class="period">Период: {esc(display_date)}</div>
     </div>
     <div class="report-stats">{stats_html}</div>
+    {filter_html}
     {regions_html}
     <div class="report-footer">
       Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
@@ -436,17 +535,115 @@ def render_report_html(d):
     </div>
   </div>
 </div>
+{filter_js}
 </body>
 </html>"""
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# HTML-РЕНДЕР ГЛАВНОЙ СТРАНИЦЫ (ИНДЕКС)
+# HTML: страница РЕГИОНА (лента награждённых за всё время)
 # ═══════════════════════════════════════════════════════════════════════
-def render_index_html(index_data):
+def render_region_html(region_name, people, all_region_counts):
+    """people: [{fio, award, position_org, decree, iso_date}], отсортирован по дате свежие сверху."""
+    esc = html_module.escape
+
+    date_from = min(p["iso_date"] for p in people) if people else "—"
+    date_to = max(p["iso_date"] for p in people) if people else "—"
+
+    # Навигация: все регионы (можно кликнуть, чтобы перейти)
+    nav_pills = []
+    for name in REGION_ORDER:
+        cnt = all_region_counts.get(name, 0)
+        if cnt == 0:
+            continue
+        slug = REGION_SLUG[name]
+        active = " active" if name == region_name else ""
+        nav_pills.append(
+            f'<a class="region-pill{active}" href="{esc(slug)}.html">'
+            f'{esc(name)}<span class="badge">{cnt}</span></a>'
+        )
+    nav_html = f'''
+    <div class="region-nav">
+      <div class="title">Другие регионы СЗФО</div>
+      <div class="pills">{"".join(nav_pills)}</div>
+    </div>''' if nav_pills else ""
+
+    # Лента
+    items_html = ""
+    for p in people:
+        pos = (p.get("position_org") or "")[:260]
+        iso_date = p["iso_date"]
+        display = format_display_date(iso_date)
+        items_html += f'''
+        <div class="timeline-item">
+          <div class="timeline-date">
+            <a href="../reports/{esc(iso_date)}.html">{esc(display)}</a>
+          </div>
+          <div class="award-name">{esc(p["award"])}</div>
+          <div class="fio">{esc(p["fio"])}</div>
+          <div class="position">{esc(pos)}</div>
+          <div class="decree">Указ № {esc(str(p["decree"]["number"]))} от {esc(p["decree"]["date"])}</div>
+        </div>'''
+
+    if not items_html:
+        items_html = '<div class="no-results">Награждённые из этого региона в архиве не найдены.</div>'
+
+    return f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(region_name)} — Мониторинг СЗФО</title>
+<style>{BASE_CSS}</style>
+</head>
+<body>
+<div class="shell">
+  <div class="nav">
+    <a href="../index.html">← Все дайджесты</a>
+  </div>
+  <div class="report">
+    <div class="report-head">
+      <h1>{esc(region_name)}</h1>
+      <div class="period">Награждённые за всё время: {len(people)} ·
+        период с {esc(format_display_date(date_from))} по {esc(format_display_date(date_to))}</div>
+    </div>
+    {nav_html}
+    {items_html}
+    <div class="report-footer">
+      Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>"""
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# HTML: главная (со списком дат + навигацией регионов)
+# ═══════════════════════════════════════════════════════════════════════
+def render_index_html(index_data, region_counts):
     esc = html_module.escape
     entries = sorted(index_data["reports"], key=lambda x: x["date"], reverse=True)
 
+    # Навигация регионов
+    nav_pills = []
+    for name in REGION_ORDER:
+        cnt = region_counts.get(name, 0)
+        if cnt == 0:
+            continue
+        slug = REGION_SLUG[name]
+        nav_pills.append(
+            f'<a class="region-pill" href="regions/{esc(slug)}.html">'
+            f'{esc(name)}<span class="badge">{cnt}</span></a>'
+        )
+    nav_html = f'''
+    <div class="region-nav">
+      <div class="title">Просмотр по региону</div>
+      <div class="pills">{"".join(nav_pills)}</div>
+    </div>''' if nav_pills else ""
+
+    # Список дат
     rows_html = ""
     for e in entries:
         szfo = e["stats"]["szfo"]
@@ -462,8 +659,7 @@ def render_index_html(index_data):
         </a>"""
 
     if not entries:
-        rows_html = '<div class="no-results">Дайджесты пока не сгенерированы. ' \
-                    'Первый прогон workflow скоро создаст запись.</div>'
+        rows_html = '<div class="no-results">Дайджесты пока не сгенерированы.</div>'
 
     total_reports = len(entries)
     total_szfo = sum(e["stats"]["szfo"] for e in entries)
@@ -483,7 +679,7 @@ def render_index_html(index_data):
            font-weight: 500; margin-bottom: 6px; }}
 .hero .sub {{ font-size: 14px; color: #6b6b6b; }}
 .summary {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-           margin-bottom: 24px; }}
+           margin-bottom: 20px; }}
 .entries {{ background: white; border: 1px solid #e8e2d5; border-radius: 10px;
            overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
 .entry {{ display: flex; justify-content: space-between; align-items: center;
@@ -512,12 +708,74 @@ def render_index_html(index_data):
     <div class="stat"><div class="stat-value">{total_szfo}</div>
       <div class="stat-label">Награждённых из СЗФО (всего)</div></div>
   </div>
+  {nav_html}
   <div class="entries">{rows_html}</div>
-  <div class="updated">Обновлено: {esc(last_update)} UTC ·
-    Автоматически ежедневно</div>
+  <div class="updated">Обновлено: {esc(last_update)} UTC · Автоматически ежедневно</div>
 </div>
 </body>
 </html>"""
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# АГРЕГАЦИЯ АРХИВА И СБОРКА СТРАНИЦ РЕГИОНОВ
+# ═══════════════════════════════════════════════════════════════════════
+def load_all_reports():
+    reports = []
+    if not REPORTS_DIR.exists():
+        return reports
+    for json_file in sorted(REPORTS_DIR.glob("*.json")):
+        if json_file.name == "index.json":
+            continue
+        try:
+            reports.append(json.loads(json_file.read_text(encoding="utf-8")))
+        except Exception as e:
+            print(f"  ⚠ Не удалось прочитать {json_file}: {e}", flush=True)
+    return reports
+
+
+def build_region_pages():
+    """Читает все reports/*.json, генерирует regions/<slug>.html для каждого региона.
+    Возвращает dict {region_name: count} для навигации на главной."""
+    print("▶ Пересборка страниц регионов…", flush=True)
+    all_reports = load_all_reports()
+
+    # Собираем ленту награждённых по каждому региону
+    by_region = {}
+    for report in all_reports:
+        iso_date = report["date"]
+        for region in report.get("regions", []):
+            name = region["name"]
+            if name not in REGION_SLUG:
+                continue  # неизвестный регион (защита от старых данных)
+            by_region.setdefault(name, [])
+            for award in region.get("awards", []):
+                for person in award.get("people", []):
+                    by_region[name].append({
+                        "fio": person.get("fio", ""),
+                        "award": award["title"],
+                        "position_org": person.get("position_org", ""),
+                        "decree": person.get("decree", {"number": "?", "date": "—"}),
+                        "iso_date": iso_date,
+                    })
+
+    # Сортируем ленту в каждом регионе: свежие сверху
+    for name in by_region:
+        by_region[name].sort(key=lambda x: x["iso_date"], reverse=True)
+
+    # Счётчики для навигации
+    region_counts = {name: len(people) for name, people in by_region.items()}
+
+    # Генерируем страницы (только для регионов с данными)
+    REGIONS_DIR.mkdir(exist_ok=True)
+    written = 0
+    for name, people in by_region.items():
+        slug = REGION_SLUG[name]
+        html = render_region_html(name, people, region_counts)
+        (REGIONS_DIR / f"{slug}.html").write_text(html, encoding="utf-8")
+        written += 1
+
+    print(f"✓ Страниц регионов: {written}", flush=True)
+    return region_counts
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -549,13 +807,30 @@ def update_index_json(iso_date, stats):
             index = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
         except Exception:
             pass
-    # Убираем предыдущую запись за эту дату, добавляем новую
     index["reports"] = [r for r in index["reports"] if r["date"] != iso_date]
     index["reports"].append({"date": iso_date, "stats": stats})
     index["updated_at"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     INDEX_JSON.write_text(json.dumps(index, ensure_ascii=False, indent=2),
                           encoding="utf-8")
     return index
+
+
+def rebuild_all_daily_pages():
+    """Перегенерирует reports/<date>.html из существующих JSON — чтобы новый шаблон
+    (с фильтром) применился ко всем ранее сохранённым отчётам."""
+    print("▶ Перегенерация дневных страниц…", flush=True)
+    count = 0
+    for json_file in sorted(REPORTS_DIR.glob("*.json")):
+        if json_file.name == "index.json":
+            continue
+        try:
+            data = json.loads(json_file.read_text(encoding="utf-8"))
+            html_path = json_file.with_suffix(".html")
+            html_path.write_text(render_report_html(data), encoding="utf-8")
+            count += 1
+        except Exception as e:
+            print(f"  ⚠ {json_file}: {e}", flush=True)
+    print(f"✓ Перегенерировано дневных страниц: {count}", flush=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -591,10 +866,23 @@ def main():
     html_path.write_text(render_report_html(result), encoding="utf-8")
     print(f"✓ Записано: {html_path}, {json_path}", flush=True)
 
-    # Обновляем index.json и перегенерируем index.html
+    # Обновляем index.json
     index = update_index_json(iso_date, result["stats"])
-    Path("index.html").write_text(render_index_html(index), encoding="utf-8")
-    print(f"✓ Обновлено: index.html ({len(index['reports'])} записей)", flush=True)
+
+    # Перегенерируем ВСЕ дневные страницы (чтобы новый шаблон с фильтром
+    # применился к уже сохранённым отчётам)
+    rebuild_all_daily_pages()
+
+    # Пересобираем страницы регионов из ВСЕГО архива
+    region_counts = build_region_pages()
+
+    # Регенерируем главную с навигацией регионов
+    Path("index.html").write_text(
+        render_index_html(index, region_counts),
+        encoding="utf-8"
+    )
+    print(f"✓ Обновлено: index.html ({len(index['reports'])} записей, "
+          f"{len(region_counts)} регионов)", flush=True)
 
     print(f"═══ Готово ═══", flush=True)
 

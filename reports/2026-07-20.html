@@ -13,6 +13,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .nav a { color: #7d1e2a; text-decoration: none; }
 .nav a:hover { text-decoration: underline; }
 .nav .sep { color: #ccc; }
+
 .report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
           padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 .report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
@@ -21,19 +22,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                   color: #5c1620; margin-bottom: 8px; }
 .period { font-size: 14px; color: #6b6b6b; }
 .report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-                margin-bottom: 34px; }
+                margin-bottom: 26px; }
 .stat { text-align: center; padding: 16px 12px; background: #faf7f0;
         border-radius: 8px; border: 1px solid #eee6d3; }
 .stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
               line-height: 1; margin-bottom: 6px; }
 .stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+
 .region-block { margin-bottom: 26px; }
 .region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
                  border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
 .marker { color: #b8860b; font-size: 12px; }
 .region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
                     color: #5c1620; flex: 1; }
-.count { font-size: 13px; color: #6b6b6b; }
+.region-header .count { font-size: 13px; color: #6b6b6b; }
+.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                               color: #5c1620; text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { text-decoration: underline; }
 .award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
 .award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
                text-transform: uppercase; margin-bottom: 8px; }
@@ -42,14 +47,65 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
 .position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
 .decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
+.decree a { color: #7d1e2a; text-decoration: none; }
+.decree a:hover { text-decoration: underline; }
+
 .no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
 .report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
                  text-align: center; font-size: 12px; color: #6b6b6b; }
 .report-footer a { color: #7d1e2a; text-decoration: none; }
+
+/* ── Панель фильтров по региону ─── */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
+              padding: 12px 14px; background: #faf7f0;
+              border: 1px solid #eee6d3; border-radius: 8px; }
+.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                            letter-spacing: 0.5px; align-self: center;
+                            padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
+              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
+              transition: all .12s; }
+.filter-btn:hover { background: #fdf6e3; }
+.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
+                     background: rgba(184,134,11,0.15); color: #7d1e2a;
+                     font-size: 11px; border-radius: 999px; }
+.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Навигация регионов на главной ─── */
+.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+              padding: 18px 22px; margin-bottom: 20px; }
+.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                     letter-spacing: 0.5px; margin-bottom: 10px; }
+.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
+               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
+               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
+.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
+                      background: rgba(184,134,11,0.15); color: #7d1e2a;
+                      font-size: 11px; border-radius: 999px;
+                      font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge { background: rgba(255,255,255,0.25); color: white; }
+
+/* ── Лента награждённых на странице региона ─── */
+.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
+                 padding: 14px 18px; margin-bottom: 10px; }
+.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
+                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-date a { color: #b8860b; text-decoration: none; }
+.timeline-date a:hover { text-decoration: underline; }
+.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
+.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-item .position { font-size: 13px; color: #6b6b6b; }
+.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+
 @media (max-width: 640px) {
   .shell { padding: 20px 14px; }
   .report { padding: 26px 20px; }
   .report-stats { grid-template-columns: 1fr; }
+  .filter-bar { padding: 10px; }
 }
 </style>
 </head>
@@ -64,7 +120,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div class="period">Период: 20.07.2026</div>
     </div>
     <div class="report-stats"><div class="stat"><div class="stat-value">6</div><div class="stat-label">Документов за день</div></div><div class="stat"><div class="stat-value">1</div><div class="stat-label">Наградных указов</div></div><div class="stat"><div class="stat-value">10</div><div class="stat-label">Награждённых СЗФО</div></div></div>
-    <div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Санкт-Петербург</h2><span class="count">4</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div><div class="awardee"><div class="fio">Ковальчука Юрия Валентиновича</div><div class="position">общественного деятеля, город Санкт-Петербург.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Баранову Ивану Яковлевичу</div><div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div><div class="decree">Указ № 495 от 20.07.2026</div></div><div class="awardee"><div class="fio">Джусоеву Тамерлану Мелитоновичу</div><div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного — автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div><div class="awardee"><div class="fio">Михайловского Семена Ильича</div><div class="position">ректора федерального государственного бюджетного образовательного учреждения высшего образования &quot;Санкт-Петербургская академия художеств имени Ильи Репина&quot;.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Ленинградская область</h2><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Максимовой Елене Николаевне</div><div class="position">заведующей библиотекой муниципального бюджетного учреждения &quot;Никольский центр культуры и досуга&quot;, Ленинградская область</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Мурманская область</h2><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Обуховой Ольге Геннадиевне</div><div class="position">министру культуры Мурманской области</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Республика Карелия</h2><span class="count">2</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ ДРУЖБЫ</div><div class="awardee"><div class="fio">Пиетиляйнен Елену Евгеньевну</div><div class="position">директора автономного учреждения Республики Карелия &quot;Редакция журнала &quot;Север&quot;.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div><div class="awardee"><div class="fio">Скобелева Олега Александровича</div><div class="position">ведущего научного сотрудника службы истории и этнографии федерального государственного бюджетного учреждения культуры &quot;Государственный  историко-архитектурный и этнографический музей-заповедник &quot;Кижи&quot;, Республика Карелия</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Республика Коми</h2><span class="count">1</span></div><div class="award-group"><div class="award-title">МАТЬ-ГЕРОИНЯ</div><div class="awardee"><div class="fio">Аршинцевой Юлии Валерьевне</div><div class="position">Республика Коми</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block"><div class="region-header"><span class="marker">▸</span><h2>Новгородская область</h2><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Нетрусовой Татьяне Ивановне</div><div class="position">врачу государственного областного бюджетного учреждения здравоохранения &quot;Боровичская центральная районная больница&quot;, Новгородская область. За достигнутые трудовые успехи и многолетнюю добросовестную работу наградить:</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div>
+    
+        <div class="filter-bar">
+          <span class="filter-label">Регион:</span>
+          <button class="filter-btn active" data-region="all">Все<span class="badge">10</span></button><button class="filter-btn" data-region="sankt-peterburg">Санкт-Петербург<span class="badge">4</span></button><button class="filter-btn" data-region="leningradskaya-oblast">Ленинградская область<span class="badge">1</span></button><button class="filter-btn" data-region="murmanskaya-oblast">Мурманская область<span class="badge">1</span></button><button class="filter-btn" data-region="respublika-kareliya">Республика Карелия<span class="badge">2</span></button><button class="filter-btn" data-region="respublika-komi">Республика Коми<span class="badge">1</span></button><button class="filter-btn" data-region="novgorodskaya-oblast">Новгородская область<span class="badge">1</span></button>
+        </div>
+    <div class="region-block" data-region="sankt-peterburg"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/sankt-peterburg.html">Санкт-Петербург</a><span class="count">4</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div><div class="awardee"><div class="fio">Ковальчука Юрия Валентиновича</div><div class="position">общественного деятеля, город Санкт-Петербург.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Баранову Ивану Яковлевичу</div><div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div><div class="decree">Указ № 495 от 20.07.2026</div></div><div class="awardee"><div class="fio">Джусоеву Тамерлану Мелитоновичу</div><div class="position">заведующему отделением Санкт-Петербургского филиала федерального государственного — автономного учреждения &quot;Национальный медицинский исследовательский центр &quot;Межотраслевой научно-технический комплекс &quot;Микрохирургия глаза&quot; имени академика С.Н.Федорова&quot;</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">ОРДЕНОМ &quot;ЗА ЗАСЛУГИ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div><div class="awardee"><div class="fio">Михайловского Семена Ильича</div><div class="position">ректора федерального государственного бюджетного образовательного учреждения высшего образования &quot;Санкт-Петербургская академия художеств имени Ильи Репина&quot;.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block" data-region="leningradskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/leningradskaya-oblast.html">Ленинградская область</a><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Максимовой Елене Николаевне</div><div class="position">заведующей библиотекой муниципального бюджетного учреждения &quot;Никольский центр культуры и досуга&quot;, Ленинградская область</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block" data-region="murmanskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/murmanskaya-oblast.html">Мурманская область</a><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Обуховой Ольге Геннадиевне</div><div class="position">министру культуры Мурманской области</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block" data-region="respublika-kareliya"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/respublika-kareliya.html">Республика Карелия</a><span class="count">2</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ ДРУЖБЫ</div><div class="awardee"><div class="fio">Пиетиляйнен Елену Евгеньевну</div><div class="position">директора автономного учреждения Республики Карелия &quot;Редакция журнала &quot;Север&quot;.</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ &quot;ЗА ТРУДЫ В КУЛЬТУРЕ И ИСКУССТВЕ&quot;</div><div class="awardee"><div class="fio">Скобелева Олега Александровича</div><div class="position">ведущего научного сотрудника службы истории и этнографии федерального государственного бюджетного учреждения культуры &quot;Государственный  историко-архитектурный и этнографический музей-заповедник &quot;Кижи&quot;, Республика Карелия</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block" data-region="respublika-komi"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/respublika-komi.html">Республика Коми</a><span class="count">1</span></div><div class="award-group"><div class="award-title">МАТЬ-ГЕРОИНЯ</div><div class="awardee"><div class="fio">Аршинцевой Юлии Валерьевне</div><div class="position">Республика Коми</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div><div class="region-block" data-region="novgorodskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/novgorodskaya-oblast.html">Новгородская область</a><span class="count">1</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Нетрусовой Татьяне Ивановне</div><div class="position">врачу государственного областного бюджетного учреждения здравоохранения &quot;Боровичская центральная районная больница&quot;, Новгородская область. За достигнутые трудовые успехи и многолетнюю добросовестную работу наградить:</div><div class="decree">Указ № 495 от 20.07.2026</div></div></div></div>
     <div class="report-footer">
       Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
                     target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
@@ -74,5 +135,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
 </div>
+
+    <script>
+    (function(){
+      const btns = document.querySelectorAll('.filter-btn');
+      const blocks = document.querySelectorAll('.region-block');
+      btns.forEach(btn => btn.addEventListener('click', () => {
+        const target = btn.dataset.region;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        blocks.forEach(block => {
+          block.style.display = (target === 'all' || block.dataset.region === target) ? '' : 'none';
+        });
+      }));
+    })();
+    </script>
 </body>
 </html>

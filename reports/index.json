@@ -1,15 +1,6 @@
 {
   "reports": [
     {
-      "date": "2026-08-19",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
       "date": "2026-07-01",
       "stats": {
         "documents": 0,
@@ -449,7 +440,16 @@
         "awardees": 0,
         "szfo": 0
       }
+    },
+    {
+      "date": "2026-08-19",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
     }
   ],
-  "updated_at": "2026-08-20 14:20:35"
+  "updated_at": "2026-08-20 19:04:00"
 }

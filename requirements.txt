@@ -1,0 +1,4 @@
+requests>=2.31
+pdfplumber>=0.10
+pdf2image>=1.16
+pytesseract>=0.3.10

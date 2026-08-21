@@ -228,12 +228,12 @@ SZFO_REGIONS = [
         # Гатчина — административный центр
         r"гатчин(?:а|ы|у|е|ой|ский|ская|ского|ской)",
         r"выборг(?:а|у|е|ом|ский|ская|ского|ской)?",
-        r"тихвин(?:а|у|е|ом|ский|ская|ского|ской)?",
-        r"соснов(?:ый|ого|ому|ым|ом)\s+бор(?:а|у|ом|е)?",  # ЛАЭС
+        r"г(?:\.|орода?|ороду|ороде|ородом)?\s*тихвин(?:а|у|е|ом)?|тихвинск(?:ий|ая|ого|ой|ому|им|ом)\s+(?:райо|мест|поселе|окру|мун)",
+        r"г(?:\.|орода?|ороду|ороде|ородом)?\s*соснов(?:ый|ого|ому|ым|ом)\s+бор(?:а|у|ом|е)?",  # ЛАЭС, только с "г."
         r"всеволожск(?:а|у|е|ом|ий|ая|ого|ой)?",
         r"кингисепп(?:а|у|е|ом|ский|ская)?",
         r"кириши(?:ей|ах|ями)?",
-        r"луг(?:а|и|у|е|ой|ского|ский|ская)\b",  # осторожно с "луга" — травяная местность
+        r"г(?:\.|орода?|ороду|ороде|ородом)?\s*луг(?:а|и|у|е|ой)\b|луж(?:ский|ская|ского|ской)",  # г. Луга или Лужский р-н
         # «Волхов» ловим только с уточнением "город" или в связке с областью, иначе река
         r"город\s+волхов(?:а|у|е|ом)?",
         r"волхов(?:а|у|е|ом|ский|ская)\s+(?:област|район|муниципа|город|бор)",
@@ -407,8 +407,17 @@ REGION_SLUG = {name: slug for name, slug, _ in SZFO_REGIONS}
 REGION_ORDER = [name for name, _, _ in SZFO_REGIONS]
 
 def match_region(text):
-    """Возвращает название региона или None. Использует расширенные паттерны."""
+    """Возвращает название региона СЗФО или None.
+
+    Защита: если в тексте есть явное упоминание НЕ-СЗФО региона
+    (Новосибирская область, Республика Татарстан, Краснодарский край,
+    Москва и т.д.) — вероятно, это чужой человек, а любое СЗФО-упоминание
+    в этом же тексте — залипший хвост от соседа. В этом случае матч
+    отменяем.
+    """
     if not text:
+        return None
+    if _has_foreign_region(text):
         return None
     matched = []
     for name, _slug, patterns in SZFO_COMPILED:
@@ -418,30 +427,117 @@ def match_region(text):
         return None
     if len(matched) == 1:
         return matched[0]
-    # Если матчится несколько регионов — выбираем тот, у которого явно упомянут субъект,
-    # а не только город-омоним
+    # Несколько СЗФО-регионов сматчились — приоритет тому, у кого есть
+    # явное упоминание субъекта (не только города-омонима)
+    subject_hint = {
+        "Санкт-Петербург": [r"санкт[-\s]петербург", r"\bспб\b"],
+        "Ленинградская область": [r"ленинградск\S+\s+обл"],
+        "Архангельская область": [r"архангельск\S+\s+обл", r"ненецк\S+\s+(?:авт|окр)"],
+        "Вологодская область": [r"вологодск\S+\s+обл"],
+        "Калининградская область": [r"калининградск\S+\s+обл"],
+        "Мурманская область": [r"мурманск\S+\s+обл"],
+        "Республика Карелия": [r"республик\S+\s+карели", r"\bкарели[яеию]\b"],
+        "Псковская область": [r"псковск\S+\s+обл"],
+        "Республика Коми": [r"республик\S+\s+коми"],
+        "Новгородская область": [r"новгородск\S+\s+обл", r"велик\S+\s+новгород"],
+    }
     scored = []
     for name in matched:
-        # ищем в тексте название субъекта или явную привязку
-        subject_hint_patterns = {
-            "Санкт-Петербург": [r"санкт[-\s]петербург", r"\bспб\b"],
-            "Ленинградская область": [r"ленинградск\S+\s+обл"],
-            "Архангельская область": [r"архангельск\S+\s+обл", r"ненецк\S+\s+(?:авт|окр)"],
-            "Вологодская область": [r"вологодск\S+\s+обл"],
-            "Калининградская область": [r"калининградск\S+\s+обл"],
-            "Мурманская область": [r"мурманск\S+\s+обл"],
-            "Республика Карелия": [r"республик\S+\s+карели", r"\bкарели[яеию]\b"],
-            "Псковская область": [r"псковск\S+\s+обл"],
-            "Республика Коми": [r"республик\S+\s+коми"],
-            "Новгородская область": [r"новгородск\S+\s+обл", r"велик\S+\s+новгород"],
-        }
         score = 0
-        for pat in subject_hint_patterns.get(name, []):
+        for pat in subject_hint.get(name, []):
             if re.search(pat, text, re.IGNORECASE):
                 score += 10
         scored.append((score, name))
     scored.sort(reverse=True)
     return scored[0][1]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# ЗАЩИТА: НЕ-СЗФО РЕГИОНЫ (отсекают ложные срабатывания на «хвостах»)
+# ═══════════════════════════════════════════════════════════════════════
+# Если в тексте position_org явно упомянут регион-НЕ-СЗФО, то любые
+# упоминания СЗФО-регионов в этом же тексте с большой вероятностью —
+# залипший фрагмент от предыдущей записи или подписной блок указа.
+# В этом случае match_region возвращает None.
+FOREIGN_REGION_PATTERNS = [
+    # -ская область — кроме 7 областей СЗФО
+    re.compile(
+        r"\b(?!ленинградск|архангельск|вологодск|калининградск|мурманск|псковск|новгородск)"
+        r"[а-яё]+ск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        re.IGNORECASE
+    ),
+    # Республики — кроме Коми и Карелии
+    re.compile(
+        r"\bреспублик[аеиу]\s+(?!коми\b|карели[яеию])(?:[а-яё]|-)+",
+        re.IGNORECASE
+    ),
+    # Чувашская, Удмуртская, Кабардино-Балкарская, Карачаево-Черкесская
+    # (пишутся с прилагательным, не «Республика Х»)
+    re.compile(
+        r"\b(?:чувашск|удмуртск|кабардино[-\s]балкарск|карачаево[-\s]черкесск)"
+        r"(?:ая|ой|ую|ое|ими|ом)\s+респ",
+        re.IGNORECASE
+    ),
+    # Края — все, у нас в СЗФО краёв нет
+    re.compile(r"\b[а-яё]+ск(?:ий|ого|ому|им|ом)\s+кра[йяю]", re.IGNORECASE),
+    # Автономные округа — кроме Ненецкого (входит в Архангельскую)
+    re.compile(
+        r"\b(?!ненецк)[а-яё]+ск(?:ий|ого|ому|им|ом)\s+автономн",
+        re.IGNORECASE
+    ),
+    # Ямало-Ненецкий АО, Ханты-Мансийский АО — двухсоставные
+    re.compile(r"\bямало[-\s]ненецк", re.IGNORECASE),
+    re.compile(r"\bханты[-\s]мансийск", re.IGNORECASE),
+    # Москва (город, области, «города Москвы»)
+    re.compile(r"\bг(?:\.|орода?|ороду|ороде|ородом)?\s*москв[аыуеой]", re.IGNORECASE),
+    re.compile(r"\bмосковск(?:ая|ой|ую|ое|ими|ом)\s+(?:област|обл\.)", re.IGNORECASE),
+    # Севастополь
+    re.compile(r"\bг(?:\.|орода?|ороду|ороде|ородом)?\s*севастопол", re.IGNORECASE),
+    # Заграница — если в тексте «в Монголии», «во Франции» и т.п.,
+    # это точно не наш награждённый по прописке
+    re.compile(
+        r"\bв\s+(?:монголии|китае|казахстане|беларуси|киргизии|узбекистане|"
+        r"таджикистане|турк[а-я]+ии|азербайджане|армении|грузии|"
+        r"украине|молдове|латвии|литве|эстонии|финляндии|швеции|норвегии|"
+        r"германии|франции|италии|испании|великобритании|"
+        r"сша|японии|индии|иране|турции|сирии|египте|бразилии|кубе|вьетнаме)\b",
+        re.IGNORECASE
+    ),
+    # Явный «Краснодар», «Ростов-на-Дону», «Екатеринбург» и т.д.
+    # (крупные не-СЗФО города, которые могут быть упомянуты без «область»)
+    re.compile(
+        r"\bг(?:\.|орода?|ороду|ороде|ородом)?\s*"
+        r"(?:краснодар|ростов[-\s]на[-\s]дон|екатеринбург|новосибирск|"
+        r"нижн(?:ий|его|ем)\s+новгород|казан|уф|перм|самар|"
+        r"воронеж|волгоград|ставропол|барнаул|хабаровск|владивосток|"
+        r"иркутск|омск|томск|тюмен|челябинск|ярославл|тверь|владимир|"
+        r"кострома|тул|калуг|курск|липецк|тамбов|орёл|орл|брянск|смоленск|"
+        r"грозный|махачкал|нальчик|владикавказ|астрахан|элист|"
+        r"якутск|чит|биробидж|благовещенск|"
+        r"симферопол|ялт|керч|"
+        r"улан[-\s]удэ|горно[-\s]алтайск|"
+        r"кемеров|новокузнецк|магнитогорск|тольятт|"
+        r"кинешм|иванов[а-я]*)",
+        re.IGNORECASE
+    ),
+]
+
+
+def _has_foreign_region(text):
+    """True, если в тексте явно указан НЕ-СЗФО регион."""
+    for pat in FOREIGN_REGION_PATTERNS:
+        if pat.search(text):
+            return True
+    return False
+
+
+def _which_pattern_matched(text, patterns):
+    """Диагностика: возвращает первый совпавший паттерн и подстроку."""
+    for pat in patterns:
+        m = pat.search(text)
+        if m:
+            return pat.pattern, m.group(0)
+    return None, None
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -908,6 +1004,70 @@ def render_index_html(index_data, region_counts):
 # ═══════════════════════════════════════════════════════════════════════
 # АГРЕГАЦИЯ + СБОРКА
 # ═══════════════════════════════════════════════════════════════════════
+def migrate_legacy_filenames():
+    """Одноразовая миграция: переименовать reports/DD.MM.YYYY.* → reports/YYYY-MM-DD.*
+    и нормализовать поле date в JSON к ISO-формату.
+
+    Такие файлы могли остаться от прогонов, где имя файла случайно писалось
+    в pravo-формате. Функция чинит это, чтобы сортировка на главной странице
+    работала корректно."""
+    pravo_pattern = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})\.(json|html)$")
+    migrated = 0
+    for f in list(REPORTS_DIR.glob("*.json")) + list(REPORTS_DIR.glob("*.html")):
+        m = pravo_pattern.match(f.name)
+        if not m:
+            continue
+        d, mo, y, ext = m.groups()
+        iso_date = f"{y}-{mo}-{d}"
+        iso_name = f"{iso_date}.{ext}"
+        target = REPORTS_DIR / iso_name
+
+        # Если целевой ISO-файл уже есть — legacy устарел, удаляем
+        if target.exists():
+            print(f"  ⚠ legacy {f.name} → ISO уже есть, удаляю legacy", flush=True)
+            try: f.unlink()
+            except Exception: pass
+            migrated += 1
+            continue
+
+        if ext == "json":
+            # Нормализуем поле date внутри JSON и записываем под новым именем
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                data["date"] = iso_date
+                target.write_text(json.dumps(data, ensure_ascii=False, indent=2),
+                                  encoding="utf-8")
+                f.unlink()
+                print(f"  → {f.name} → {iso_name} (date нормализовано)", flush=True)
+            except Exception as e:
+                print(f"  ⚠ {f.name}: не удалось прочитать/переписать: {e}", flush=True)
+                continue
+        else:
+            # HTML — просто переименовать (потом при rebuild пересоздастся из JSON)
+            try:
+                f.rename(target)
+                print(f"  → {f.name} → {iso_name}", flush=True)
+            except Exception as e:
+                print(f"  ⚠ {f.name}: {e}", flush=True)
+                continue
+        migrated += 1
+    return migrated
+
+
+def normalize_date_field(iso_or_pravo):
+    """Приводит любую дату к ISO-формату YYYY-MM-DD."""
+    if not iso_or_pravo:
+        return iso_or_pravo
+    s = iso_or_pravo.strip()
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", s):
+        return s
+    m = re.match(r"^(\d{2})\.(\d{2})\.(\d{4})$", s)
+    if m:
+        d, mo, y = m.groups()
+        return f"{y}-{mo}-{d}"
+    return s  # если что-то ещё — возвращаем как есть
+
+
 def load_all_reports():
     reports = []
     if not REPORTS_DIR.exists():
@@ -916,7 +1076,9 @@ def load_all_reports():
         if json_file.name == "index.json":
             continue
         try:
-            reports.append(json.loads(json_file.read_text(encoding="utf-8")))
+            data = json.loads(json_file.read_text(encoding="utf-8"))
+            data["date"] = normalize_date_field(data.get("date", ""))
+            reports.append(data)
         except Exception as e:
             print(f"  ⚠ Не удалось прочитать {json_file}: {e}", flush=True)
     return reports
@@ -979,12 +1141,16 @@ def to_pravo_date(iso_date):
 
 
 def update_index_json(iso_date, stats):
+    iso_date = normalize_date_field(iso_date)
     index = {"reports": [], "updated_at": ""}
     if INDEX_JSON.exists():
         try:
             index = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
         except Exception:
             pass
+    # Нормализуем все существующие записи к ISO
+    for r in index.get("reports", []):
+        r["date"] = normalize_date_field(r.get("date", ""))
     index["reports"] = [r for r in index["reports"] if r["date"] != iso_date]
     index["reports"].append({"date": iso_date, "stats": stats})
     index["updated_at"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -1012,6 +1178,13 @@ def rebuild_all_daily_pages():
 def rebuild_all_from_json():
     """Пересобирает ВСЕ отчёты из reports/*.json — переприменяет актуальные паттерны
     к сохранённым all_awardees, обновляет JSON и HTML. Без OCR."""
+    print("▶ Миграция legacy-имён файлов (если есть)…", flush=True)
+    n = migrate_legacy_filenames()
+    if n:
+        print(f"✓ Перенесено {n} файл(ов) к ISO-формату", flush=True)
+    else:
+        print(f"  ничего мигрировать не нужно", flush=True)
+
     print("▶ Пересборка всех отчётов из JSON (без OCR)…", flush=True)
 
     fresh_index_reports = []
@@ -1065,15 +1238,82 @@ def rebuild_all_from_json():
 # ═══════════════════════════════════════════════════════════════════════
 # MAIN
 # ═══════════════════════════════════════════════════════════════════════
+def debug_region(region_name):
+    """Диагностика: печатает все записи, попавшие в указанный регион, с raw,
+    position_org и указанием, какой именно паттерн сработал."""
+    print(f"═══ ДИАГНОСТИКА региона: '{region_name}' ═══", flush=True)
+    if region_name not in REGION_SLUG:
+        print(f"⚠ Неизвестный регион. Доступные: {', '.join(REGION_SLUG)}")
+        return
+
+    # Находим паттерны для этого региона
+    target_patterns = None
+    for name, slug, patterns in SZFO_COMPILED:
+        if name == region_name:
+            target_patterns = patterns
+            break
+
+    all_reports = load_all_reports()
+    total_hits = 0
+    for report in all_reports:
+        iso_date = report["date"]
+        for reg in report.get("regions", []):
+            if reg["name"] != region_name:
+                continue
+            for award in reg.get("awards", []):
+                for person in award.get("people", []):
+                    total_hits += 1
+                    pos = person.get("position_org", "")
+                    raw = person.get("raw", "")
+
+                    pat_pos, hit_pos = _which_pattern_matched(pos, target_patterns)
+                    pat_raw, hit_raw = _which_pattern_matched(raw, target_patterns)
+                    foreign_pos = _has_foreign_region(pos)
+                    foreign_raw = _has_foreign_region(raw)
+
+                    print(f"\n── {iso_date} · {person.get('fio', '?')}")
+                    print(f"   награда:      {award['title'][:80]}")
+                    print(f"   position_org: {pos[:200]}")
+                    if len(pos) > 200:
+                        print(f"                 …{pos[200:400]}")
+                    print(f"   raw:          {raw[:200]}")
+                    if len(raw) > 200:
+                        print(f"                 …{raw[200:400]}")
+                    if pat_pos:
+                        print(f"   ✓ POSITION_ORG сматчил: '{hit_pos}' (паттерн: {pat_pos[:60]})")
+                    elif pat_raw:
+                        print(f"   ⚠ POSITION_ORG чист, RAW сматчил: '{hit_raw}' (паттерн: {pat_raw[:60]})")
+                    else:
+                        print(f"   ✗ НЕ ДОЛЖЕН БЫЛ ПОПАСТЬ — паттерны {region_name} не срабатывают!")
+                    if foreign_pos:
+                        print(f"   ⚠ В position_org есть маркер ЧУЖОГО региона — сейчас должен отсекаться")
+                    if foreign_raw:
+                        print(f"   ⚠ В raw есть маркер ЧУЖОГО региона — сейчас должен отсекаться")
+    print(f"\n═══ Всего записей в '{region_name}': {total_hits} ═══")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", help="YYYY-MM-DD (по умолчанию — вчера)")
     parser.add_argument("--rebuild", action="store_true",
                         help="Пересобрать все отчёты из reports/*.json без OCR "
                              "(применить актуальные паттерны регионов)")
+    parser.add_argument("--debug-region", metavar="ИМЯ",
+                        help="Диагностика: показать все записи в указанном регионе с "
+                             "информацией о том, какой паттерн сработал")
     args = parser.parse_args()
 
     REPORTS_DIR.mkdir(exist_ok=True)
+
+    # Одноразовая миграция файлов (безвредна, если ничего чинить не надо)
+    if not args.debug_region:
+        n = migrate_legacy_filenames()
+        if n:
+            print(f"✓ Миграция: перенесено {n} файл(ов) к ISO-формату", flush=True)
+
+    if args.debug_region:
+        debug_region(args.debug_region)
+        return
 
     if args.rebuild:
         print("═══ REBUILD-режим: без OCR, применяем актуальные паттерны ═══", flush=True)

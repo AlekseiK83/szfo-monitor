@@ -1,7 +1,7 @@
 {
   "reports": [
     {
-      "date": "01.07.2026",
+      "date": "2026-07-01",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -10,7 +10,7 @@
       }
     },
     {
-      "date": "02.07.2026",
+      "date": "2026-07-02",
       "stats": {
         "documents": 1,
         "awarding": 0,
@@ -19,7 +19,7 @@
       }
     },
     {
-      "date": "03.07.2026",
+      "date": "2026-07-03",
       "stats": {
         "documents": 3,
         "awarding": 0,
@@ -28,7 +28,7 @@
       }
     },
     {
-      "date": "04.07.2026",
+      "date": "2026-07-04",
       "stats": {
         "documents": 23,
         "awarding": 0,
@@ -37,7 +37,7 @@
       }
     },
     {
-      "date": "05.07.2026",
+      "date": "2026-07-05",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -46,7 +46,7 @@
       }
     },
     {
-      "date": "06.07.2026",
+      "date": "2026-07-06",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -55,7 +55,7 @@
       }
     },
     {
-      "date": "07.07.2026",
+      "date": "2026-07-07",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -64,7 +64,7 @@
       }
     },
     {
-      "date": "08.07.2026",
+      "date": "2026-07-08",
       "stats": {
         "documents": 1,
         "awarding": 0,
@@ -73,7 +73,7 @@
       }
     },
     {
-      "date": "09.07.2026",
+      "date": "2026-07-09",
       "stats": {
         "documents": 5,
         "awarding": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "date": "10.07.2026",
+      "date": "2026-07-10",
       "stats": {
         "documents": 4,
         "awarding": 0,
@@ -91,7 +91,7 @@
       }
     },
     {
-      "date": "11.07.2026",
+      "date": "2026-07-11",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -100,7 +100,7 @@
       }
     },
     {
-      "date": "12.07.2026",
+      "date": "2026-07-12",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -109,7 +109,7 @@
       }
     },
     {
-      "date": "13.07.2026",
+      "date": "2026-07-13",
       "stats": {
         "documents": 5,
         "awarding": 1,
@@ -118,7 +118,7 @@
       }
     },
     {
-      "date": "14.07.2026",
+      "date": "2026-07-14",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -127,7 +127,7 @@
       }
     },
     {
-      "date": "15.07.2026",
+      "date": "2026-07-15",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -136,7 +136,7 @@
       }
     },
     {
-      "date": "16.07.2026",
+      "date": "2026-07-16",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -145,7 +145,7 @@
       }
     },
     {
-      "date": "17.07.2026",
+      "date": "2026-07-17",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -154,7 +154,7 @@
       }
     },
     {
-      "date": "18.07.2026",
+      "date": "2026-07-18",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -163,7 +163,7 @@
       }
     },
     {
-      "date": "19.07.2026",
+      "date": "2026-07-19",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -172,7 +172,7 @@
       }
     },
     {
-      "date": "20.07.2026",
+      "date": "2026-07-20",
       "stats": {
         "documents": 6,
         "awarding": 1,
@@ -181,7 +181,7 @@
       }
     },
     {
-      "date": "21.07.2026",
+      "date": "2026-07-21",
       "stats": {
         "documents": 5,
         "awarding": 0,
@@ -190,7 +190,7 @@
       }
     },
     {
-      "date": "22.07.2026",
+      "date": "2026-07-22",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -199,7 +199,7 @@
       }
     },
     {
-      "date": "23.07.2026",
+      "date": "2026-07-23",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -208,7 +208,7 @@
       }
     },
     {
-      "date": "24.07.2026",
+      "date": "2026-07-24",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -217,7 +217,7 @@
       }
     },
     {
-      "date": "25.07.2026",
+      "date": "2026-07-25",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -226,7 +226,7 @@
       }
     },
     {
-      "date": "26.07.2026",
+      "date": "2026-07-26",
       "stats": {
         "documents": 37,
         "awarding": 0,
@@ -235,7 +235,7 @@
       }
     },
     {
-      "date": "27.07.2026",
+      "date": "2026-07-27",
       "stats": {
         "documents": 10,
         "awarding": 0,
@@ -244,7 +244,7 @@
       }
     },
     {
-      "date": "28.07.2026",
+      "date": "2026-07-28",
       "stats": {
         "documents": 7,
         "awarding": 0,
@@ -253,7 +253,7 @@
       }
     },
     {
-      "date": "29.07.2026",
+      "date": "2026-07-29",
       "stats": {
         "documents": 1,
         "awarding": 0,
@@ -262,7 +262,7 @@
       }
     },
     {
-      "date": "30.07.2026",
+      "date": "2026-07-30",
       "stats": {
         "documents": 1,
         "awarding": 0,
@@ -271,7 +271,7 @@
       }
     },
     {
-      "date": "31.07.2026",
+      "date": "2026-07-31",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -280,7 +280,7 @@
       }
     },
     {
-      "date": "01.08.2026",
+      "date": "2026-08-01",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -289,7 +289,7 @@
       }
     },
     {
-      "date": "02.08.2026",
+      "date": "2026-08-02",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -298,7 +298,7 @@
       }
     },
     {
-      "date": "03.08.2026",
+      "date": "2026-08-03",
       "stats": {
         "documents": 6,
         "awarding": 0,
@@ -307,7 +307,7 @@
       }
     },
     {
-      "date": "04.08.2026",
+      "date": "2026-08-04",
       "stats": {
         "documents": 66,
         "awarding": 1,
@@ -316,7 +316,7 @@
       }
     },
     {
-      "date": "05.08.2026",
+      "date": "2026-08-05",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -325,7 +325,7 @@
       }
     },
     {
-      "date": "06.08.2026",
+      "date": "2026-08-06",
       "stats": {
         "documents": 11,
         "awarding": 1,
@@ -334,7 +334,7 @@
       }
     },
     {
-      "date": "07.08.2026",
+      "date": "2026-08-07",
       "stats": {
         "documents": 1,
         "awarding": 0,
@@ -343,7 +343,7 @@
       }
     },
     {
-      "date": "08.08.2026",
+      "date": "2026-08-08",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -352,7 +352,7 @@
       }
     },
     {
-      "date": "09.08.2026",
+      "date": "2026-08-09",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -361,7 +361,7 @@
       }
     },
     {
-      "date": "10.08.2026",
+      "date": "2026-08-10",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -370,7 +370,7 @@
       }
     },
     {
-      "date": "11.08.2026",
+      "date": "2026-08-11",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -388,7 +388,7 @@
       }
     },
     {
-      "date": "13.08.2026",
+      "date": "2026-08-13",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -397,7 +397,7 @@
       }
     },
     {
-      "date": "14.08.2026",
+      "date": "2026-08-14",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -406,7 +406,7 @@
       }
     },
     {
-      "date": "15.08.2026",
+      "date": "2026-08-15",
       "stats": {
         "documents": 2,
         "awarding": 0,
@@ -415,7 +415,7 @@
       }
     },
     {
-      "date": "16.08.2026",
+      "date": "2026-08-16",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -424,7 +424,7 @@
       }
     },
     {
-      "date": "17.08.2026",
+      "date": "2026-08-17",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -433,7 +433,7 @@
       }
     },
     {
-      "date": "18.08.2026",
+      "date": "2026-08-18",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -442,7 +442,7 @@
       }
     },
     {
-      "date": "19.08.2026",
+      "date": "2026-08-19",
       "stats": {
         "documents": 0,
         "awarding": 0,
@@ -451,5 +451,5 @@
       }
     }
   ],
-  "updated_at": "2026-08-21 06:36:09"
+  "updated_at": "2026-08-21 06:44:05"
 }

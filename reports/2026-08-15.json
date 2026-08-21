@@ -1,11 +1,12 @@
 {
-  "date": "2026-08-15",
-  "generated_at": "2026-08-20T19:03:56.873901Z",
   "stats": {
     "documents": 2,
     "awarding": 0,
     "awardees": 0,
     "szfo": 0
   },
-  "regions": []
+  "regions": [],
+  "all_awardees": [],
+  "date": "2026-08-15",
+  "generated_at": "2026-08-21T07:13:44.709777Z"
 }

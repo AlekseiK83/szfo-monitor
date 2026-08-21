@@ -1177,7 +1177,11 @@ def rebuild_all_daily_pages():
 
 def rebuild_all_from_json():
     """Пересобирает ВСЕ отчёты из reports/*.json — переприменяет актуальные паттерны
-    к сохранённым all_awardees, обновляет JSON и HTML. Без OCR."""
+    к сохранённым all_awardees, обновляет JSON и HTML. Без OCR.
+
+    Дополнительно: нормализует поле date к ISO-формату во всех JSON — это чинит
+    случаи, когда файлы уже переименованы к ISO, а поле date внутри осталось
+    в pravo-формате (тогда сортировка на главной ломается, ссылки уходят в 404)."""
     print("▶ Миграция legacy-имён файлов (если есть)…", flush=True)
     n = migrate_legacy_filenames()
     if n:
@@ -1190,6 +1194,7 @@ def rebuild_all_from_json():
     fresh_index_reports = []
     reprocessed = 0
     legacy_skipped = 0
+    normalized_dates = 0
 
     for json_file in sorted(REPORTS_DIR.glob("*.json")):
         if json_file.name == "index.json":
@@ -1200,27 +1205,44 @@ def rebuild_all_from_json():
             print(f"  ⚠ {json_file}: {e}", flush=True)
             continue
 
+        # Нормализуем поле date к ISO — независимо от ветки ниже
+        original_date = data.get("date", "")
+        iso_date = normalize_date_field(original_date)
+        date_was_fixed = (iso_date != original_date)
+        data["date"] = iso_date
+
         if "all_awardees" not in data:
-            # Легаси JSON без сохранённых awardees — оставляем как есть,
-            # но фиксируем в статистике
+            # Legacy JSON без сохранённых awardees: пересобрать содержимое не можем,
+            # но поле date поправим — этого достаточно, чтобы ссылки в index.html
+            # были корректными
             legacy_skipped += 1
-            fresh_index_reports.append({"date": data["date"], "stats": data["stats"]})
+            if date_was_fixed:
+                json_file.write_text(json.dumps(data, ensure_ascii=False, indent=2),
+                                     encoding="utf-8")
+                normalized_dates += 1
+            fresh_index_reports.append({"date": iso_date, "stats": data["stats"]})
             continue
 
+        # Новый JSON с all_awardees: переприменяем паттерны и пересобираем HTML
         new_data = rebuild_report_from_json(data)
+        new_data["date"] = iso_date  # гарантируем ISO
         json_file.write_text(json.dumps(new_data, ensure_ascii=False, indent=2),
                              encoding="utf-8")
         html_path = json_file.with_suffix(".html")
         html_path.write_text(render_report_html(new_data), encoding="utf-8")
-        fresh_index_reports.append({"date": new_data["date"], "stats": new_data["stats"]})
+        fresh_index_reports.append({"date": iso_date, "stats": new_data["stats"]})
         reprocessed += 1
-        print(f"  {new_data['date']}: {new_data['stats']['szfo']} из СЗФО "
+        if date_was_fixed:
+            normalized_dates += 1
+        print(f"  {iso_date}: {new_data['stats']['szfo']} из СЗФО "
               f"(из {new_data['stats']['awardees']} всего)", flush=True)
 
-    print(f"✓ Переобработано: {reprocessed}, пропущено (legacy без all_awardees): {legacy_skipped}",
-          flush=True)
+    print(f"✓ Переобработано с новыми паттернами: {reprocessed}", flush=True)
+    print(f"✓ Legacy без all_awardees (только дата нормализована): {legacy_skipped}", flush=True)
+    if normalized_dates:
+        print(f"✓ Поле date нормализовано в {normalized_dates} файл(ах)", flush=True)
 
-    # Обновляем index.json
+    # Обновляем index.json (все даты уже ISO)
     index = {"reports": fresh_index_reports,
              "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}
     INDEX_JSON.write_text(json.dumps(index, ensure_ascii=False, indent=2),

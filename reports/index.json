@@ -114,7 +114,7 @@
         "documents": 5,
         "awarding": 1,
         "awardees": 246,
-        "szfo": 13
+        "szfo": 12
       }
     },
     {
@@ -177,7 +177,7 @@
         "documents": 6,
         "awarding": 1,
         "awardees": 103,
-        "szfo": 10
+        "szfo": 12
       }
     },
     {
@@ -460,5 +460,5 @@
       }
     }
   ],
-  "updated_at": "2026-08-21 07:13:48"
+  "updated_at": "2026-08-21 07:23:24"
 }

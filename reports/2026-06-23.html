@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ленинградская область — Мониторинг СЗФО</title>
+<title>Дайджест СЗФО за 2026-06-23</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -108,30 +108,35 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
-      <h1>Ленинградская область</h1>
-      <div class="period">Награждённые за всё время: 1 ·
-        период с 20 июля 2026 по 20 июля 2026</div>
+      <h1>Дайджест наградных указов СЗФО</h1>
+      <div class="period">Период: 23 июня 2026</div>
     </div>
+    <div class="report-stats"><div class="stat"><div class="stat-value">3</div><div class="stat-label">Документов за день</div></div><div class="stat"><div class="stat-value">0</div><div class="stat-label">Наградных указов</div></div><div class="stat"><div class="stat-value">0</div><div class="stat-label">Награждённых СЗФО</div></div></div>
     
-    <div class="region-nav">
-      <div class="title">Другие регионы СЗФО</div>
-      <div class="pills"><a class="region-pill" href="sankt-peterburg.html">Санкт-Петербург<span class="badge">39</span></a><a class="region-pill active" href="leningradskaya-oblast.html">Ленинградская область<span class="badge">1</span></a><a class="region-pill" href="arhangelskaya-oblast.html">Архангельская область<span class="badge">9</span></a><a class="region-pill" href="vologodskaya-oblast.html">Вологодская область<span class="badge">2</span></a><a class="region-pill" href="kaliningradskaya-oblast.html">Калининградская область<span class="badge">9</span></a><a class="region-pill" href="murmanskaya-oblast.html">Мурманская область<span class="badge">8</span></a><a class="region-pill" href="respublika-kareliya.html">Республика Карелия<span class="badge">6</span></a><a class="region-pill" href="respublika-komi.html">Республика Коми<span class="badge">6</span></a><a class="region-pill" href="novgorodskaya-oblast.html">Новгородская область<span class="badge">10</span></a></div>
-    </div>
-    
-        <div class="timeline-item">
-          <div class="timeline-date">
-            <a href="../reports/2026-07-20.html">20 июля 2026</a>
-          </div>
-          <div class="award-name">ЗАСЛУЖЕННЫЙ АРТИСТ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
-          <div class="fio">Максимовой Елене Николаевне</div>
-          <div class="position">заведующей библиотекой муниципального бюджетного учреждения &quot;Никольский центр культуры и досуга&quot;, Ленинградская область</div>
-          <div class="decree">Указ № 495 от 20.07.2026</div>
-        </div>
+    <div class="no-results">За выбранную дату награждённых из регионов СЗФО не найдено</div>
     <div class="report-footer">
       Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
-                    target="_blank" rel="noopener">publication.pravo.gov.ru</a>
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
+      Всего в указах награждённых: 0 ·
+      Отфильтровано по 10 регионам СЗФО<br>
+      Сгенерировано автоматически: 2026-08-21T20:11:58.560937Z
     </div>
   </div>
 </div>
+
+    <script>
+    (function(){
+      const btns = document.querySelectorAll('.filter-btn');
+      const blocks = document.querySelectorAll('.region-block');
+      btns.forEach(btn => btn.addEventListener('click', () => {
+        const target = btn.dataset.region;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        blocks.forEach(block => {
+          block.style.display = (target === 'all' || block.dataset.region === target) ? '' : 'none';
+        });
+      }));
+    })();
+    </script>
 </body>
 </html>

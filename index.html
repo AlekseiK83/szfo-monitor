@@ -13,7 +13,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
 .nav a { color: #7d1e2a; text-decoration: none; }
 .nav a:hover { text-decoration: underline; }
-.nav .sep { color: #ccc; }
 
 .report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
           padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -48,21 +47,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
 .position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
 .decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
-.decree a { color: #7d1e2a; text-decoration: none; }
-.decree a:hover { text-decoration: underline; }
 
 .no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
 .report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
                  text-align: center; font-size: 12px; color: #6b6b6b; }
 .report-footer a { color: #7d1e2a; text-decoration: none; }
 
-/* ── Панель фильтров по региону ─── */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
               padding: 12px 14px; background: #faf7f0;
               border: 1px solid #eee6d3; border-radius: 8px; }
 .filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                            letter-spacing: 0.5px; align-self: center;
-                            padding-right: 4px; }
+                            letter-spacing: 0.5px; align-self: center; padding-right: 4px; }
 .filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
               background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
               transition: all .12s; }
@@ -73,7 +68,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                      font-size: 11px; border-radius: 999px; }
 .filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
 
-/* ── Навигация регионов на главной ─── */
 .region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
               padding: 18px 22px; margin-bottom: 20px; }
 .region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
@@ -83,13 +77,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
                color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
 .region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
 .region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
                       background: rgba(184,134,11,0.15); color: #7d1e2a;
-                      font-size: 11px; border-radius: 999px;
-                      font-variant-numeric: tabular-nums; }
-.region-pill:hover .badge { background: rgba(255,255,255,0.25); color: white; }
+                      font-size: 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge,
+.region-pill.active .badge { background: rgba(255,255,255,0.25); color: white; }
 
-/* ── Лента награждённых на странице региона ─── */
 .timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
                  padding: 14px 18px; margin-bottom: 10px; }
 .timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
@@ -141,13 +135,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="summary">
     <div class="stat"><div class="stat-value">50</div>
       <div class="stat-label">Дайджестов в архиве</div></div>
-    <div class="stat"><div class="stat-value">72</div>
+    <div class="stat"><div class="stat-value">81</div>
       <div class="stat-label">Награждённых из СЗФО (всего)</div></div>
   </div>
   
     <div class="region-nav">
       <div class="title">Просмотр по региону</div>
-      <div class="pills"><a class="region-pill" href="regions/sankt-peterburg.html">Санкт-Петербург<span class="badge">37</span></a><a class="region-pill" href="regions/leningradskaya-oblast.html">Ленинградская область<span class="badge">1</span></a><a class="region-pill" href="regions/arhangelskaya-oblast.html">Архангельская область<span class="badge">7</span></a><a class="region-pill" href="regions/vologodskaya-oblast.html">Вологодская область<span class="badge">2</span></a><a class="region-pill" href="regions/kaliningradskaya-oblast.html">Калининградская область<span class="badge">4</span></a><a class="region-pill" href="regions/murmanskaya-oblast.html">Мурманская область<span class="badge">2</span></a><a class="region-pill" href="regions/respublika-kareliya.html">Республика Карелия<span class="badge">5</span></a><a class="region-pill" href="regions/respublika-komi.html">Республика Коми<span class="badge">5</span></a><a class="region-pill" href="regions/novgorodskaya-oblast.html">Новгородская область<span class="badge">9</span></a></div>
+      <div class="pills"><a class="region-pill" href="regions/sankt-peterburg.html">Санкт-Петербург<span class="badge">37</span></a><a class="region-pill" href="regions/leningradskaya-oblast.html">Ленинградская область<span class="badge">9</span></a><a class="region-pill" href="regions/arhangelskaya-oblast.html">Архангельская область<span class="badge">7</span></a><a class="region-pill" href="regions/vologodskaya-oblast.html">Вологодская область<span class="badge">2</span></a><a class="region-pill" href="regions/kaliningradskaya-oblast.html">Калининградская область<span class="badge">4</span></a><a class="region-pill" href="regions/murmanskaya-oblast.html">Мурманская область<span class="badge">3</span></a><a class="region-pill" href="regions/respublika-kareliya.html">Республика Карелия<span class="badge">5</span></a><a class="region-pill" href="regions/respublika-komi.html">Республика Коми<span class="badge">5</span></a><a class="region-pill" href="regions/novgorodskaya-oblast.html">Новгородская область<span class="badge">9</span></a></div>
     </div>
   <div class="entries">
         <a class="entry empty" href="reports/2026-08-19.html">
@@ -203,7 +197,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <div class="entry-date">12 августа 2026</div>
           <div class="entry-stats">
             <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>20</b></span>
+            <span>Из СЗФО: <b>29</b></span>
           </div>
         </a>
         <a class="entry empty" href="reports/2026-08-11.html">
@@ -500,7 +494,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
             <span>Из СЗФО: <b>0</b></span>
           </div>
         </a></div>
-  <div class="updated">Обновлено: 2026-08-20 19:17:24 UTC · Автоматически ежедневно</div>
+  <div class="updated">Обновлено: 2026-08-21 05:42:25 UTC · Автоматически ежедневно</div>
 </div>
 </body>
 </html>

@@ -3,13 +3,15 @@
 Использование:
     python generate.py                    # за вчера
     python generate.py --date 2026-08-12  # за конкретную дату
+    python generate.py --rebuild          # пересобрать всё из reports/*.json без OCR
+                                          # (после правки паттернов регионов)
 
 Выход:
     reports/YYYY-MM-DD.html               # отчёт за день (с JS-фильтром по региону)
-    reports/YYYY-MM-DD.json               # сырые данные
+    reports/YYYY-MM-DD.json               # сырые данные + all_awardees для реюза
     reports/index.json                    # список обработанных дат
-    regions/<slug>.html                   # лента награждённых по каждому региону (за всё время)
-    index.html                            # главная страница со списком дат + навигация регионов
+    regions/<slug>.html                   # лента награждённых по каждому региону
+    index.html                            # главная страница
 """
 import argparse
 import json
@@ -194,50 +196,209 @@ def parse_awardees(raw_text, decree_ref):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# РЕГИОНЫ СЗФО + СЛУГИ ДЛЯ URL
+# РЕГИОНЫ СЗФО — РАСШИРЕННЫЕ ПАТТЕРНЫ
 # ═══════════════════════════════════════════════════════════════════════
+# Философия матчинга:
+# 1. Название региона (все падежи) — уверенно
+# 2. Уникальные крупные города (все падежи + прилагательные) — уверенно
+# 3. Города-омонимы (Кировск, Мирный, Остров, Сокол и т.д.) — не ловим
+#    без явного контекста региона, чтобы не приписать чужих
+#
+# Формат: каждый паттерн должен матчить фразу как слово (границы \b),
+# но с учётом русской морфологии — все падежные окончания.
+
 SZFO_REGIONS = [
+    # ── Санкт-Петербург (нет городов-спутников в границах субъекта) ──
     ("Санкт-Петербург", "sankt-peterburg", [
         r"санкт[-\s]петербург[а-я]*",
         r"г\.?\s*с[.\-]\s*петербург[а-я]*",
         r"\bспб\b",
+        # Кронштадт входит в состав Санкт-Петербурга
+        r"кронштадт(?:а|у|е|ом|ский|ская|ского|ской|ские)?",
+        # Колпино, Пушкин, Петергоф — районы СПб, но «Пушкин» слишком коллизионен (поэт, город
+        # в Тверской обл., улицы), «Петергоф» — обычно с уточнением; ловим осторожно
+        r"колпин(?:о|а|у|е|ом)",
+        r"петергоф(?:а|у|е|ом|ский|ская)?",
+        r"сестрорецк(?:а|у|е|ом|ий|ая)?",
     ]),
+
+    # ── Ленинградская область ──
     ("Ленинградская область", "leningradskaya-oblast", [
         r"ленинградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        # Гатчина — административный центр
+        r"гатчин(?:а|ы|у|е|ой|ский|ская|ского|ской)",
+        r"выборг(?:а|у|е|ом|ский|ская|ского|ской)?",
+        r"тихвин(?:а|у|е|ом|ский|ская|ского|ской)?",
+        r"соснов(?:ый|ого|ому|ым|ом)\s+бор(?:а|у|ом|е)?",  # ЛАЭС
+        r"всеволожск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"кингисепп(?:а|у|е|ом|ский|ская)?",
+        r"кириши(?:ей|ах|ями)?",
+        r"луг(?:а|и|у|е|ой|ского|ский|ская)\b",  # осторожно с "луга" — травяная местность
+        # «Волхов» ловим только с уточнением "город" или в связке с областью, иначе река
+        r"город\s+волхов(?:а|у|е|ом)?",
+        r"волхов(?:а|у|е|ом|ский|ская)\s+(?:област|район|муниципа|город|бор)",
+        r"приозерск(?:а|у|е|ом|ий|ая)?",
+        r"подпорожь(?:е|я|ю|ем|и)",
+        r"лодейно(?:е|го|му|м)\s+пол(?:е|я|ю|ем)",
     ]),
+
+    # ── Архангельская область ──
     ("Архангельская область", "arhangelskaya-oblast", [
         r"архангельск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
-        r"г\.?\s*архангельск[а-я]*",
-        r"\bархангельск(?:а|у|е|ом|ий|ого|ому|им)\b",
+        r"\bархангельск(?:а|у|е|ом|ий|ого|ому|им)?\b",
+        r"северодвинск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"котлас(?:а|у|е|ом|ский|ская|ского|ской)?",
+        r"новодвинск(?:а|у|е|ом|ий|ая)?",
+        r"коряжм(?:а|ы|у|е|ой|ский|ская)",
+        r"онег(?:а|и|у|е|ой|ский|ская)\s+(?:город|район|област|мест)",  # осторожно, чтоб не спутать
+        r"город\s+онег(?:а|и|у|е|ой)",
+        r"мирн(?:ый|ого|ому|ым|ом)\s+архангельск",  # ЗАТО Мирный только с уточнением
+        r"плесецк(?:а|у|е|ом|ий|ая)?",
+        r"каргопол(?:ь|я|ю|ем|е|ьский|ьская)",
+        r"вельск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        # Ненецкий АО — часть Архангельской области (сложный статус, но по прописке — да)
+        r"нарьян[-\s]мар(?:а|у|е|ом|ский|ская)?",
+        r"ненецк(?:ий|ого|ому|им|ом|ая|ой)\s+(?:автономн|округ|нац)",
     ]),
+
+    # ── Вологодская область ──
     ("Вологодская область", "vologodskaya-oblast", [
         r"вологодск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"\bвологд(?:а|ы|у|е|ой)\b",
+        r"вологодск(?:ий|ого|ому|им|ом)\b",  # прилагательное
+        r"череповц(?:а|у|е|ом)|череповец(?:кий|кая|кого|кой|ким|ким)?",
+        # Соколу нужен уточнитель — слишком коллизионный
+        r"город\s+сокол(?:а|у|е|ом)?",
+        r"великий\s+устюг|велик(?:ого|ому|им)\s+устюг(?:а|у|е|ом)",
+        r"тотьм(?:а|ы|у|е|ой|ский|ская)",
+        r"кириллов(?:а|у|е|ом|ский|ская)\s+(?:вологод|мест|город|район|монаст)",
+        r"город\s+кириллов",
+        r"белозерск(?:а|у|е|ом|ий|ая)?",
+        r"грязовец(?:а|у|е|ом|кий|кая)?",
+        r"устюжн(?:а|ы|у|е|ой|ский|ская)",
+        r"вытегр(?:а|ы|у|е|ой|ский|ская)",
     ]),
+
+    # ── Калининградская область ──
     ("Калининградская область", "kaliningradskaya-oblast", [
         r"калининградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
-        r"\bкалининград(?:а|у|е|ом)?\b",
+        r"\bкалининград(?:а|у|е|ом|ский|ская|ского|ской)?\b",
+        r"советск(?:а|у|е|ом|ий|ая)\s+(?:калининград|област)",  # Советск в Калининградской, но омоним!
+        r"город\s+советск(?:а|у|е|ом)?\b",
+        r"черняховск(?:а|у|е|ом|ий|ая)?",
+        r"балтийск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"гусев(?:а|у|е|ом|ский|ская)\s+(?:калининград|област|город|район)",
+        r"город\s+гусев(?:а|у|е|ом)?",
+        r"светлогорск(?:а|у|е|ом|ий|ая)?",
+        r"пионерск(?:а|у|е|ом|ий|ая)\s+(?:калининград|област|город)",
+        r"зеленоградск(?:а|у|е|ом|ий|ая)?",
+        r"неман(?:а|у|е|ом|ский|ская)\s+(?:город|калининград|област|район)",
+        r"город\s+неман(?:а|у|е|ом)?\b",
+        r"багратионовск(?:а|у|е|ом|ий|ая)?",
+        r"гвардейск(?:а|у|е|ом|ий|ая)\s+(?:калининград|област|город|район)",
+        r"город\s+гвардейск(?:а|у|е|ом)?",
     ]),
+
+    # ── Мурманская область ──
     ("Мурманская область", "murmanskaya-oblast", [
         r"мурманск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
-        r"\bмурманск(?:а|у|е|ом)?\b",
+        r"\bмурманск(?:а|у|е|ом|ий|ая|ого|ой)?\b",
+        r"апатит(?:ы|ов|ам|ах|ами|ский|ская)",
+        r"кировск(?:а|у|е|ом|ий|ая)\s+(?:мурман|област|город|район)",
+        r"город\s+кировск(?:а|у|е|ом)?\s+(?:мурман|област)?",  # чтобы отличать от Кировска Ленобласти
+        r"мончегорск(?:а|у|е|ом|ий|ая)?",
+        r"североморск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"кандалакш(?:а|и|у|е|ей|ский|ская)",
+        r"полярн(?:ый|ого|ому|ом|ым|ые)\s+(?:зор|мурман|город)",
+        r"полярные\s+зори",
+        r"оленегорск(?:а|у|е|ом|ий|ая)?",
+        r"заполярн(?:ый|ого|ому|ом|ым)",
+        r"снежногорск(?:а|у|е|ом|ий|ая)?",
+        r"гаджиев(?:а|у|е|ом|ский|ская)?",  # ЗАТО, редко фамилия
+        r"североморск|заозёрск|островной\s+мурман",
+        r"печенг(?:а|и|у|е|ой|ский|ская)",
+        r"ковдор(?:а|у|е|ом|ский|ская)?",
     ]),
+
+    # ── Республика Карелия ──
     ("Республика Карелия", "respublika-kareliya", [
         r"республик[аеиу]\s+карели[яеию]",
         r"\bкарели[яеию]\b",
+        r"карельск(?:ий|ая|ого|ой|ому|ой|им|ой|ом)",
+        r"петрозаводск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"кондопог(?:а|и|у|е|ой|ский|ская)",
+        r"сегеж(?:а|и|у|е|ой|ский|ская)",
+        r"костомукш(?:а|и|у|е|ой|ский|ская)",
+        r"сортавал(?:а|ы|у|е|ой|ский|ская)",
+        r"беломорск(?:а|у|е|ом|ий|ая)?",
+        r"кем(?:ь|и|ью|ский|ская)\s+(?:карели|карельск|город|район)",
+        r"город\s+кем(?:ь|и|ью)",
+        r"олонец(?:а|у|е|ом|кий|кая)?",
+        r"питкярант(?:а|ы|у|е|ой|ский|ская)",
+        r"пудож(?:а|у|е|ом|ский|ская)?",
+        r"суоярви",
+        r"медвежьегорск(?:а|у|е|ом|ий|ая)?",
+        r"лахденпохь(?:я|и|е|ей|ский|ская)",
     ]),
+
+    # ── Псковская область ──
     ("Псковская область", "pskovskaya-oblast", [
         r"псковск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
-        r"\bпсков(?:а|у|е|ом)?\b",
+        r"\bпсков(?:а|у|е|ом|ский|ская|ского|ской)?\b",
+        r"велик(?:ие|их|им|ими)\s+лук(?:и|ах|ами|)\b",
+        r"великолукск(?:ий|ая|ого|ой|ому|им|ом|ое|ими)",
+        r"остров(?:а|у|е|ом|ский|ская)\s+(?:псков|област|город|район)",
+        r"город\s+остров(?:а|у|е|ом)?\b",
+        r"опочк(?:а|и|у|е|ой|ский|ская)",
+        r"порхов(?:а|у|е|ом|ский|ская)?",
+        r"печор(?:ы|ам|ах|ами|ский|ская)\s+(?:псков|област)",
+        r"город\s+печоры\s+псков",  # чтобы отличать от Печоры Коми
+        r"невель(?:я|ю|ем|е|ский|ская)?",
+        r"дн(?:о|а|у|е|ом)\s+(?:псков|област|город|район)",  # Дно — город в Псковской обл.
+        r"город\s+дно",
+        r"себеж(?:а|у|е|ом|ский|ская)?",
+        r"новоржев(?:а|у|е|ом|ский|ская)?",
+        r"пыталово",
+        r"гдов(?:а|у|е|ом|ский|ская)?",
     ]),
+
+    # ── Республика Коми ──
     ("Республика Коми", "respublika-komi", [
         r"республик[аеиу]\s+коми",
+        r"\bреспублик[аеиу]?\s+коми\b",
+        # "Коми" отдельно (без "республика") — слишком коллизионно, не ловим
+        r"коми\-пермяцк(?:ий|ая|ого|ой|ому|ом)",  # это Пермский край, специально исключаем
+        r"сыктывкар(?:а|у|е|ом|ский|ская|ского|ской)?",
+        r"ухт(?:а|ы|у|е|ой|инский|инская|инского|инской)",
+        r"воркут(?:а|ы|у|е|ой|инский|инская|инского|инской)",
+        r"печор(?:а|ы|у|е|ой|ский|ская)\s+(?:коми|город|район|мест)",  # с уточнением
+        r"город\s+печор(?:а|ы|у|е|ой)",
+        r"инт(?:а|ы|у|е|ой|инский|инская)",  # Инта — город
+        r"усинск(?:а|у|е|ом|ий|ая|ого|ой)?",
+        r"сосногорск(?:а|у|е|ом|ий|ая)?",
+        r"вуктыл(?:а|у|е|ом|ский|ская)?",
+        r"емв(?:а|ы|у|е|ой|инский|инская)",
+        r"микунь(?:я|ю|ем|е|ский|ская)?",
     ]),
+
+    # ── Новгородская область ──
     ("Новгородская область", "novgorodskaya-oblast", [
         r"новгородск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
         r"велик(?:ий|ого|ому|им|ом)\s+новгород[а-я]*",
+        r"г\.?\s*велик(?:ий|ого)\s+новгород",
+        r"борович(?:и|ей|ах|ами|ский|ская)",
+        r"стар(?:ая|ой)\s+русс(?:а|ы|у|е|ой)",
+        r"чудов(?:а|у|е|ом|ский|ская)?",
+        r"валда(?:й|я|ю|ем|е|йский|йская)",
+        r"пестов(?:а|у|е|ом|ский|ская)?",
+        r"окуловк(?:а|и|у|е|ой|ский|ская)",
+        r"сольц(?:ы|ам|ах|ами|ский|ская)",
+        r"холм(?:а|у|е|ом|ский|ская)\s+(?:новгород|област|город|район)",
+        r"город\s+холм(?:а|у|е|ом)?",
+        r"мал(?:ая|ой|ую|ой)\s+вишер(?:а|ы|е|ой)",
     ]),
 ]
+
 SZFO_COMPILED = [
     (name, slug, [re.compile(p, re.IGNORECASE) for p in patterns])
     for name, slug, patterns in SZFO_REGIONS
@@ -245,53 +406,56 @@ SZFO_COMPILED = [
 REGION_SLUG = {name: slug for name, slug, _ in SZFO_REGIONS}
 REGION_ORDER = [name for name, _, _ in SZFO_REGIONS]
 
-
 def match_region(text):
+    """Возвращает название региона или None. Использует расширенные паттерны."""
     if not text:
         return None
+    matched = []
     for name, _slug, patterns in SZFO_COMPILED:
         if any(p.search(text) for p in patterns):
-            return name
-    return None
+            matched.append(name)
+    if not matched:
+        return None
+    if len(matched) == 1:
+        return matched[0]
+    # Если матчится несколько регионов — выбираем тот, у которого явно упомянут субъект,
+    # а не только город-омоним
+    scored = []
+    for name in matched:
+        # ищем в тексте название субъекта или явную привязку
+        subject_hint_patterns = {
+            "Санкт-Петербург": [r"санкт[-\s]петербург", r"\bспб\b"],
+            "Ленинградская область": [r"ленинградск\S+\s+обл"],
+            "Архангельская область": [r"архангельск\S+\s+обл", r"ненецк\S+\s+(?:авт|окр)"],
+            "Вологодская область": [r"вологодск\S+\s+обл"],
+            "Калининградская область": [r"калининградск\S+\s+обл"],
+            "Мурманская область": [r"мурманск\S+\s+обл"],
+            "Республика Карелия": [r"республик\S+\s+карели", r"\bкарели[яеию]\b"],
+            "Псковская область": [r"псковск\S+\s+обл"],
+            "Республика Коми": [r"республик\S+\s+коми"],
+            "Новгородская область": [r"новгородск\S+\s+обл", r"велик\S+\s+новгород"],
+        }
+        score = 0
+        for pat in subject_hint_patterns.get(name, []):
+            if re.search(pat, text, re.IGNORECASE):
+                score += 10
+        scored.append((score, name))
+    scored.sort(reverse=True)
+    return scored[0][1]
 
 
 # ═══════════════════════════════════════════════════════════════════════
 # ПАЙПЛАЙН
 # ═══════════════════════════════════════════════════════════════════════
-def run_pipeline(date_str):
-    print(f"▶ Запрос за {date_str}", flush=True)
-    docs = fetch_documents(date_str)
-    print(f"✓ Документов: {len(docs)}", flush=True)
-
-    awarding = [d for d in docs if is_awarding(d)]
-    print(f"✓ Наградных: {len(awarding)}", flush=True)
-
-    all_szfo, total = [], 0
-
-    for i, doc in enumerate(awarding, 1):
-        num = doc.get("number") or doc.get("Number") or "?"
-        eo = doc.get("eoNumber") or doc.get("EoNumber") or doc.get("id")
-        print(f"[{i}/{len(awarding)}] Указ № {num} ({eo})", flush=True)
-
-        try:
-            pdf_bytes = download_pdf(eo)
-            print(f"  скачано: {len(pdf_bytes)/1024:.1f} КБ", flush=True)
-            text = ocr_pdf(pdf_bytes)
-        except Exception as e:
-            print(f"  ✗ {e}", flush=True)
-            continue
-
-        parsed = parse_awardees(text, {"number": num, "date": date_str, "eo": eo})
-        total += len(parsed)
-
-        doc_szfo = 0
-        for rec in parsed:
-            region = match_region(rec["position_org"]) or match_region(rec["raw"])
-            if region:
-                rec["region"] = region
-                all_szfo.append(rec)
-                doc_szfo += 1
-        print(f"  извлечено {len(parsed)}, из СЗФО: {doc_szfo}", flush=True)
+def build_result_from_awardees(all_awardees, docs_count, awarding_count):
+    """Строит итоговый result dict из уже извлечённых awardees.
+    Каждый awardee: {fio, award, position_org, raw, decree}"""
+    all_szfo = []
+    for rec in all_awardees:
+        region = match_region(rec.get("position_org", "")) or match_region(rec.get("raw", ""))
+        if region:
+            rec_copy = {**rec, "region": region}
+            all_szfo.append(rec_copy)
 
     # Группировка по регионам
     by_region = {}
@@ -311,20 +475,70 @@ def run_pipeline(date_str):
             })
 
     return {
-        "date": date_str,
-        "generated_at": datetime.utcnow().isoformat() + "Z",
         "stats": {
-            "documents": len(docs),
-            "awarding": len(awarding),
-            "awardees": total,
+            "documents": docs_count,
+            "awarding": awarding_count,
+            "awardees": len(all_awardees),
             "szfo": len(all_szfo),
         },
         "regions": regions,
+        # Сохраняем ВСЕХ извлечённых награждённых — для быстрой пересборки
+        # при изменении паттернов регионов без повторного OCR
+        "all_awardees": all_awardees,
     }
 
 
+def run_pipeline(date_str):
+    print(f"▶ Запрос за {date_str}", flush=True)
+    docs = fetch_documents(date_str)
+    print(f"✓ Документов: {len(docs)}", flush=True)
+
+    awarding = [d for d in docs if is_awarding(d)]
+    print(f"✓ Наградных: {len(awarding)}", flush=True)
+
+    all_awardees = []
+
+    for i, doc in enumerate(awarding, 1):
+        num = doc.get("number") or doc.get("Number") or "?"
+        eo = doc.get("eoNumber") or doc.get("EoNumber") or doc.get("id")
+        print(f"[{i}/{len(awarding)}] Указ № {num} ({eo})", flush=True)
+
+        try:
+            pdf_bytes = download_pdf(eo)
+            print(f"  скачано: {len(pdf_bytes)/1024:.1f} КБ", flush=True)
+            text = ocr_pdf(pdf_bytes)
+        except Exception as e:
+            print(f"  ✗ {e}", flush=True)
+            continue
+
+        parsed = parse_awardees(text, {"number": num, "date": date_str, "eo": eo})
+        all_awardees.extend(parsed)
+        print(f"  извлечено записей: {len(parsed)}", flush=True)
+
+    result = build_result_from_awardees(all_awardees, len(docs), len(awarding))
+    result["date"] = date_str
+    result["generated_at"] = datetime.utcnow().isoformat() + "Z"
+    print(f"✓ Из СЗФО: {result['stats']['szfo']}", flush=True)
+    return result
+
+
+def rebuild_report_from_json(json_data):
+    """Пересобирает отчёт из сохранённого all_awardees, применяя актуальные паттерны."""
+    all_awardees = json_data.get("all_awardees", [])
+    if not all_awardees:
+        # Старые JSON без all_awardees — используем то, что уже сгруппировано
+        return json_data
+    docs_count = json_data.get("stats", {}).get("documents", 0)
+    awarding_count = json_data.get("stats", {}).get("awarding", 0)
+    new_result = build_result_from_awardees(all_awardees, docs_count, awarding_count)
+    new_result["date"] = json_data["date"]
+    new_result["generated_at"] = json_data.get("generated_at", "")
+    new_result["rebuilt_at"] = datetime.utcnow().isoformat() + "Z"
+    return new_result
+
+
 # ═══════════════════════════════════════════════════════════════════════
-# CSS
+# CSS + HTML-РЕНДЕРЫ (без изменений в стиле)
 # ═══════════════════════════════════════════════════════════════════════
 BASE_CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -334,7 +548,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
 .nav a { color: #7d1e2a; text-decoration: none; }
 .nav a:hover { text-decoration: underline; }
-.nav .sep { color: #ccc; }
 
 .report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
           padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -369,21 +582,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
 .position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
 .decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
-.decree a { color: #7d1e2a; text-decoration: none; }
-.decree a:hover { text-decoration: underline; }
 
 .no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
 .report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
                  text-align: center; font-size: 12px; color: #6b6b6b; }
 .report-footer a { color: #7d1e2a; text-decoration: none; }
 
-/* ── Панель фильтров по региону ─── */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
               padding: 12px 14px; background: #faf7f0;
               border: 1px solid #eee6d3; border-radius: 8px; }
 .filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                            letter-spacing: 0.5px; align-self: center;
-                            padding-right: 4px; }
+                            letter-spacing: 0.5px; align-self: center; padding-right: 4px; }
 .filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
               background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
               transition: all .12s; }
@@ -394,7 +603,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                      font-size: 11px; border-radius: 999px; }
 .filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
 
-/* ── Навигация регионов на главной ─── */
 .region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
               padding: 18px 22px; margin-bottom: 20px; }
 .region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
@@ -404,13 +612,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
                color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
 .region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
 .region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
                       background: rgba(184,134,11,0.15); color: #7d1e2a;
-                      font-size: 11px; border-radius: 999px;
-                      font-variant-numeric: tabular-nums; }
-.region-pill:hover .badge { background: rgba(255,255,255,0.25); color: white; }
+                      font-size: 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge,
+.region-pill.active .badge { background: rgba(255,255,255,0.25); color: white; }
 
-/* ── Лента награждённых на странице региона ─── */
 .timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
                  padding: 14px 18px; margin-bottom: 10px; }
 .timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
@@ -432,9 +640,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 """
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# HTML: страница ОДНОГО ДНЯ (с JS-фильтром по регионам)
-# ═══════════════════════════════════════════════════════════════════════
 def render_report_html(d):
     esc = html_module.escape
     display_date = format_display_date(d["date"])
@@ -446,7 +651,6 @@ def render_report_html(d):
         stats_html += f'<div class="stat"><div class="stat-value">{val}</div>' \
                       f'<div class="stat-label">{lbl}</div></div>'
 
-    # Панель фильтров — только регионы, которые есть в этом отчёте, + кнопка «Все»
     filter_html = ""
     regions_html = ""
     if d["regions"]:
@@ -515,9 +719,7 @@ def render_report_html(d):
 </head>
 <body>
 <div class="shell">
-  <div class="nav">
-    <a href="../index.html">← Все дайджесты</a>
-  </div>
+  <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
       <h1>Дайджест наградных указов СЗФО</h1>
@@ -531,7 +733,7 @@ def render_report_html(d):
                     target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
       Всего в указах награждённых: {d["stats"]["awardees"]} ·
       Отфильтровано по 10 регионам СЗФО<br>
-      Сгенерировано автоматически: {esc(d["generated_at"])}
+      Сгенерировано автоматически: {esc(d.get("generated_at", ""))}
     </div>
   </div>
 </div>
@@ -540,17 +742,12 @@ def render_report_html(d):
 </html>"""
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# HTML: страница РЕГИОНА (лента награждённых за всё время)
-# ═══════════════════════════════════════════════════════════════════════
 def render_region_html(region_name, people, all_region_counts):
-    """people: [{fio, award, position_org, decree, iso_date}], отсортирован по дате свежие сверху."""
     esc = html_module.escape
 
     date_from = min(p["iso_date"] for p in people) if people else "—"
     date_to = max(p["iso_date"] for p in people) if people else "—"
 
-    # Навигация: все регионы (можно кликнуть, чтобы перейти)
     nav_pills = []
     for name in REGION_ORDER:
         cnt = all_region_counts.get(name, 0)
@@ -568,7 +765,6 @@ def render_region_html(region_name, people, all_region_counts):
       <div class="pills">{"".join(nav_pills)}</div>
     </div>''' if nav_pills else ""
 
-    # Лента
     items_html = ""
     for p in people:
         pos = (p.get("position_org") or "")[:260]
@@ -598,9 +794,7 @@ def render_region_html(region_name, people, all_region_counts):
 </head>
 <body>
 <div class="shell">
-  <div class="nav">
-    <a href="../index.html">← Все дайджесты</a>
-  </div>
+  <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
       <h1>{esc(region_name)}</h1>
@@ -619,14 +813,10 @@ def render_region_html(region_name, people, all_region_counts):
 </html>"""
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# HTML: главная (со списком дат + навигацией регионов)
-# ═══════════════════════════════════════════════════════════════════════
 def render_index_html(index_data, region_counts):
     esc = html_module.escape
     entries = sorted(index_data["reports"], key=lambda x: x["date"], reverse=True)
 
-    # Навигация регионов
     nav_pills = []
     for name in REGION_ORDER:
         cnt = region_counts.get(name, 0)
@@ -643,7 +833,6 @@ def render_index_html(index_data, region_counts):
       <div class="pills">{"".join(nav_pills)}</div>
     </div>''' if nav_pills else ""
 
-    # Список дат
     rows_html = ""
     for e in entries:
         szfo = e["stats"]["szfo"]
@@ -717,7 +906,7 @@ def render_index_html(index_data, region_counts):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# АГРЕГАЦИЯ АРХИВА И СБОРКА СТРАНИЦ РЕГИОНОВ
+# АГРЕГАЦИЯ + СБОРКА
 # ═══════════════════════════════════════════════════════════════════════
 def load_all_reports():
     reports = []
@@ -734,19 +923,16 @@ def load_all_reports():
 
 
 def build_region_pages():
-    """Читает все reports/*.json, генерирует regions/<slug>.html для каждого региона.
-    Возвращает dict {region_name: count} для навигации на главной."""
     print("▶ Пересборка страниц регионов…", flush=True)
     all_reports = load_all_reports()
 
-    # Собираем ленту награждённых по каждому региону
     by_region = {}
     for report in all_reports:
         iso_date = report["date"]
         for region in report.get("regions", []):
             name = region["name"]
             if name not in REGION_SLUG:
-                continue  # неизвестный регион (защита от старых данных)
+                continue
             by_region.setdefault(name, [])
             for award in region.get("awards", []):
                 for person in award.get("people", []):
@@ -758,14 +944,11 @@ def build_region_pages():
                         "iso_date": iso_date,
                     })
 
-    # Сортируем ленту в каждом регионе: свежие сверху
     for name in by_region:
         by_region[name].sort(key=lambda x: x["iso_date"], reverse=True)
 
-    # Счётчики для навигации
     region_counts = {name: len(people) for name, people in by_region.items()}
 
-    # Генерируем страницы (только для регионов с данными)
     REGIONS_DIR.mkdir(exist_ok=True)
     written = 0
     for name, people in by_region.items():
@@ -778,15 +961,11 @@ def build_region_pages():
     return region_counts
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# ВСПОМОГАТЕЛЬНОЕ
-# ═══════════════════════════════════════════════════════════════════════
 MONTHS_RU = ["января", "февраля", "марта", "апреля", "мая", "июня",
              "июля", "августа", "сентября", "октября", "ноября", "декабря"]
 
 
 def format_display_date(iso_date):
-    """2026-08-17 → 17 августа 2026"""
     try:
         y, m, d = iso_date.split("-")
         return f"{int(d)} {MONTHS_RU[int(m) - 1]} {y}"
@@ -795,7 +974,6 @@ def format_display_date(iso_date):
 
 
 def to_pravo_date(iso_date):
-    """2026-08-17 → 17.08.2026"""
     y, m, d = iso_date.split("-")
     return f"{d}.{m}.{y}"
 
@@ -816,8 +994,6 @@ def update_index_json(iso_date, stats):
 
 
 def rebuild_all_daily_pages():
-    """Перегенерирует reports/<date>.html из существующих JSON — чтобы новый шаблон
-    (с фильтром) применился ко всем ранее сохранённым отчётам."""
     print("▶ Перегенерация дневных страниц…", flush=True)
     count = 0
     for json_file in sorted(REPORTS_DIR.glob("*.json")):
@@ -833,13 +1009,77 @@ def rebuild_all_daily_pages():
     print(f"✓ Перегенерировано дневных страниц: {count}", flush=True)
 
 
+def rebuild_all_from_json():
+    """Пересобирает ВСЕ отчёты из reports/*.json — переприменяет актуальные паттерны
+    к сохранённым all_awardees, обновляет JSON и HTML. Без OCR."""
+    print("▶ Пересборка всех отчётов из JSON (без OCR)…", flush=True)
+
+    fresh_index_reports = []
+    reprocessed = 0
+    legacy_skipped = 0
+
+    for json_file in sorted(REPORTS_DIR.glob("*.json")):
+        if json_file.name == "index.json":
+            continue
+        try:
+            data = json.loads(json_file.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"  ⚠ {json_file}: {e}", flush=True)
+            continue
+
+        if "all_awardees" not in data:
+            # Легаси JSON без сохранённых awardees — оставляем как есть,
+            # но фиксируем в статистике
+            legacy_skipped += 1
+            fresh_index_reports.append({"date": data["date"], "stats": data["stats"]})
+            continue
+
+        new_data = rebuild_report_from_json(data)
+        json_file.write_text(json.dumps(new_data, ensure_ascii=False, indent=2),
+                             encoding="utf-8")
+        html_path = json_file.with_suffix(".html")
+        html_path.write_text(render_report_html(new_data), encoding="utf-8")
+        fresh_index_reports.append({"date": new_data["date"], "stats": new_data["stats"]})
+        reprocessed += 1
+        print(f"  {new_data['date']}: {new_data['stats']['szfo']} из СЗФО "
+              f"(из {new_data['stats']['awardees']} всего)", flush=True)
+
+    print(f"✓ Переобработано: {reprocessed}, пропущено (legacy без all_awardees): {legacy_skipped}",
+          flush=True)
+
+    # Обновляем index.json
+    index = {"reports": fresh_index_reports,
+             "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}
+    INDEX_JSON.write_text(json.dumps(index, ensure_ascii=False, indent=2),
+                          encoding="utf-8")
+
+    # Пересобираем страницы регионов и главную
+    region_counts = build_region_pages()
+    Path("index.html").write_text(
+        render_index_html(index, region_counts), encoding="utf-8"
+    )
+    print(f"✓ Готово: {len(fresh_index_reports)} записей, {len(region_counts)} регионов",
+          flush=True)
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # MAIN
 # ═══════════════════════════════════════════════════════════════════════
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", help="YYYY-MM-DD (по умолчанию — вчера)")
+    parser.add_argument("--rebuild", action="store_true",
+                        help="Пересобрать все отчёты из reports/*.json без OCR "
+                             "(применить актуальные паттерны регионов)")
     args = parser.parse_args()
+
+    REPORTS_DIR.mkdir(exist_ok=True)
+
+    if args.rebuild:
+        print("═══ REBUILD-режим: без OCR, применяем актуальные паттерны ═══", flush=True)
+        rebuild_all_from_json()
+        print("═══ Готово ═══", flush=True)
+        return
 
     if args.date:
         iso_date = args.date
@@ -847,18 +1087,16 @@ def main():
         iso_date = (date.today() - timedelta(days=1)).isoformat()
 
     pravo_date = to_pravo_date(iso_date)
-    REPORTS_DIR.mkdir(exist_ok=True)
-
     print(f"═══ Дайджест за {iso_date} ({pravo_date}) ═══", flush=True)
 
     try:
         result = run_pipeline(pravo_date)
+        result["date"] = iso_date
     except Exception as e:
         print(f"✗ Ошибка пайплайна: {e}", flush=True)
         traceback.print_exc()
         sys.exit(1)
 
-    # Сохраняем JSON и HTML отчёта за день
     json_path = REPORTS_DIR / f"{iso_date}.json"
     html_path = REPORTS_DIR / f"{iso_date}.html"
     json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2),
@@ -866,24 +1104,14 @@ def main():
     html_path.write_text(render_report_html(result), encoding="utf-8")
     print(f"✓ Записано: {html_path}, {json_path}", flush=True)
 
-    # Обновляем index.json
     index = update_index_json(iso_date, result["stats"])
-
-    # Перегенерируем ВСЕ дневные страницы (чтобы новый шаблон с фильтром
-    # применился к уже сохранённым отчётам)
     rebuild_all_daily_pages()
-
-    # Пересобираем страницы регионов из ВСЕГО архива
     region_counts = build_region_pages()
-
-    # Регенерируем главную с навигацией регионов
     Path("index.html").write_text(
-        render_index_html(index, region_counts),
-        encoding="utf-8"
+        render_index_html(index, region_counts), encoding="utf-8"
     )
     print(f"✓ Обновлено: index.html ({len(index['reports'])} записей, "
           f"{len(region_counts)} регионов)", flush=True)
-
     print(f"═══ Готово ═══", flush=True)
 
 

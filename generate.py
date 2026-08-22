@@ -621,6 +621,7 @@ def run_pipeline(date_str):
     print(f"✓ Наградных: {len(awarding)}", flush=True)
 
     all_awardees = []
+    raw_texts = {}  # eo_number → полный OCR-текст указа (для будущих rebuild без OCR)
 
     for i, doc in enumerate(awarding, 1):
         num = doc.get("number") or doc.get("Number") or "?"
@@ -635,6 +636,14 @@ def run_pipeline(date_str):
             print(f"  ✗ {e}", flush=True)
             continue
 
+        # Сохраняем полный OCR-текст — чтобы --rebuild мог перепарсить
+        # без переOCR при будущих правках парсера
+        raw_texts[str(eo)] = {
+            "number": num,
+            "date": date_str,
+            "text": text,
+        }
+
         parsed = parse_awardees(text, {"number": num, "date": date_str, "eo": eo})
         all_awardees.extend(parsed)
         print(f"  извлечено записей: {len(parsed)}", flush=True)
@@ -642,22 +651,48 @@ def run_pipeline(date_str):
     result = build_result_from_awardees(all_awardees, len(docs), len(awarding))
     result["date"] = date_str
     result["generated_at"] = datetime.utcnow().isoformat() + "Z"
+    result["raw_texts"] = raw_texts  # ← новое поле
     print(f"✓ Из СЗФО: {result['stats']['szfo']}", flush=True)
     return result
 
 
 def rebuild_report_from_json(json_data):
-    """Пересобирает отчёт из сохранённого all_awardees, применяя актуальные паттерны."""
-    all_awardees = json_data.get("all_awardees", [])
-    if not all_awardees:
-        # Старые JSON без all_awardees — используем то, что уже сгруппировано
-        return json_data
+    """Пересобирает отчёт из сохранённого JSON, применяя актуальные паттерны.
+
+    Стратегия:
+    1. Если в JSON есть `raw_texts` (полный OCR-текст указа) — прогоняем через
+       АКТУАЛЬНЫЙ парсер. Все правки парсера (склейка многострочных заголовков,
+       новые splitter-маркеры и т.п.) применятся. Без OCR — за миллисекунды.
+    2. Если raw_texts нет (старый JSON) — используем сохранённый all_awardees,
+       но переприменяем только матчер регионов. Правки парсера НЕ применятся —
+       для этого нужен новый OCR.
+    """
+    raw_texts = json_data.get("raw_texts", {})
+    date_str = json_data.get("date", "")
+
+    if raw_texts:
+        # Полный перепарсинг из сохранённого OCR-текста
+        all_awardees = []
+        for eo, entry in raw_texts.items():
+            text = entry.get("text", "")
+            num = entry.get("number", "?")
+            decree_date = entry.get("date", date_str)
+            parsed = parse_awardees(text, {"number": num, "date": decree_date, "eo": eo})
+            all_awardees.extend(parsed)
+    else:
+        # Fallback: старый формат без raw_texts — работаем с готовыми записями
+        all_awardees = json_data.get("all_awardees", [])
+        if not all_awardees:
+            return json_data
+
     docs_count = json_data.get("stats", {}).get("documents", 0)
     awarding_count = json_data.get("stats", {}).get("awarding", 0)
     new_result = build_result_from_awardees(all_awardees, docs_count, awarding_count)
-    new_result["date"] = json_data["date"]
+    new_result["date"] = date_str
     new_result["generated_at"] = json_data.get("generated_at", "")
     new_result["rebuilt_at"] = datetime.utcnow().isoformat() + "Z"
+    if raw_texts:
+        new_result["raw_texts"] = raw_texts  # сохраняем для будущих rebuild
     return new_result
 
 

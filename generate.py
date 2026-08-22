@@ -148,8 +148,29 @@ def trim_by_markers(s):
     return re.sub(r"[\s.,]+[0-9A-Za-z]{1,3}\s*$", "", s[:cut]).strip()
 
 
+def preprocess_multiline_award_headers(text):
+    """Заголовок звания в кавычках может быть напечатан в PDF на 2+ строках,
+    например:
+        "ЗАСЛУЖЕННЫЙ РАБОТНИК ЗДРАВООХРАНЕНИЯ
+        РОССИЙСКОЙ ФЕДЕРАЦИИ"
+    Склеиваем такие блоки в одну строку — до парсинга. AWARD_QT сработает как
+    для обычного однострочного заголовка."""
+    pattern = re.compile(
+        r'([«"„])([А-ЯЁ \-,\.\d\n\t]{5,400}?)([»"“])',
+        re.MULTILINE
+    )
+    def collapse(m):
+        content = m.group(2).replace('\n', ' ').replace('\t', ' ')
+        content = re.sub(r'\s+', ' ', content).strip()
+        return m.group(1) + content + m.group(3)
+    return pattern.sub(collapse, text)
+
+
 def parse_awardees(raw_text, decree_ref):
+    # Склеиваем OCR-переносы слов внутри одного слова: "Санкт-\nПетербург"
     text = re.sub(r"(\S)-\s*\n\s*(\S)", r"\1-\2", raw_text)
+    # Склеиваем многострочные заголовки званий в кавычках
+    text = preprocess_multiline_award_headers(text)
     lines = [l.strip() for l in text.split("\n") if l.strip()]
     results, seen = [], set()
     cur_award, cur_rec = None, None
@@ -225,6 +246,7 @@ SZFO_REGIONS = [
     # ── Ленинградская область ──
     ("Ленинградская область", "leningradskaya-oblast", [
         r"ленинградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bленинградск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         # Гатчина — административный центр
         r"гатчин(?:а|ы|у|е|ой|ский|ская|ского|ской)",
         r"выборг(?:а|у|е|ом|ский|ская|ского|ской)?",
@@ -245,6 +267,7 @@ SZFO_REGIONS = [
     # ── Архангельская область ──
     ("Архангельская область", "arhangelskaya-oblast", [
         r"архангельск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bархангельск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"\bархангельск(?:а|у|е|ом|ий|ого|ому|им)?\b",
         r"северодвинск(?:а|у|е|ом|ий|ая|ого|ой)?",
         r"котлас(?:а|у|е|ом|ский|ская|ского|ской)?",
@@ -264,6 +287,7 @@ SZFO_REGIONS = [
     # ── Вологодская область ──
     ("Вологодская область", "vologodskaya-oblast", [
         r"вологодск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bвологодск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"\bвологд(?:а|ы|у|е|ой)\b",
         r"вологодск(?:ий|ого|ому|им|ом)\b",  # прилагательное
         r"череповц(?:а|у|е|ом)|череповец(?:кий|кая|кого|кой|ким|ким)?",
@@ -282,6 +306,7 @@ SZFO_REGIONS = [
     # ── Калининградская область ──
     ("Калининградская область", "kaliningradskaya-oblast", [
         r"калининградск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bкалининградск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"\bкалининград(?:а|у|е|ом|ский|ская|ского|ской)?\b",
         r"советск(?:а|у|е|ом|ий|ая)\s+(?:калининград|област)",  # Советск в Калининградской, но омоним!
         r"город\s+советск(?:а|у|е|ом)?\b",
@@ -302,10 +327,11 @@ SZFO_REGIONS = [
     # ── Мурманская область ──
     ("Мурманская область", "murmanskaya-oblast", [
         r"мурманск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bмурманск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"\bмурманск(?:а|у|е|ом|ий|ая|ого|ой)?\b",
         r"апатит(?:ы|ов|ам|ах|ами|ский|ская)",
-        r"кировск(?:а|у|е|ом|ий|ая)\s+(?:мурман|област|город|район)",
-        r"город\s+кировск(?:а|у|е|ом)?\s+(?:мурман|област)?",  # чтобы отличать от Кировска Ленобласти
+        r"кировск(?:а|у|е|ом|ий|ая|ому|им)\s+(?:мурман|заполярн)",  # только с явным Мурманском/Заполярьем
+        r"город\s+кировск(?:а|у|е|ом)?\s+мурман",
         r"мончегорск(?:а|у|е|ом|ий|ая)?",
         r"североморск(?:а|у|е|ом|ий|ая|ого|ой)?",
         r"кандалакш(?:а|и|у|е|ей|ский|ская)",
@@ -344,6 +370,7 @@ SZFO_REGIONS = [
     # ── Псковская область ──
     ("Псковская область", "pskovskaya-oblast", [
         r"псковск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bпсковск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"\bпсков(?:а|у|е|ом|ский|ская|ского|ской)?\b",
         r"велик(?:ие|их|им|ими)\s+лук(?:и|ах|ами|)\b",
         r"великолукск(?:ий|ая|ого|ой|ому|им|ом|ое|ими)",
@@ -384,6 +411,7 @@ SZFO_REGIONS = [
     # ── Новгородская область ──
     ("Новгородская область", "novgorodskaya-oblast", [
         r"новгородск(?:ая|ой|ую|ое|ими|ом)\s+(?:област[ьию]|обл\.)",
+        r"\bновгородск(?:ий|ая|ое|ого|ой|ому|им|ом|ими|их|ые|ых|ым|ую)\b",
         r"велик(?:ий|ого|ому|им|ом)\s+новгород[а-я]*",
         r"г\.?\s*велик(?:ий|ого)\s+новгород",
         r"борович(?:и|ей|ах|ами|ский|ская)",
@@ -1314,6 +1342,53 @@ def debug_region(region_name):
     print(f"\n═══ Всего записей в '{region_name}': {total_hits} ═══")
 
 
+def find_person(query):
+    """Ищет запись по подстроке в fio во всех reports/*.json (в поле all_awardees
+    и в структуре regions). Печатает найденные и подсказывает, где парсер спотыкается."""
+    print(f"═══ ПОИСК: '{query}' ═══", flush=True)
+    q = query.lower()
+    all_reports = load_all_reports()
+    found_in_awardees = 0
+    found_in_regions = 0
+
+    for report in all_reports:
+        iso_date = report["date"]
+        # 1. В all_awardees (полный список всех извлечённых, включая не-СЗФО)
+        for rec in report.get("all_awardees", []):
+            if q in rec.get("fio", "").lower():
+                found_in_awardees += 1
+                region = match_region(rec.get("position_org", "")) or match_region(rec.get("raw", ""))
+                foreign = _has_foreign_region(rec.get("position_org", "")) or _has_foreign_region(rec.get("raw", ""))
+                print(f"\n── {iso_date} · В all_awardees ──")
+                print(f"   ФИО:          {rec.get('fio')}")
+                print(f"   Award:        {rec.get('award', '')[:100]}")
+                print(f"   position_org: {rec.get('position_org', '')[:250]}")
+                print(f"   raw:          {rec.get('raw', '')[:250]}")
+                print(f"   → match_region: {region or 'None'}")
+                print(f"   → foreign_region: {foreign}")
+                if not region and not foreign:
+                    print(f"   ⚠ Не попал в дайджест: паттерны СЗФО не сработали на её тексте")
+                elif not region and foreign:
+                    print(f"   ⚠ Не попал: сработал фильтр чужого региона")
+        # 2. В сгруппированных regions
+        for reg in report.get("regions", []):
+            for award in reg.get("awards", []):
+                for person in award.get("people", []):
+                    if q in person.get("fio", "").lower():
+                        found_in_regions += 1
+                        print(f"\n── {iso_date} · В дайджесте, регион '{reg['name']}' ──")
+                        print(f"   ФИО:          {person.get('fio')}")
+                        print(f"   Award:        {award['title'][:100]}")
+                        print(f"   position_org: {person.get('position_org', '')[:250]}")
+
+    print(f"\n═══ Итого: в all_awardees — {found_in_awardees}, в дайджесте — {found_in_regions} ═══")
+    if found_in_awardees == 0 and found_in_regions == 0:
+        print("⚠ Ничего не найдено. Возможные причины:")
+        print("   • ФИО OCR-нулось с ошибкой (проверьте варианты написания)")
+        print("   • Записи нет в поле all_awardees — старый JSON без сохранённых данных")
+        print("   • Парсер не распознал строку с ФИО как начало новой записи")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", help="YYYY-MM-DD (по умолчанию — вчера)")
@@ -1323,9 +1398,15 @@ def main():
     parser.add_argument("--debug-region", metavar="ИМЯ",
                         help="Диагностика: показать все записи в указанном регионе с "
                              "информацией о том, какой паттерн сработал")
+    parser.add_argument("--find-person", metavar="СТРОКА",
+                        help="Диагностика: найти по подстроке в ФИО во всех отчётах")
     args = parser.parse_args()
 
     REPORTS_DIR.mkdir(exist_ok=True)
+
+    if args.find_person:
+        find_person(args.find_person)
+        return
 
     # Одноразовая миграция файлов (безвредна, если ничего чинить не надо)
     if not args.debug_region:

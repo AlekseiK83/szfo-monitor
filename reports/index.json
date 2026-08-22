@@ -602,7 +602,16 @@
         "awardees": 0,
         "szfo": 0
       }
+    },
+    {
+      "date": "2026-08-21",
+      "stats": {
+        "documents": 1,
+        "awarding": 1,
+        "awardees": 4,
+        "szfo": 0
+      }
     }
   ],
-  "updated_at": "2026-08-21 20:11:59"
+  "updated_at": "2026-08-22 07:46:18"
 }

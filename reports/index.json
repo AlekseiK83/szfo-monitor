@@ -1,6 +1,150 @@
 {
   "reports": [
     {
+      "date": "2026-06-15",
+      "stats": {
+        "documents": 2,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-16",
+      "stats": {
+        "documents": 2,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-17",
+      "stats": {
+        "documents": 1,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-18",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-20",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-21",
+      "stats": {
+        "documents": 1,
+        "awarding": 1,
+        "awardees": 150,
+        "szfo": 16
+      }
+    },
+    {
+      "date": "2026-06-22",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-23",
+      "stats": {
+        "documents": 3,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-24",
+      "stats": {
+        "documents": 1,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-25",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-26",
+      "stats": {
+        "documents": 45,
+        "awarding": 2,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-27",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-28",
+      "stats": {
+        "documents": 4,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-29",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
+      "date": "2026-06-30",
+      "stats": {
+        "documents": 3,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
+    },
+    {
       "date": "2026-07-01",
       "stats": {
         "documents": 0,
@@ -114,7 +258,7 @@
         "documents": 5,
         "awarding": 1,
         "awardees": 246,
-        "szfo": 12
+        "szfo": 13
       }
     },
     {
@@ -177,7 +321,7 @@
         "documents": 6,
         "awarding": 1,
         "awardees": 103,
-        "szfo": 12
+        "szfo": 13
       }
     },
     {
@@ -384,7 +528,7 @@
         "documents": 2,
         "awarding": 1,
         "awardees": 140,
-        "szfo": 21
+        "szfo": 22
       }
     },
     {
@@ -460,150 +604,6 @@
       }
     },
     {
-      "date": "2026-06-25",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-26",
-      "stats": {
-        "documents": 45,
-        "awarding": 2,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-27",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-28",
-      "stats": {
-        "documents": 4,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-29",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-30",
-      "stats": {
-        "documents": 3,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-15",
-      "stats": {
-        "documents": 2,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-16",
-      "stats": {
-        "documents": 2,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-17",
-      "stats": {
-        "documents": 1,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-18",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-19",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-20",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-21",
-      "stats": {
-        "documents": 1,
-        "awarding": 1,
-        "awardees": 150,
-        "szfo": 16
-      }
-    },
-    {
-      "date": "2026-06-22",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-23",
-      "stats": {
-        "documents": 3,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
-      "date": "2026-06-24",
-      "stats": {
-        "documents": 1,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
       "date": "2026-08-21",
       "stats": {
         "documents": 1,
@@ -613,5 +613,5 @@
       }
     }
   ],
-  "updated_at": "2026-08-22 07:46:18"
+  "updated_at": "2026-08-22 08:16:40"
 }

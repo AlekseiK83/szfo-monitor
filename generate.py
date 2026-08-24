@@ -992,13 +992,22 @@ def render_index_html(index_data, region_counts):
       <div class="pills">{"".join(nav_pills)}</div>
     </div>''' if nav_pills else ""
 
+    # Считаем счётчики для панели фильтров
+    total_all = len(entries)
+    total_awarding = sum(1 for e in entries if e["stats"]["awarding"] > 0)
+    total_szfo_days = sum(1 for e in entries if e["stats"]["szfo"] > 0)
+
     rows_html = ""
     for e in entries:
         szfo = e["stats"]["szfo"]
         awarding = e["stats"]["awarding"]
         empty_class = " empty" if szfo == 0 else ""
+        # data-атрибуты для JS-фильтрации
+        has_awarding = "1" if awarding > 0 else "0"
+        has_szfo = "1" if szfo > 0 else "0"
         rows_html += f"""
-        <a class="entry{empty_class}" href="reports/{esc(e['date'])}.html">
+        <a class="entry{empty_class}" data-awarding="{has_awarding}" data-szfo="{has_szfo}"
+           href="reports/{esc(e['date'])}.html">
           <div class="entry-date">{esc(format_display_date(e['date']))}</div>
           <div class="entry-stats">
             <span>Наградных: <b>{awarding}</b></span>
@@ -1009,7 +1018,22 @@ def render_index_html(index_data, region_counts):
     if not entries:
         rows_html = '<div class="no-results">Дайджесты пока не сгенерированы.</div>'
 
-    total_reports = len(entries)
+    # Панель фильтров — три сегмента со счётчиками
+    filters_html = f'''
+    <div class="index-filter" role="tablist" aria-label="Фильтр дней">
+      <button class="index-filter-btn active" data-filter="all" role="tab" aria-selected="true">
+        Все<span class="badge">{total_all}</span>
+      </button>
+      <button class="index-filter-btn" data-filter="awarding" role="tab" aria-selected="false">
+        С наградными указами<span class="badge">{total_awarding}</span>
+      </button>
+      <button class="index-filter-btn" data-filter="szfo" role="tab" aria-selected="false">
+        С награждёнными СЗФО<span class="badge">{total_szfo_days}</span>
+      </button>
+    </div>
+    <div class="index-filter-empty" hidden>В этом фильтре нет дней.</div>
+    '''
+
     total_szfo = sum(e["stats"]["szfo"] for e in entries)
     last_update = index_data.get("updated_at", "")
 
@@ -1039,7 +1063,36 @@ def render_index_html(index_data, region_counts):
 .entry-stats {{ display: flex; gap: 20px; font-size: 13px; color: #6b6b6b; }}
 .entry-stats b {{ color: #7d1e2a; font-weight: 600; }}
 .entry.empty {{ opacity: 0.55; }}
+.entry.hidden {{ display: none; }}
 .updated {{ text-align: center; font-size: 12px; color: #999; margin-top: 20px; }}
+
+/* Сегментированный фильтр списка дней */
+.index-filter {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+                 padding: 6px; background: #faf7f0; border: 1px solid #eee6d3;
+                 border-radius: 999px; }}
+.index-filter-btn {{ flex: 1; min-width: 100px; padding: 9px 16px; border: none;
+                     background: transparent; color: #5c1620; font: inherit;
+                     font-size: 13.5px; border-radius: 999px; cursor: pointer;
+                     transition: all .15s; display: inline-flex;
+                     align-items: center; justify-content: center; gap: 8px;
+                     white-space: nowrap; }}
+.index-filter-btn:hover {{ background: white; }}
+.index-filter-btn.active {{ background: #7d1e2a; color: white;
+                             box-shadow: 0 1px 3px rgba(125,30,42,.25); }}
+.index-filter-btn .badge {{ display: inline-block; padding: 0 8px;
+                            background: rgba(184,134,11,.15); color: #7d1e2a;
+                            font-size: 11.5px; border-radius: 999px;
+                            font-variant-numeric: tabular-nums; }}
+.index-filter-btn.active .badge {{ background: rgba(255,255,255,.22);
+                                    color: white; }}
+.index-filter-empty {{ text-align: center; padding: 30px 20px;
+                       color: #6b6b6b; font-size: 14px;
+                       background: white; border: 1px dashed #e8e2d5;
+                       border-radius: 10px; }}
+@media (max-width: 640px) {{
+  .index-filter {{ border-radius: 12px; }}
+  .index-filter-btn {{ font-size: 12.5px; padding: 8px 10px; }}
+}}
 </style>
 </head>
 <body>
@@ -1051,15 +1104,63 @@ def render_index_html(index_data, region_counts):
                      источник: publication.pravo.gov.ru</div>
   </div>
   <div class="summary">
-    <div class="stat"><div class="stat-value">{total_reports}</div>
+    <div class="stat"><div class="stat-value">{total_all}</div>
       <div class="stat-label">Дайджестов в архиве</div></div>
     <div class="stat"><div class="stat-value">{total_szfo}</div>
       <div class="stat-label">Награждённых из СЗФО (всего)</div></div>
   </div>
   {nav_html}
-  <div class="entries">{rows_html}</div>
+  {filters_html}
+  <div class="entries" id="entries-list">{rows_html}</div>
   <div class="updated">Обновлено: {esc(last_update)} UTC · Автоматически ежедневно</div>
 </div>
+<script>
+(function(){{
+  const buttons = document.querySelectorAll('.index-filter-btn');
+  const entries = document.querySelectorAll('.entries .entry');
+  const emptyMsg = document.querySelector('.index-filter-empty');
+  const entriesList = document.getElementById('entries-list');
+
+  function applyFilter(name){{
+    let visible = 0;
+    entries.forEach(el => {{
+      let show = true;
+      if (name === 'awarding')  show = el.dataset.awarding === '1';
+      else if (name === 'szfo') show = el.dataset.szfo === '1';
+      el.classList.toggle('hidden', !show);
+      if (show) visible++;
+    }});
+    buttons.forEach(b => {{
+      const isActive = b.dataset.filter === name;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    }});
+    emptyMsg.hidden = visible > 0;
+    entriesList.style.display = visible > 0 ? '' : 'none';
+  }}
+
+  function readFromUrl(){{
+    const p = new URLSearchParams(window.location.search).get('filter');
+    return (p === 'awarding' || p === 'szfo') ? p : 'all';
+  }}
+
+  function writeToUrl(name){{
+    const url = new URL(window.location.href);
+    if (name === 'all') url.searchParams.delete('filter');
+    else url.searchParams.set('filter', name);
+    history.replaceState({{}}, '', url);
+  }}
+
+  buttons.forEach(btn => btn.addEventListener('click', () => {{
+    const name = btn.dataset.filter;
+    applyFilter(name);
+    writeToUrl(name);
+  }}));
+
+  // Инициализация из URL при загрузке
+  applyFilter(readFromUrl());
+}})();
+</script>
 </body>
 </html>"""
 

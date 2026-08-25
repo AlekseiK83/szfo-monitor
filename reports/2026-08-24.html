@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дайджест СЗФО за 2026-08-24</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+       background: #f6f2ea; color: #1a1a1a; line-height: 1.55; min-height: 100vh; }
+.shell { max-width: 940px; margin: 0 auto; padding: 32px 20px 60px; }
+.nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
+.nav a { color: #7d1e2a; text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+
+.report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+          padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
+               margin-bottom: 26px; }
+.report-head h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 500;
+                  color: #5c1620; margin-bottom: 8px; }
+.period { font-size: 14px; color: #6b6b6b; }
+.report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+                margin-bottom: 26px; }
+.stat { text-align: center; padding: 16px 12px; background: #faf7f0;
+        border-radius: 8px; border: 1px solid #eee6d3; }
+.stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
+              line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.region-block { margin-bottom: 26px; }
+.region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
+                 border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
+.marker { color: #b8860b; font-size: 12px; }
+.region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                    color: #5c1620; flex: 1; }
+.region-header .count { font-size: 13px; color: #6b6b6b; }
+.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
+                               color: #5c1620; text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { text-decoration: underline; }
+.award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
+.award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
+               text-transform: uppercase; margin-bottom: 8px; }
+.awardee { padding: 6px 0 8px; border-bottom: 1px dotted #e8e2d5; }
+.awardee:last-child { border-bottom: none; }
+.fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
+.position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
+.decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
+
+.no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
+.report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
+                 text-align: center; font-size: 12px; color: #6b6b6b; }
+.report-footer a { color: #7d1e2a; text-decoration: none; }
+
+.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
+              padding: 12px 14px; background: #faf7f0;
+              border: 1px solid #eee6d3; border-radius: 8px; }
+.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                            letter-spacing: 0.5px; align-self: center; padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
+              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
+              transition: all .12s; }
+.filter-btn:hover { background: #fdf6e3; }
+.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
+                     background: rgba(184,134,11,0.15); color: #7d1e2a;
+                     font-size: 11px; border-radius: 999px; }
+.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+
+.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+              padding: 18px 22px; margin-bottom: 20px; }
+.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
+                     letter-spacing: 0.5px; margin-bottom: 10px; }
+.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
+               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
+               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
+.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
+.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
+                      background: rgba(184,134,11,0.15); color: #7d1e2a;
+                      font-size: 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge,
+.region-pill.active .badge { background: rgba(255,255,255,0.25); color: white; }
+
+.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
+                 padding: 14px 18px; margin-bottom: 10px; }
+.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
+                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-date a { color: #b8860b; text-decoration: none; }
+.timeline-date a:hover { text-decoration: underline; }
+.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
+.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
+.timeline-item .position { font-size: 13px; color: #6b6b6b; }
+.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+
+@media (max-width: 640px) {
+  .shell { padding: 20px 14px; }
+  .report { padding: 26px 20px; }
+  .report-stats { grid-template-columns: 1fr; }
+  .filter-bar { padding: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
+  <div class="report">
+    <div class="report-head">
+      <h1>Дайджест наградных указов СЗФО</h1>
+      <div class="period">Период: 24 августа 2026</div>
+    </div>
+    <div class="report-stats"><div class="stat"><div class="stat-value">12</div><div class="stat-label">Документов за день</div></div><div class="stat"><div class="stat-value">2</div><div class="stat-label">Наградных указов</div></div><div class="stat"><div class="stat-value">22</div><div class="stat-label">Награждённых СЗФО</div></div></div>
+    
+        <div class="filter-bar">
+          <span class="filter-label">Регион:</span>
+          <button class="filter-btn active" data-region="all">Все<span class="badge">22</span></button><button class="filter-btn" data-region="sankt-peterburg">Санкт-Петербург<span class="badge">5</span></button><button class="filter-btn" data-region="arhangelskaya-oblast">Архангельская область<span class="badge">4</span></button><button class="filter-btn" data-region="vologodskaya-oblast">Вологодская область<span class="badge">2</span></button><button class="filter-btn" data-region="kaliningradskaya-oblast">Калининградская область<span class="badge">2</span></button><button class="filter-btn" data-region="pskovskaya-oblast">Псковская область<span class="badge">4</span></button><button class="filter-btn" data-region="respublika-komi">Республика Коми<span class="badge">3</span></button><button class="filter-btn" data-region="novgorodskaya-oblast">Новгородская область<span class="badge">2</span></button>
+        </div>
+    <div class="region-block" data-region="sankt-peterburg"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/sankt-peterburg.html">Санкт-Петербург</a><span class="count">5</span></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div><div class="awardee"><div class="fio">Циркунова Юрия Михайловича</div><div class="position">профессора кафедры федерального государственного бюджетного образовательного учреждения высшего образования &quot;Балтийский государственный технический университет &quot;ВОЕНМЕХ&quot; им. Д.Ф.Устинова&quot;, город Санкт-Петербург</div><div class="decree">Указ № 597 от 24.08.2026</div></div><div class="awardee"><div class="fio">Хомич Елену Владиславовну</div><div class="position">начальника отдела федерального государственного бюджетного учреждения науки Института электрофизики и электроэнергетики Российской академии наук, город Санкт-Петербург</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">ЕДИНАЯ РОССИЯ</div><div class="awardee"><div class="fio">Сидоренко Галине Павловне</div><div class="position">артистке-вокалистке Филармонического отдела Санкт-Петербургского государственного бюджетного учреждения культуры &quot;Петербург-концерт&quot; И</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div><div class="awardee"><div class="fio">Шукшину Сергею Ивановичу</div><div class="position">первому проректору федерального государственного бюджетного образовательного учреждения высшего образования &quot;Санкт-Петербургский государственный институт культуры&quot;. За активную работу по развитию архивного дела и популяризации документов Архивного фонда Россий</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div><div class="awardee"><div class="fio">Гаман-голутвину Оксану Викторовну</div><div class="position">заведующую кафедрой федерального государственного автономного образовательного учреждения высшего образования &quot;Московский государственный институт международных отношений (университет) Министерства иностранных дел Российской Федерации&quot;</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div></div></div><div class="region-block" data-region="arhangelskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/arhangelskaya-oblast.html">Архангельская область</a><span class="count">4</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ &quot;РОДИТЕЛЬСКАЯ СЛАВА&quot;</div><div class="awardee"><div class="fio">Моршнева Сергея Валерьевича</div><div class="position">Архангельская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div><div class="awardee"><div class="fio">Моршневу Анастасию Сергеевну</div><div class="position">Архангельская область ИИ 088 70500</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ ОРДЕНА &quot;РОДИТЕЛЬСКАЯ СЛАВА&quot;</div><div class="awardee"><div class="fio">Акулова Сергея Андреевича</div><div class="position">Архангельская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div><div class="awardee"><div class="fio">Акулову Татьяну Васильевну</div><div class="position">Архангельская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div></div><div class="region-block" data-region="vologodskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/vologodskaya-oblast.html">Вологодская область</a><span class="count">2</span></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ ОРДЕНА &quot;РОДИТЕЛЬСКАЯ СЛАВА&quot;</div><div class="awardee"><div class="fio">Казакова Александра Александровича</div><div class="position">Вологодская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div><div class="awardee"><div class="fio">Казакову Ольгу Павловну</div><div class="position">Вологодская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div></div><div class="region-block" data-region="kaliningradskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/kaliningradskaya-oblast.html">Калининградская область</a><span class="count">2</span></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div><div class="awardee"><div class="fio">Ермолаева Олега Филипповича</div><div class="position">президента открытого акционерного общества &quot;БАЛТКРАН&quot;, Калининградская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВЕТЕРИНАРНЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Новиковой Ольге Викторовне</div><div class="position">ветеринарному врачу структурного подразделения &quot;Калининградская ветеринарная станция&quot; государственного бюджетного учреждения ветеринарии Калининградской области &quot;Областная станция по борьбе с болезнями животных&quot;</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div></div><div class="region-block" data-region="pskovskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/pskovskaya-oblast.html">Псковская область</a><span class="count">4</span></div><div class="award-group"><div class="award-title">МЕДАЛЬЮ ОРДЕНА &quot;ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ&quot;</div><div class="awardee"><div class="fio">Парамонова Петра Анатольевича</div><div class="position">генерального директора общества с ограниченной ответственностью &quot;Великолукский механический завод&quot;, Псковская область</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">ЕДИНАЯ РОССИЯ</div><div class="awardee"><div class="fio">Василевича Георгия Николаевича</div><div class="position">директора федерального государственного бюджетного учреждения культуры &quot;Государственный мемориальный историко-литературный и природно-ландшафтный музей-заповедник А.С.Пушкина &quot;Михайловское&quot;, Псковская область</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div><div class="awardee"><div class="fio">Михайловой Наталье Александровне</div><div class="position">учителю муниципального бюджетного общеобразовательного учреждения &quot;Средняя школа №1&quot; муниципального образования &quot;Островский район&quot;, Псковская область</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div><div class="awardee"><div class="fio">Храброй Светлане Ивановне</div><div class="position">учителю муниципального общеобразовательного учреждения средней общеобразовательной школы № 2 имени Н.И.Ковалева города Невеля Псковской области. В.Путин 24 августа 2026 года № 316-рп</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div></div></div><div class="region-block" data-region="respublika-komi"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/respublika-komi.html">Республика Коми</a><span class="count">3</span></div><div class="award-group"><div class="award-title">ЗАСЛУЖЕННЫЙ ВЕТЕРИНАРНЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="awardee"><div class="fio">Беляковой Елене Александровне</div><div class="position">заведующей отделом - ветеринарному врачу Усть-Вымского отдела государственного бюджетного учреждения Республики Коми &quot;Управление ветеринарии Республики Коми&quot;</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">ЕДИНАЯ РОССИЯ</div><div class="awardee"><div class="fio">Михайловой Татьяне Васильевне</div><div class="position">артистке государственного автономного учреждения Республики Коми &quot;Государственный ордена Дружбы народов академический театр драмы им. В.Савина&quot;</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div><div class="awardee"><div class="fio">Соколовой Валентине Владимировне</div><div class="position">артистке-вокалистке государственного бюджетного учреждения Республики Коми &quot;Национальный музыкально-драматический театр Республики Коми&quot;</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div></div></div><div class="region-block" data-region="novgorodskaya-oblast"><div class="region-header"><span class="marker">▸</span><a class="region-link" href="../regions/novgorodskaya-oblast.html">Новгородская область</a><span class="count">2</span></div><div class="award-group"><div class="award-title">ОРДЕНОМ ДРУЖБЫ</div><div class="awardee"><div class="fio">Писареву Елену Владимировну</div><div class="position">сенатора Российской Федерации - представителя от законодательного (представительного) органа государственной власти Новгородской области, заместителя председателя Комитета Совета Федерации по науке, образованию и культуре.</div><div class="decree">Указ № 597 от 24.08.2026</div></div></div><div class="award-group"><div class="award-title">ЕДИНАЯ РОССИЯ</div><div class="awardee"><div class="fio">Карповой Елене Анатольевне</div><div class="position">учителю муниципального автономного общеобразовательного учреждения &quot;Средняя общеобразовательная школа № 2&quot;, Новгородская область</div><div class="decree">Указ № 316-рп от 24.08.2026</div></div></div></div>
+    <div class="report-footer">
+      Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
+      Всего в указах награждённых: 304 ·
+      Отфильтровано по 10 регионам СЗФО<br>
+      Сгенерировано автоматически: 2026-08-25T08:13:05.197738Z
+    </div>
+  </div>
+</div>
+
+    <script>
+    (function(){
+      const btns = document.querySelectorAll('.filter-btn');
+      const blocks = document.querySelectorAll('.region-block');
+      btns.forEach(btn => btn.addEventListener('click', () => {
+        const target = btn.dataset.region;
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        blocks.forEach(block => {
+          block.style.display = (target === 'all' || block.dataset.region === target) ? '' : 'none';
+        });
+      }));
+    })();
+    </script>
+</body>
+</html>

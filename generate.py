@@ -1574,9 +1574,75 @@ def find_person(query):
         print("   • Парсер не распознал строку с ФИО как начало новой записи")
 
 
+def process_one_date(iso_date):
+    """Обработать одну дату полностью: OCR, парсинг, сохранение JSON/HTML,
+    обновление index.json. НЕ регенерирует index.html и regions/ — это делается
+    один раз в конце main() после всех дат.
+
+    Возвращает stats. Кидает исключение при провале пайплайна."""
+    pravo_date = to_pravo_date(iso_date)
+    result = run_pipeline(pravo_date)
+    result["date"] = iso_date
+
+    json_path = REPORTS_DIR / f"{iso_date}.json"
+    html_path = REPORTS_DIR / f"{iso_date}.html"
+    json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2),
+                         encoding="utf-8")
+    html_path.write_text(render_report_html(result), encoding="utf-8")
+    update_index_json(iso_date, result["stats"])
+    return result["stats"]
+
+
+def compute_missing_dates(max_dates=14):
+    """Возвращает список ISO-дат, которые надо обработать: все пропущенные
+    от (последняя_в_index + 1) до вчерашней включительно. Пустой список,
+    если всё уже обработано.
+
+    Ограничение max_dates защищает от очень долгих прогонов, если репозиторий
+    молчал недели. За 2 суток дообработается всё (по 14 в день)."""
+    yesterday = date.today() - timedelta(days=1)
+
+    if not INDEX_JSON.exists():
+        return [yesterday.isoformat()]
+
+    try:
+        index = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
+    except Exception:
+        return [yesterday.isoformat()]
+
+    reports = index.get("reports", [])
+    if not reports:
+        return [yesterday.isoformat()]
+
+    # Все даты в ISO (нормализованные)
+    dates_in_index = [normalize_date_field(r.get("date", "")) for r in reports]
+    dates_in_index = [d for d in dates_in_index if re.match(r"^\d{4}-\d{2}-\d{2}$", d)]
+    if not dates_in_index:
+        return [yesterday.isoformat()]
+
+    max_iso = max(dates_in_index)
+    try:
+        max_date = date.fromisoformat(max_iso)
+    except ValueError:
+        return [yesterday.isoformat()]
+
+    start = max_date + timedelta(days=1)
+    if start > yesterday:
+        return []  # ничего догонять
+
+    dates = []
+    cur = start
+    while cur <= yesterday and len(dates) < max_dates:
+        dates.append(cur.isoformat())
+        cur += timedelta(days=1)
+    return dates
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--date", help="YYYY-MM-DD (по умолчанию — вчера)")
+    parser.add_argument("--date", help="YYYY-MM-DD (по умолчанию — автодогон "
+                                       "пропущенных дней от последней в архиве "
+                                       "до вчерашней)")
     parser.add_argument("--rebuild", action="store_true",
                         help="Пересобрать все отчёты из reports/*.json без OCR "
                              "(применить актуальные паттерны регионов)")
@@ -1609,32 +1675,62 @@ def main():
         print("═══ Готово ═══", flush=True)
         return
 
+    # ───── Определяем, какие даты обрабатывать ─────
     if args.date:
-        iso_date = args.date
+        dates_to_process = [args.date]
+        print(f"═══ Явно указана дата: {args.date} ═══", flush=True)
     else:
-        iso_date = (date.today() - timedelta(days=1)).isoformat()
+        dates_to_process = compute_missing_dates()
+        if not dates_to_process:
+            print("═══ Всё догнано: пропущенных дней нет ═══", flush=True)
+            # Всё равно перерендерим index/regions, чтобы отразить любые
+            # ручные изменения в reports/
+            region_counts = build_region_pages()
+            if INDEX_JSON.exists():
+                index = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
+                Path("index.html").write_text(
+                    render_index_html(index, region_counts), encoding="utf-8"
+                )
+                print(f"✓ Обновлено: index.html ({len(index['reports'])} записей)",
+                      flush=True)
+            return
+        if len(dates_to_process) == 1:
+            print(f"═══ Дайджест за {dates_to_process[0]} ═══", flush=True)
+        else:
+            print(f"═══ АВТОДОГОН пропущенных дней: {len(dates_to_process)} шт. "
+                  f"({dates_to_process[0]} … {dates_to_process[-1]}) ═══",
+                  flush=True)
 
-    pravo_date = to_pravo_date(iso_date)
-    print(f"═══ Дайджест за {iso_date} ({pravo_date}) ═══", flush=True)
+    # ───── Обрабатываем каждую дату отдельно ─────
+    processed = 0
+    failed = []
+    for i, iso_date in enumerate(dates_to_process, 1):
+        if len(dates_to_process) > 1:
+            print(f"\n─── [{i}/{len(dates_to_process)}] {iso_date} ───", flush=True)
+        try:
+            process_one_date(iso_date)
+            processed += 1
+        except Exception as e:
+            print(f"✗ Ошибка при обработке {iso_date}: {e}", flush=True)
+            traceback.print_exc()
+            failed.append(iso_date)
+            # Продолжаем со следующей датой — не падаем целиком
 
-    try:
-        result = run_pipeline(pravo_date)
-        result["date"] = iso_date
-    except Exception as e:
-        print(f"✗ Ошибка пайплайна: {e}", flush=True)
-        traceback.print_exc()
+    if len(dates_to_process) > 1:
+        print(f"\n═══ Обработка завершена: успешно {processed}/{len(dates_to_process)} ═══",
+              flush=True)
+        if failed:
+            print(f"⚠ Ошибки: {', '.join(failed)}", flush=True)
+
+    # Если вообще ничего не сохранилось — не перегенеровывать пустые страницы
+    if processed == 0:
+        print("✗ Ни одна дата не обработана, страницы не перегенеровались", flush=True)
         sys.exit(1)
 
-    json_path = REPORTS_DIR / f"{iso_date}.json"
-    html_path = REPORTS_DIR / f"{iso_date}.html"
-    json_path.write_text(json.dumps(result, ensure_ascii=False, indent=2),
-                         encoding="utf-8")
-    html_path.write_text(render_report_html(result), encoding="utf-8")
-    print(f"✓ Записано: {html_path}, {json_path}", flush=True)
-
-    index = update_index_json(iso_date, result["stats"])
+    # ───── Финальная перегенерация страниц (один раз, не в цикле) ─────
     rebuild_all_daily_pages()
     region_counts = build_region_pages()
+    index = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
     Path("index.html").write_text(
         render_index_html(index, region_counts), encoding="utf-8"
     )

@@ -60,7 +60,7 @@
         "documents": 1,
         "awarding": 1,
         "awardees": 150,
-        "szfo": 16
+        "szfo": 15
       }
     },
     {
@@ -852,7 +852,7 @@
         "documents": 1,
         "awarding": 1,
         "awardees": 190,
-        "szfo": 11
+        "szfo": 10
       }
     },
     {
@@ -883,5 +883,5 @@
       }
     }
   ],
-  "updated_at": "2026-09-22 11:18:43"
+  "updated_at": "2026-09-22 15:51:24"
 }

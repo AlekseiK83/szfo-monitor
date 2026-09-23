@@ -163,7 +163,12 @@ TRIM_MARKERS = [
     re.compile(r"(?:^|\s)Наградить\s+", re.IGNORECASE),
     re.compile(r"(?:^|\s)Объявить\s+благодарность", re.IGNORECASE),
     re.compile(r"(?:^|\s)Президент\s+Российской\s+Федерации", re.IGNORECASE),
+    # Подпись в конце документа (штамп часто «съедает» слово «Президент»)
+    re.compile(r"(?:^|\s)В\.\s?Путин\b"),
+    re.compile(r"(?:^|\s)Москва,\s+Кремль"),
 ]
+# Текст штрих-кода внизу первой страницы: «2 100088 70500 7», в OCR — «ИИ 088 70500»
+BARCODE_TAIL = re.compile(r"(?:\s+\S{1,3})?\s+\d{3,6}\s+\d{5}(?:\s+\d)?\s*$")
 
 
 def normalize_fio(raw):
@@ -180,7 +185,8 @@ def trim_by_markers(s):
         m = rx.search(s)
         if m and 20 < m.start() < cut:
             cut = m.start()
-    return re.sub(r"[\s.,]+[0-9A-Za-z]{1,3}\s*$", "", s[:cut]).strip()
+    s = BARCODE_TAIL.sub("", s[:cut])
+    return re.sub(r"[\s.,]+[0-9A-Za-z]{1,3}\s*$", "", s).strip()
 
 
 def preprocess_multiline_award_headers(text):
@@ -1789,20 +1795,21 @@ def compute_missing_dates(max_dates=14):
     if not dates_in_index:
         return [yesterday.isoformat()]
 
-    max_iso = max(dates_in_index)
     try:
-        max_date = date.fromisoformat(max_iso)
+        min_date = date.fromisoformat(min(dates_in_index))
     except ValueError:
         return [yesterday.isoformat()]
 
-    start = max_date + timedelta(days=1)
-    if start > yesterday:
-        return []  # ничего догонять
-
+    # Пропуски ищем во ВСЁМ диапазоне архива: и «дыры» в середине
+    # (день, который cron пропустил, а следующие обработались), и дни
+    # после последней обработанной даты.
+    have = set(dates_in_index)
     dates = []
-    cur = start
+    cur = min_date
     while cur <= yesterday and len(dates) < max_dates:
-        dates.append(cur.isoformat())
+        iso = cur.isoformat()
+        if iso not in have:
+            dates.append(iso)
         cur += timedelta(days=1)
     return dates
 

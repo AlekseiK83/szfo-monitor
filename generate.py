@@ -86,10 +86,10 @@ def download_pdf(eo_number):
 def ocr_pdf(pdf_bytes):
     try:
         with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-            text = "\n".join(p.extract_text() or "" for p in pdf.pages)
+            text = "\n\f\n".join(p.extract_text() or "" for p in pdf.pages)
     except Exception:
         text = ""
-    if len(text) >= 100:
+    if len(text.replace("\f", "").strip()) >= 100:
         print(f"  текстовый слой: {len(text)} симв.", flush=True)
         return text
     print("  OCR (текстового слоя нет)…", flush=True)
@@ -99,7 +99,8 @@ def ocr_pdf(pdf_bytes):
         t = pytesseract.image_to_string(img, lang="rus")
         parts.append(t)
         print(f"  стр. {i}/{len(images)}: OCR {len(t)} симв.", flush=True)
-    return "\n".join(parts)
+    # \f между страницами — парсер по нему определяет номер страницы записи
+    return "\n\f\n".join(parts)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -200,67 +201,189 @@ def preprocess_multiline_award_headers(text):
     return pattern.sub(collapse, text)
 
 
+# ── Заголовки разделов («За заслуги … наградить:», «объявить благодарность …»,
+#    «наградить Почетной грамотой …», «Присвоить почетные звания:») ──
+# Заголовок может занимать несколько строк; ключевой глагол бывает не в начале
+# строки («Федерации объявить благодарность Президента Российской»). Поэтому
+# строки заголовка копятся в буфер и разбираются целиком, когда начинается
+# первая запись раздела.
+HEADING_START = re.compile(
+    r'^(?:За\s+[а-яё«"]|наградить\b|объявить\s+благодарност|присвоить\b)',
+    re.IGNORECASE
+)
+# Для «За …» — только с заглавной З (строка-продолжение «за рубежом» — не заголовок)
+HEADING_ZA = re.compile(r'^За\s')
+HEADING_VERB = re.compile(r'наградить|присвоить|объявить', re.IGNORECASE)
+HEADING_DONE = re.compile(
+    r'(?:Федерации|коллектив(?:у|ам)|звани[ея]|наградить|посмертно)\s*:?\s*$|:\s*$',
+    re.IGNORECASE
+)
+HEADING_GRAMOTA = re.compile(r'поч[её]тн\w*\s+грамот', re.IGNORECASE)
+HEADING_BLAGODARNOST = re.compile(r'объявить\s+благодарност', re.IGNORECASE)
+HEADING_COLLECTIVE = re.compile(r'\bколлектив(?:у|ам)\b', re.IGNORECASE)
+
+# ── Коллективы ──
+# «коллектив федерального государственного …» — начало записи-коллектива
+COLLECTIVE_START = re.compile(r'^коллектив\s+\S', re.IGNORECASE)
+# В разделе «… коллективам:» записи идут без слова «коллектив»; новая запись
+# начинается со слова-«головы» организации, если предыдущая строка закончилась
+# концом наименования (кавычка, точка, город/регион).
+COLLECTIVE_HEAD = re.compile(
+    r'^(?:федеральн|государственн|муниципальн|публичн|акционерн|обществ[ао]\b|'
+    r'общественн|Общероссийск|автономн|некоммерческ|областн|краев|регионал|'
+    r'бюджетн|казенн|казённ|открыт|закрыт|частн|религиозн)',
+    re.IGNORECASE
+)
+COLLECTIVE_TERMINAL = re.compile(
+    r'(?:["»)]|\.|город\s+[А-ЯЁ][а-яё\-]+|област[ьи]|кра[йя]|Кузбасс|'
+    r'округ[аe]?|Федерации)\s*[.,;:]?\s*$'
+)
+# «II СТЕПЕНИ», «XXX ЛЕТ» — вторая строка заголовка ордена/знака
+AWARD_DEGREE = re.compile(r'^[IVXLІП1]{1,5}\s+(?:СТЕПЕНИ|ЛЕТ)\s*$')
+
+
 def parse_awardees(raw_text, decree_ref):
-    # Склеиваем OCR-переносы слов внутри одного слова: "Санкт-\nПетербург"
-    text = re.sub(r"(\S)-\s*\n\s*(\S)", r"\1-\2", raw_text)
+    """Разбирает текст указа/распоряжения на записи.
+
+    Каждая запись: {fio, position_org, raw, award, decree, page, kind}
+      kind = "person" | "collective"
+      page = номер страницы PDF (None для старых raw_texts без меток страниц)
+    """
+    # Склеиваем OCR-переносы слов: "Санкт-\nПетербург"
+    text = re.sub(r"(\S)-[ \t]*\n[ \t]*(?:\f[ \t]*\n[ \t]*)?(\S)", r"\1-\2", raw_text)
     # Склеиваем многострочные заголовки званий в кавычках
     text = preprocess_multiline_award_headers(text)
-    lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+    has_pages = "\f" in text
+    lines = []  # (page, line)
+    for page_no, page_text in enumerate(text.split("\f"), 1):
+        for l in page_text.split("\n"):
+            l = l.strip()
+            if l:
+                lines.append((page_no if has_pages else None, l))
+
     results, seen = [], set()
     cur_award, cur_rec = None, None
+    heading = None            # буфер строк заголовка раздела (list) или None
+    collective_mode = False   # раздел «… коллективу/коллективам:»
 
     def flush():
         nonlocal cur_rec
         if not cur_rec or not cur_award:
             cur_rec = None
             return
+        cur_rec["position_org"] = trim_by_markers(cur_rec["position_org"])
         key = (cur_rec["fio"].lower(), cur_award.lower())
+        if cur_rec["kind"] == "collective":
+            key = key + (cur_rec["position_org"][:120].lower(),)
         if key in seen:
             cur_rec = None
             return
         seen.add(key)
-        cur_rec["position_org"] = trim_by_markers(cur_rec["position_org"])
         results.append({**cur_rec, "award": cur_award, "decree": decree_ref})
         cur_rec = None
 
-    for line in lines:
-        # Специфичные splitter'ы распоряжений — устанавливают cur_award автоматически
-        if GRAMOTA_MARKER.match(line):
-            flush()
+    def resolve_heading():
+        """Разобрать накопленный заголовок: какая награда и режим коллективов."""
+        nonlocal heading, cur_award, collective_mode
+        buf = " ".join(heading)
+        heading = None
+        if HEADING_GRAMOTA.search(buf):
             cur_award = GRAMOTA_AWARD
-            continue
-        if BLAGODARNOST_MARKER.match(line):
-            flush()
+        elif HEADING_BLAGODARNOST.search(buf):
             cur_award = BLAGODARNOST_AWARD
-            continue
-        # Общий splitter — только сбрасывает cur_award (далее ожидается заголовок звания)
-        if SPLITTER.match(line):
-            flush()
-            cur_award = None
-            continue
-        # Заголовок звания в кавычках — только если содержит ключевое слово награды
-        # (защита от «ЕДИНАЯ РОССИЯ», «ПОБЕДА» и других названий в кавычках)
+        else:
+            cur_award = None   # дальше будет заголовок ордена/звания
+        collective_mode = bool(HEADING_COLLECTIVE.search(buf))
+
+    def start_collective(page, line):
+        nonlocal cur_rec
+        body = re.sub(r'^коллектив\s+', '', line, flags=re.IGNORECASE)
+        cur_rec = {"fio": "Коллектив", "position_org": body, "raw": line,
+                   "page": page, "kind": "collective"}
+
+    def is_award_header(line):
         if AWARD_QT.match(line):
             content = re.sub(r'^[«"„]|[»"“]$', "", line).strip()
-            if AWARD_KEYWORDS_QUOTED.search(content):
-                flush()
-                cur_award = content
+            return bool(AWARD_KEYWORDS_QUOTED.search(content))
+        return bool(AWARD_KW.match(line))
+
+    for page, line in lines:
+        fio_m = FIO_START.match(line)
+        header = is_award_header(line)
+
+        # ── Начало нового заголовка раздела ──
+        starts_heading = (HEADING_ZA.match(line) and HEADING_START.match(line)) or \
+                         (not line.startswith(("За ", "за ")) and HEADING_START.match(line))
+        if starts_heading and not header and not fio_m:
+            flush()
+            if heading is None:
+                heading = []
+                collective_mode = False
+            heading.append(line)
+            continue
+
+        # ── Мы внутри заголовка: копим, пока не начнутся записи ──
+        if heading is not None:
+            buf = " ".join(heading)
+            ends = bool(fio_m) or header or COLLECTIVE_START.match(line)
+            collective_entry = (HEADING_COLLECTIVE.search(buf)
+                                and HEADING_VERB.search(buf)
+                                and HEADING_DONE.search(buf))
+            if not ends and not collective_entry:
+                heading.append(line)
                 continue
-            # иначе строка проваливается вниз (в continuation или FIO_START)
-        if AWARD_KW.match(line):
+            resolve_heading()
+            # и обрабатываем текущую строку как обычную (ниже)
+
+        # ── Заголовок ордена/звания ──
+        if header:
             flush()
-            cur_award = line.strip()
+            collective_mode = False
+            if AWARD_QT.match(line):
+                cur_award = re.sub(r'^[«"„]|[»"“]$', "", line).strip()
+            else:
+                cur_award = line.strip()
             continue
-        m = FIO_START.match(line)
-        if m and m.start() == 0:
+
+        # ── «II СТЕПЕНИ» / «XXX ЛЕТ» — продолжение заголовка награды ──
+        if cur_rec is None and cur_award and AWARD_DEGREE.match(line):
+            cur_award = f"{cur_award} {line.strip()}"
+            continue
+
+        # ── Физическое лицо ──
+        if fio_m and fio_m.start() == 0:
             flush()
-            fio_raw = m.group(0)
+            collective_mode = False
+            fio_raw = fio_m.group(0)
             rest = re.sub(r"^\s*[-—,]\s*", "", line[len(fio_raw):]).strip()
-            cur_rec = {"fio": normalize_fio(fio_raw), "position_org": rest, "raw": line}
+            cur_rec = {"fio": normalize_fio(fio_raw), "position_org": rest,
+                       "raw": line, "page": page, "kind": "person"}
             continue
+
+        # ── «коллектив …» (в указах — под заголовком ордена) ──
+        if COLLECTIVE_START.match(line):
+            flush()
+            start_collective(page, line)
+            continue
+
+        # ── Раздел «… коллективам:» — записи без слова «коллектив» ──
+        if collective_mode and cur_award:
+            if cur_rec is None:
+                start_collective(page, line)
+                continue
+            if COLLECTIVE_HEAD.match(line) and COLLECTIVE_TERMINAL.search(cur_rec["raw"]):
+                flush()
+                start_collective(page, line)
+                continue
+
+        # ── Продолжение текущей записи ──
         if cur_rec:
             cur_rec["raw"] += " " + line
             cur_rec["position_org"] += " " + line
+
+    if heading is not None:
+        heading = None
     flush()
     return results
 
@@ -749,6 +872,46 @@ def rebuild_report_from_json(json_data):
 # ═══════════════════════════════════════════════════════════════════════
 # CSS + HTML-РЕНДЕРЫ (без изменений в стиле)
 # ═══════════════════════════════════════════════════════════════════════
+def decree_kind(number):
+    """«Распоряжение» для номеров вида 316-рп, иначе «Указ»."""
+    return "Распоряжение" if re.search(r"рп\s*$", str(number or ""), re.IGNORECASE) else "Указ"
+
+
+def source_url(decree, page=None):
+    """Прямая ссылка на PDF документа на pravo.gov.ru (с переходом на страницу)."""
+    eo = str((decree or {}).get("eo") or "").strip()
+    if not eo or eo == "?":
+        return None
+    url = f"{API_BASE}/file/pdf?eoNumber={eo}"
+    if page:
+        url += f"#page={int(page)}"
+    return url
+
+
+def render_decree_line(p):
+    """HTML-строка с реквизитами документа и ссылкой на PDF-оригинал."""
+    esc = html_module.escape
+    d = p.get("decree") or {}
+    number = str(d.get("number", "?"))
+    label = f'{decree_kind(number)} № {esc(number)} от {esc(str(d.get("date", "")))}'
+    url = source_url(d, p.get("page"))
+    if not url:
+        return f'<div class="decree">{label}</div>'
+    page_txt = f', стр. {int(p["page"])}' if p.get("page") else ""
+    return (f'<div class="decree">{label} · '
+            f'<a class="source-link" href="{esc(url)}" target="_blank" rel="noopener">'
+            f'PDF-оригинал{page_txt}&nbsp;↗</a></div>')
+
+
+def render_fio(p):
+    """ФИО или «Коллектив» с пометкой-организацией."""
+    esc = html_module.escape
+    if p.get("kind") == "collective":
+        return ('<div class="fio">Коллектив '
+                '<span class="kind-badge">организация</span></div>')
+    return f'<div class="fio">{esc(p.get("fio", ""))}</div>'
+
+
 BASE_CSS = """
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -791,6 +954,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
 .position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
 .decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
+.source-link { color: #7d1e2a; font-style: normal; text-decoration: none;
+               border-bottom: 1px dotted #b8860b; white-space: nowrap; }
+.source-link:hover { border-bottom-style: solid; }
+.kind-badge { display: inline-block; margin-left: 6px; padding: 1px 8px;
+              font-size: 10.5px; font-weight: 500; color: #7d1e2a;
+              background: rgba(184,134,11,.14); border-radius: 999px;
+              vertical-align: 1px; }
 
 .no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
 .report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
@@ -891,11 +1061,9 @@ def render_report_html(d):
                 for p_ in a["people"]:
                     pos = (p_.get("position_org") or "")[:260]
                     regions_html += f'<div class="awardee">' \
-                                    f'<div class="fio">{esc(p_["fio"])}</div>' \
+                                    f'{render_fio(p_)}' \
                                     f'<div class="position">{esc(pos)}</div>' \
-                                    f'<div class="decree">Указ № ' \
-                                    f'{esc(str(p_["decree"]["number"]))} от ' \
-                                    f'{esc(p_["decree"]["date"])}</div></div>'
+                                    f'{render_decree_line(p_)}</div>'
                 regions_html += '</div>'
             regions_html += '</div>'
     else:
@@ -985,9 +1153,9 @@ def render_region_html(region_name, people, all_region_counts):
             <a href="../reports/{esc(iso_date)}.html">{esc(display)}</a>
           </div>
           <div class="award-name">{esc(p["award"])}</div>
-          <div class="fio">{esc(p["fio"])}</div>
+          {render_fio(p)}
           <div class="position">{esc(pos)}</div>
-          <div class="decree">Указ № {esc(str(p["decree"]["number"]))} от {esc(p["decree"]["date"])}</div>
+          {render_decree_line(p)}
         </div>'''
 
     if not items_html:

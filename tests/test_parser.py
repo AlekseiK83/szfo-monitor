@@ -375,5 +375,74 @@ class TestEndToEnd(unittest.TestCase):
         self.assertIn("eoNumber=0001202608240015#page=", html)
 
 
+# ═══════════════════════════════════════════════════════════════════════
+# Обрезка «мусора» в конце должности и автодогон пропусков
+# ═══════════════════════════════════════════════════════════════════════
+class TestTailCleanup(unittest.TestCase):
+    def test_barcode_noise_removed(self):
+        # Регресс 24.08: «Архангельская область ИИ 088 70500» (штрих-код стр. 1)
+        self.assertEqual(g.trim_by_markers("Архангельская область ИИ 088 70500"),
+                         "Архангельская область")
+        self.assertEqual(g.trim_by_markers("Омская область 2 100088 70500 7"),
+                         "Омская область")
+
+    def test_signature_removed(self):
+        # Регресс 24.08: подпись «В.Путин 24 августа 2026 года № 316-рп» у Храброй
+        s = ("учителю муниципального общеобразовательного учреждения средней "
+             "общеобразовательной школы № 2 имени Н.И.Ковалева города Невеля "
+             "Псковской области. В.Путин 24 августа 2026 года № 316-рп")
+        out = g.trim_by_markers(s)
+        self.assertNotIn("Путин", out)
+        self.assertTrue(out.endswith("Псковской области."), out)
+
+    def test_school_number_kept(self):
+        s = "учителю муниципального учреждения \"Средняя школа № 10\", Смоленская область"
+        self.assertEqual(g.trim_by_markers(s), s)
+
+
+class TestMissingDates(unittest.TestCase):
+    def setUp(self):
+        import json, tempfile
+        from datetime import date, timedelta
+        self.json, self.date, self.td = json, date, timedelta
+        self.tmp = tempfile.TemporaryDirectory()
+        self._orig = g.INDEX_JSON
+        g.INDEX_JSON = Path(self.tmp.name) / "index.json"
+        self.yest = date.today() - timedelta(days=1)
+
+    def tearDown(self):
+        g.INDEX_JSON = self._orig
+        self.tmp.cleanup()
+
+    def make_index(self, isos):
+        rep = [{"date": d, "stats": {"documents": 0, "awarding": 0, "awardees": 0, "szfo": 0}}
+               for d in isos]
+        g.INDEX_JSON.write_text(self.json.dumps({"reports": rep}), encoding="utf-8")
+
+    def day(self, n):
+        return (self.yest - self.td(days=n)).isoformat()
+
+    def test_gap_in_the_middle_is_found(self):
+        # Регресс: 26.08 пропущен, 25.08 и 27.08+ есть — автодогон дыру не видел
+        self.make_index([self.day(n) for n in range(0, 10) if n != 5])
+        self.assertEqual(g.compute_missing_dates(), [self.day(5)])
+
+    def test_tail_gap(self):
+        self.make_index([self.day(3)])
+        self.assertEqual(g.compute_missing_dates(), [self.day(2), self.day(1), self.day(0)])
+
+    def test_nothing_missing(self):
+        self.make_index([self.day(n) for n in range(0, 5)])
+        self.assertEqual(g.compute_missing_dates(), [])
+
+    def test_limit(self):
+        self.make_index([self.day(30)])
+        self.assertEqual(len(g.compute_missing_dates(max_dates=14)), 14)
+
+    def test_empty_or_broken_index(self):
+        g.INDEX_JSON.write_text("не json", encoding="utf-8")
+        self.assertEqual(g.compute_missing_dates(), [self.yest.isoformat()])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

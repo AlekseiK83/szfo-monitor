@@ -26,9 +26,22 @@ ARKH = "Архангельская область"
 VOLOGDA = "Вологодская область"
 
 
+# Разрыв страницы в фикстурах — видимая строка-метка, а не невидимый символ \f:
+# так файлы переживают копирование через веб-редактор GitHub.
+PAGE_MARK = "<<<PAGE>>>"
+
+
+def load_fixture(name):
+    path = FIXTURES / name
+    if not path.exists():
+        raise AssertionError(f"Нет файла фикстуры {path.relative_to(ROOT)} — "
+                             f"загрузите папку tests/fixtures целиком")
+    text = path.read_text(encoding="utf-8")
+    return text.replace(PAGE_MARK, "\f")
+
+
 def parse_fixture(name, number, date, eo="0000000000000000"):
-    text = (FIXTURES / name).read_text(encoding="utf-8")
-    return g.parse_awardees(text, {"number": number, "date": date, "eo": eo})
+    return g.parse_awardees(load_fixture(name), {"number": number, "date": date, "eo": eo})
 
 
 def region_of(rec):
@@ -42,6 +55,29 @@ def find(recs, fio_prefix):
         raise AssertionError(f"Запись «{fio_prefix}» не найдена. "
                              f"Есть: {[r['fio'] for r in recs]}")
     return hits[0]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 0. Предпроверка окружения — понятные сообщения при ошибках загрузки
+# ═══════════════════════════════════════════════════════════════════════
+class Test00Setup(unittest.TestCase):
+    def test_generate_py_is_current(self):
+        for name in ("source_url", "render_decree_line", "COLLECTIVE_START"):
+            self.assertTrue(hasattr(g, name),
+                            f"В generate.py нет «{name}» — в репозитории старая версия "
+                            f"generate.py, загрузите новую")
+
+    def test_fixtures_present(self):
+        expected = ["rp_316_2026-08-24.txt", "ukaz_548_2026-08-04.txt",
+                    "ukaz_580_2026-08-12.txt", "ukaz_597_2026-08-24.txt",
+                    "ukaz_667_2026-09-18.txt"]
+        missing = [n for n in expected if not (FIXTURES / n).exists()]
+        self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
+
+    def test_fixtures_have_page_marks(self):
+        text = (FIXTURES / "ukaz_580_2026-08-12.txt").read_text(encoding="utf-8")
+        self.assertIn(PAGE_MARK, text,
+                      "В фикстурах нет меток <<<PAGE>>> — загружена старая версия фикстур")
 
 
 class Base(unittest.TestCase):
@@ -319,7 +355,7 @@ class TestEndToEnd(unittest.TestCase):
     """Пересборка из raw_texts (как делает --rebuild) и рендер HTML."""
 
     def test_rebuild_and_render(self):
-        text = (FIXTURES / "rp_316_2026-08-24.txt").read_text(encoding="utf-8")
+        text = load_fixture("rp_316_2026-08-24.txt")
         data = {
             "date": "2026-08-24",
             "stats": {"documents": 20, "awarding": 1, "awardees": 0, "szfo": 0},

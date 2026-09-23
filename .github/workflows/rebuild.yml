@@ -22,6 +22,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Регрессионные тесты (при провале данные не публикуются)
+        run: python -m unittest discover -s tests -v
+
       - name: Пересборка из reports/*.json
         run: python generate.py --rebuild
 

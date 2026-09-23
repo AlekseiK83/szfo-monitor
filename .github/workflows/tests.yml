@@ -1,0 +1,31 @@
+name: Регрессионные тесты
+
+on:
+  push:
+    paths:
+      - 'generate.py'
+      - 'tests/**'
+      - 'requirements.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Установка Python-зависимостей
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Запуск тестов
+        run: python -m unittest discover -s tests -v

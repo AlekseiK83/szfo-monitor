@@ -881,7 +881,16 @@
         "awardees": 96,
         "szfo": 5
       }
+    },
+    {
+      "date": "2026-09-22",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
     }
   ],
-  "updated_at": "2026-09-22 15:51:24"
+  "updated_at": "2026-09-23 11:10:05"
 }

@@ -1061,7 +1061,16 @@
         "awardees": 0,
         "szfo": 0
       }
+    },
+    {
+      "date": "2026-10-11",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
     }
   ],
-  "updated_at": "2026-10-11 12:26:25"
+  "updated_at": "2026-10-12 14:57:13"
 }

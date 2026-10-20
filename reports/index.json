@@ -743,8 +743,8 @@
       "stats": {
         "documents": 4,
         "awarding": 2,
-        "awardees": 180,
-        "szfo": 10
+        "awardees": 191,
+        "szfo": 11
       }
     },
     {
@@ -869,7 +869,7 @@
       "stats": {
         "documents": 1,
         "awarding": 1,
-        "awardees": 0,
+        "awardees": 1,
         "szfo": 0
       }
     },
@@ -1135,5 +1135,5 @@
       }
     }
   ],
-  "updated_at": "2026-10-20 08:32:02"
+  "updated_at": "2026-10-20 08:49:50"
 }

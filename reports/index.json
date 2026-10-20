@@ -262,15 +262,6 @@
       }
     },
     {
-      "date": "2026-07-20",
-      "stats": {
-        "documents": 6,
-        "awarding": 1,
-        "awardees": 103,
-        "szfo": 13
-      }
-    },
-    {
       "date": "2026-07-21",
       "stats": {
         "documents": 5,
@@ -1133,7 +1124,16 @@
         "awardees": 215,
         "szfo": 29
       }
+    },
+    {
+      "date": "2026-07-20",
+      "stats": {
+        "documents": 6,
+        "awarding": 1,
+        "awardees": 105,
+        "szfo": 13
+      }
     }
   ],
-  "updated_at": "2026-10-20 08:54:16"
+  "updated_at": "2026-10-20 09:31:10"
 }

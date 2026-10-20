@@ -157,6 +157,28 @@ FIO_START = re.compile(
     r'([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
     r'(\s+[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)?'
 )
+# Отчество (все падежи): Хайдарович-а/-у, Ивановн-а/-е/-у, Ильинична …
+PATRONYMIC = r'[А-ЯЁ][а-яё]+(?:вич|ич)(?:а|у|ем|е)?|[А-ЯЁ][а-яё]+(?:вн|чн)(?:а|ы|е|у|ой)|[А-ЯЁ][а-яё]+\s+(?:оглы|кызы)'
+# OCR вставляет тире между именем и отчеством: «ЗИННУРОВА Ирека — Хайдаровича - …»
+FIO_DASHED = re.compile(
+    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s+([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
+    r'\s+[—–]\s+(' + PATRONYMIC + r')\b'
+)
+# «МГИМО Одинцовского филиала…» — аббревиатура + прилагательное, а не Фамилия Имя
+ADJECTIVE_WORD = re.compile(r'(?:ого|его|ский|ской|ская|ское|ских|цкий|цкой|цкая|ного|ной|ный|ная|ное|ных|ых|их)$')
+
+
+def match_fio(line):
+    """(fio_raw, остаток строки) или None."""
+    m = FIO_DASHED.match(line)
+    if m:
+        return f"{m.group(1)} {m.group(2)} {m.group(3)}", line[m.end():]
+    m = FIO_START.match(line)
+    if not m:
+        return None
+    if not m.group(3) and ADJECTIVE_WORD.search(m.group(2)):
+        return None
+    return m.group(0), line[m.end():]
 TRIM_MARKERS = [
     re.compile(r"(?:^|\s)За\s+заслуги\s+в", re.IGNORECASE),
     re.compile(r"(?:^|\s)Присвоить\s+", re.IGNORECASE),
@@ -366,7 +388,7 @@ def parse_awardees(raw_text, decree_ref):
         return bool(AWARD_KW.match(line))
 
     for page, line in lines:
-        fio_m = FIO_START.match(line)
+        fio_m = match_fio(line)
         header = is_award_header(line)
 
         # ── Начало нового заголовка раздела ──
@@ -410,11 +432,11 @@ def parse_awardees(raw_text, decree_ref):
             continue
 
         # ── Физическое лицо ──
-        if fio_m and fio_m.start() == 0:
+        if fio_m:
             flush()
             collective_mode = False
-            fio_raw = fio_m.group(0)
-            rest = re.sub(r"^\s*[-—,]\s*", "", line[len(fio_raw):]).strip()
+            fio_raw, rest = fio_m
+            rest = re.sub(r"^\s*[-—,]\s*", "", rest).strip()
             cur_rec = {"fio": normalize_fio(fio_raw), "position_org": rest,
                        "raw": line, "page": page, "kind": "person"}
             continue
@@ -443,7 +465,65 @@ def parse_awardees(raw_text, decree_ref):
     if heading is not None:
         heading = None
     flush()
+    results += parse_city_titles(text, decree_ref, seen)
+    if not results:
+        results += parse_inline_single(text, decree_ref)
     return results
+
+
+# ── Почётные звания городов: «присвоить почетное звание Российской Федерации
+#    "Город трудовой доблести" г. Березники, г.Бийску, … г. Ухте …» ──
+CITY_TITLE = re.compile(
+    r'присвоить\s+поч[её]тное\s+звание\s+Российской\s+Федерации\s*'
+    r'[«"„]\s*((?:Город|Населенный|Населённый)[^»"“\n]{3,60})[»"“]\s*(.+?)(?:\.\s*\n|\n\s*\n|В\.\s?Путин)',
+    re.IGNORECASE | re.DOTALL
+)
+CITY_ITEM = re.compile(
+    r'\b((?:г|пгт|пос|с|рп)\.\s?[А-ЯЁ][а-яё]+(?:[\s-][А-ЯЁ][а-яё]+)?)')
+
+
+def parse_city_titles(text, decree_ref, seen):
+    out = []
+    for m in CITY_TITLE.finditer(text):
+        award = f'Почётное звание "{re.sub(chr(32) + "+", " ", m.group(1).strip())}"'
+        for c in CITY_ITEM.finditer(m.group(2).replace("\n", " ")):
+            name = re.sub(r"\.\s?", ". ", c.group(1), count=1)
+            key = (name.lower(), award.lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            page = text[:m.start()].count("\f") + 1 if "\f" in text else None
+            out.append({"fio": name, "position_org": "", "raw": name, "page": page,
+                        "kind": "city", "award": award, "decree": decree_ref})
+    return out
+
+
+# ── Указ об одном человеке, записанный абзацем: «… наградить орденом МУЖЕСТВА
+#    председателя … Запорожской области АСТАНИНУ Елену Викторовну (посмертно).» ──
+INLINE_AWARD = re.compile(
+    r'(?:наградить|присвоить(?:\s+поч[её]тное)?\s+звание)\s+'
+    r'((?:орден\w*|медал\w*|знак\w*(?:\s+отличия)?)?\s*[«"„]?[А-ЯЁ][А-ЯЁ\s\-«»"„“]{2,80}?[»"“]?)'
+    r'(?=\s+[а-яё])', re.IGNORECASE)
+INLINE_FIO = re.compile(
+    r'(?<![А-ЯЁа-яё])([А-ЯЁ]{3,}(?:-[А-ЯЁ]{2,})?)\s+([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)\s+(' + PATRONYMIC + r')\b')
+
+
+def parse_inline_single(text, decree_ref):
+    flat = re.sub(r"\s+", " ", text.replace("\f", " "))
+    am = INLINE_AWARD.search(flat)
+    if not am:
+        return []
+    fm = INLINE_FIO.search(flat, am.end())
+    if not fm:
+        return []
+    award = re.sub(r"\s+", " ", am.group(1)).strip()
+    tail = flat[fm.end():fm.end() + 200].split(".")[0].strip()
+    position = (flat[am.end():fm.start()].strip(" ,") + (" " + tail if tail else "")).strip()
+    fio = f"{fm.group(1)} {fm.group(2)} {fm.group(3)}"
+    return [{"fio": normalize_fio(fio), "position_org": position, "raw": flat[am.start():fm.end() + 200],
+             "page": 1 if "\f" in text else None, "kind": "person",
+             "award": normalize_award(award.upper()),
+             "decree": decree_ref}]
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -932,9 +1012,16 @@ def rebuild_report_from_json(json_data):
     new_result = build_result_from_awardees(all_awardees, docs_count, awarding_count)
     new_result["date"] = date_str
     new_result["generated_at"] = json_data.get("generated_at", "")
-    new_result["rebuilt_at"] = datetime.utcnow().isoformat() + "Z"
     if raw_texts:
         new_result["raw_texts"] = raw_texts  # сохраняем для будущих rebuild
+    # Метку пересборки меняем, только если данные действительно изменились —
+    # иначе каждая пересборка давала бы «пустой» коммит из одних меток времени
+    def _content(d):
+        return {k: v for k, v in d.items() if k not in ("rebuilt_at", "generated_at")}
+    if _content(new_result) == _content(json_data) and json_data.get("rebuilt_at"):
+        new_result["rebuilt_at"] = json_data["rebuilt_at"]
+    else:
+        new_result["rebuilt_at"] = datetime.utcnow().isoformat() + "Z"
     return new_result
 
 
@@ -978,6 +1065,9 @@ def render_fio(p):
     if p.get("kind") == "collective":
         return ('<div class="fio">Коллектив '
                 '<span class="kind-badge">организация</span></div>')
+    if p.get("kind") == "city":
+        return (f'<div class="fio">{esc(p.get("fio", ""))} '
+                '<span class="kind-badge">населённый пункт</span></div>')
     return f'<div class="fio">{esc(p.get("fio", ""))}</div>'
 
 
@@ -1694,8 +1784,17 @@ def rebuild_all_from_json():
         print(f"✓ Поле date нормализовано в {normalized_dates} файл(ах)", flush=True)
 
     # Обновляем index.json (все даты уже ISO)
+    prev = {}
+    if INDEX_JSON.exists():
+        try:
+            prev = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
+        except Exception:
+            prev = {}
+    same = (sorted(fresh_index_reports, key=lambda r: r["date"])
+            == sorted(prev.get("reports", []), key=lambda r: r.get("date", "")))
     index = {"reports": fresh_index_reports,
-             "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}
+             "updated_at": prev.get("updated_at") if same and prev.get("updated_at")
+                           else datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}
     INDEX_JSON.write_text(json.dumps(index, ensure_ascii=False, indent=2),
                           encoding="utf-8")
 

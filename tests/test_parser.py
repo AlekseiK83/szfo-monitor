@@ -70,7 +70,9 @@ class Test00Setup(unittest.TestCase):
     def test_fixtures_present(self):
         expected = ["rp_316_2026-08-24.txt", "ukaz_548_2026-08-04.txt",
                     "ukaz_580_2026-08-12.txt", "ukaz_597_2026-08-24.txt",
-                    "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt"]
+                    "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt",
+                    "ukaz_640_2026-09-05_goroda.txt", "ukaz_670_2026-09-19_abzac.txt",
+                    "fio_anomalies_2026.txt"]
         missing = [n for n in expected if not (FIXTURES / n).exists()]
         self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
 
@@ -343,6 +345,50 @@ class TestUkaz736(Base):
                          'МЕДАЛЬЮ ОРДЕНА "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ" III СТЕПЕНИ')
         self.assertEqual(g.normalize_award('ОРДЕНОМ "РОДИТЕЛЬСКАЯ СЛАВА"'),
                          'ОРДЕНОМ "РОДИТЕЛЬСКАЯ СЛАВА"')
+
+
+class TestAuditOctober(Base):
+    """Пробелы, найденные аудитом архива 20.10.2026 (реальные тексты указов)."""
+
+    def test_city_titles_ukhta(self):
+        # Указ № 640: «Город трудовой доблести» 12 городам, среди них Ухта (Коми)
+        recs = parse_fixture("ukaz_640_2026-09-05_goroda.txt", "640", "05.09.2026")
+        cities = [r for r in recs if r["kind"] == "city"]
+        self.assertEqual(len(cities), 12, [c["fio"] for c in cities])
+        ukhta = self.check(recs, "г. Ухте", "Город трудовой доблести", KOMI)
+        self.assertEqual(ukhta["kind"], "city")
+        self.assertEqual([c["fio"] for c in cities if region_of(c)], ["г. Ухте"])
+        self.assertIn("г. Вятские Поляны", [c["fio"] for c in cities])
+
+    def test_single_person_paragraph_decree(self):
+        # Указ № 670: ФИО внутри абзаца, а не с начала строки
+        recs = parse_fixture("ukaz_670_2026-09-19_abzac.txt", "670", "19.09.2026")
+        self.assertEqual(len(recs), 1)
+        rec = self.check(recs, "Астанину Елену Викторовну", "ОРДЕНОМ МУЖЕСТВА", None)
+        self.assertIn("Запорожской области", rec["position_org"])
+
+    def test_dash_inside_fio(self):
+        recs = parse_fixture("fio_anomalies_2026.txt", "597", "24.08.2026")
+        rec = find(recs, "Зиннурова")
+        self.assertEqual(rec["fio"], "Зиннурова Ирека Хайдаровича")
+        self.assertIn("ОРДЕНОМ ПОЧЕТА", rec["award"])
+
+    def test_abbreviation_line_is_not_fio(self):
+        recs = parse_fixture("fio_anomalies_2026.txt", "597", "24.08.2026")
+        self.assertFalse([r for r in recs if r["fio"].startswith("Мгимо")])
+        rec = find(recs, "Демакову")
+        self.assertIn("МГИМО Одинцовского филиала", rec["position_org"])
+        self.assertTrue(rec["position_org"].endswith("Московская область"), rec["position_org"])
+
+    def test_real_two_word_fio_still_parsed(self):
+        text = '"ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ"\nКИМ Анна - врачу больницы, город Санкт-Петербург\n'
+        recs = g.parse_awardees(text, {"number": "1", "date": "01.01.2026", "eo": "x"})
+        self.assertEqual([r["fio"] for r in recs], ["Ким Анна"])
+
+    def test_city_rendered_with_badge(self):
+        html = g.render_fio({"kind": "city", "fio": "г. Ухте"})
+        self.assertIn("г. Ухте", html)
+        self.assertIn("населённый пункт", html)
 
 
 # ═══════════════════════════════════════════════════════════════════════

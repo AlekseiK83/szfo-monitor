@@ -70,7 +70,7 @@ class Test00Setup(unittest.TestCase):
     def test_fixtures_present(self):
         expected = ["rp_316_2026-08-24.txt", "ukaz_548_2026-08-04.txt",
                     "ukaz_580_2026-08-12.txt", "ukaz_597_2026-08-24.txt",
-                    "ukaz_667_2026-09-18.txt"]
+                    "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt"]
         missing = [n for n in expected if not (FIXTURES / n).exists()]
         self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
 
@@ -284,6 +284,67 @@ class TestPointRegressions(Base):
         self.assertEqual(region_of(recs[0]), SPB)
 
 
+class TestUkaz705(Base):
+    """Регресс 29.09.2026: штрих-код в должности, «П СТЕПЕНИ», ведущее тире."""
+
+    def test_fokina_and_degree(self):
+        text = "\n".join([
+            "Наградить:",
+            "ОРДЕНОМ \"РОДИТЕЛЬСКАЯ СЛАВА\"",
+            "ФОКИНА Виталия Валерьевича, Республика Карелия",
+            "ФОКИНУ Анну Сергеевну, Республика Карелия. О 2 100088 ПЕЙ,",
+            "<<<PAGE>>>",
+            "2",
+            "МЕДАЛЬЮ ОРДЕНА \"ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ\"",
+            "П СТЕПЕНИ",
+            "ЖАРКОВА Александра Вячеславовича - председателя комитета",
+            "по здравоохранению Ленинградской области",
+            "СЕДОВА Дениса Станиславовича",
+            "— вице-губернатора Ленинградской области.",
+        ]).replace(PAGE_MARK, "\f")
+        recs = g.parse_awardees(text, {"number": "705", "date": "29.09.2026", "eo": "x"})
+        fok = self.check(recs, "Фокину", "РОДИТЕЛЬСКАЯ СЛАВА", "Республика Карелия", page=1)
+        self.assertEqual(fok["position_org"], "Республика Карелия.")
+        zh = self.check(recs, "Жаркова", "II СТЕПЕНИ", "Ленинградская область", page=2)
+        self.assertNotIn(" П СТЕПЕНИ", zh["award"])
+        sed = find(recs, "Седова")
+        self.assertTrue(sed["position_org"].startswith("вице-губернатора"), sed["position_org"])
+
+
+class TestUkaz736(Base):
+    """Регресс 15.10.2026 (реальный OCR-текст указа № 736)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.recs = parse_fixture("ukaz_736_2026-10-15.txt", "736", "15.10.2026")
+
+    def test_kaluga_is_not_luga(self):
+        # «Ка-лужской епархии» ловилось как Лужский район Ленинградской области
+        self.check(self.recs, "Ильину", "ОРДЕНОМ ПОЧЕТА", None, page=1)
+
+    def test_header_not_glued_to_previous_record(self):
+        # Заголовок медали прилипал к должности Петькиной, и её группа
+        # получала награду предыдущего раздела («ОРДЕНОМ ДРУЖБЫ»)
+        rec = self.check(self.recs, "Петькину", "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ", None, page=3)
+        self.assertTrue(rec["award"].endswith("I СТЕПЕНИ") and "II" not in rec["award"], rec["award"])
+        self.assertNotIn("МЕДАЛЬЮ", rec["position_org"])
+        self.assertTrue(rec["position_org"].endswith("передающий центр\"."), rec["position_org"])
+        for fio in ("Кузина", "Оболонкину"):
+            self.check(self.recs, fio, "I СТЕПЕНИ", None)
+        self.check(self.recs, "Малявко", "ОРДЕНОМ ДРУЖБЫ", None)
+        self.assertNotIn("МЕДАЛЬЮ", find(self.recs, "Малявко")["position_org"])
+
+    def test_ocr_degrees(self):
+        self.assertTrue(find(self.recs, "Раева")["award"].endswith(" II СТЕПЕНИ"))      # «П»
+        self.assertTrue(find(self.recs, "Графееву")["award"].endswith(" II СТЕПЕНИ"))
+        self.assertEqual(g.normalize_award('ОРДЕНОМ "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ" ГУ СТЕПЕНИ'),
+                         'ОРДЕНОМ "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ" IV СТЕПЕНИ')
+        self.assertEqual(g.normalize_award('МЕДАЛЬЮ ОРДЕНА"ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ" Ш СТЕПЕНИ'),
+                         'МЕДАЛЬЮ ОРДЕНА "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ" III СТЕПЕНИ')
+        self.assertEqual(g.normalize_award('ОРДЕНОМ "РОДИТЕЛЬСКАЯ СЛАВА"'),
+                         'ОРДЕНОМ "РОДИТЕЛЬСКАЯ СЛАВА"')
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # Матчер регионов
 # ═══════════════════════════════════════════════════════════════════════
@@ -300,6 +361,23 @@ class TestRegionMatcher(unittest.TestCase):
         ("Кировский областной перинатальный центр", None),
         ("работал в сосновом бору", None),
         ("на заливных лугах", None),
+        # Совпадения внутри слова (аудит архива 20.10.2026)
+        ("монастыря в городе Малоярославце Калужской епархии", None),
+        ('"Калужский областной радиотелевизионный передающий центр"', None),
+        ("оказание услуги населению, город Москва", None),
+        ("заведующей отделением, Ахмед-Гаджиевне", None),
+        ('АО "Балтийская Стивидорная Компания", город Москва', None),
+        ("Балтийский государственный технический университет, город Москва", None),
+        # …и настоящие города продолжают ловиться
+        ("работник Невельского района", PSKOV),
+        ("житель Вельска", ARKH),
+        ("житель г. Луга", "Ленинградская область"),
+        ("работник Лужского района", "Ленинградская область"),
+        ("военнослужащий, город Балтийск", KALININGRAD),
+        ("администрация Балтийского городского округа", KALININGRAD),
+        ("ЗАТО Гаджиево", "Мурманская область"),
+        ("сотрудник Тихвинского района", "Ленинградская область"),
+        ("работник г. Сосновый Бор", "Ленинградская область"),
         # СЗФО
         ("врач ГБУЗ Республики Коми", KOMI),
         ("работник Сыктывкарской больницы", KOMI),
@@ -394,6 +472,22 @@ class TestTailCleanup(unittest.TestCase):
         out = g.trim_by_markers(s)
         self.assertNotIn("Путин", out)
         self.assertTrue(out.endswith("Псковской области."), out)
+
+    def test_barcode_noise_variants(self):
+        # Регресс 29.09 (Указ № 705): «Республика Карелия. О 2 100088 ПЕЙ,» у Фокиной
+        self.assertEqual(g.trim_by_markers("Республика Карелия. О 2 100088 ПЕЙ,"),
+                         "Республика Карелия.")
+        self.assertEqual(g.trim_by_markers("Псковская область 2 1ОО088 70500"),
+                         "Псковская область")
+        self.assertEqual(g.trim_by_markers("Республика Коми. 2 100088 70500 7 |"),
+                         "Республика Коми.")
+
+    def test_numbers_that_are_not_barcode_kept(self):
+        for s in ["учителю муниципального учреждения \"Гимназия № 3\", Новгородская область",
+                  "врачу \"Городская поликлиника № 115\"",
+                  "директору школы № 10520",
+                  "Республика Коми."]:
+            self.assertEqual(g.trim_by_markers(s), s)
 
     def test_school_number_kept(self):
         s = "учителю муниципального учреждения \"Средняя школа № 10\", Смоленская область"

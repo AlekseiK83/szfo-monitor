@@ -528,6 +528,15 @@ class TestTailCleanup(unittest.TestCase):
         self.assertEqual(g.trim_by_markers("Республика Коми. 2 100088 70500 7 |"),
                          "Республика Коми.")
 
+    def test_single_letter_tail_removed(self):
+        # Регресс: «…"Петербург-концерт" И», «…Калининградская область И»
+        self.assertEqual(g.trim_by_markers('учреждения культуры "Петербург-концерт" И'),
+                         'учреждения культуры "Петербург-концерт"')
+        self.assertEqual(g.trim_by_markers("база\", Калининградская область И"),
+                         "база\", Калининградская область")
+        s = "музей имени А.С. Пушкина"
+        self.assertEqual(g.trim_by_markers(s), s)
+
     def test_numbers_that_are_not_barcode_kept(self):
         for s in ["учителю муниципального учреждения \"Гимназия № 3\", Новгородская область",
                   "врачу \"Городская поликлиника № 115\"",

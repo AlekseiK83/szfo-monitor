@@ -2,7 +2,11 @@ name: Ежедневный дайджест СЗФО
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    # GitHub запускает расписание с опозданием, особенно в начале часа:
+    # прогон «на 9:00» фактически стартовал в 13–18 МСК. Поэтому — нестандартная
+    # минута и два запуска. Второй ничего не делает, если первый уже всё обработал.
+    - cron: '17 3 * * *'   # 06:17 МСК
+    - cron: '43 9 * * *'   # 12:43 МСК — страховка
   workflow_dispatch:
     inputs:
       date:
@@ -13,9 +17,15 @@ on:
 permissions:
   contents: write
 
+# Не даём ежедневному прогону, пересборке и backfill писать в репозиторий одновременно
+concurrency:
+  group: szfo-data
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v5
 
@@ -54,5 +64,6 @@ jobs:
             echo "Изменений нет — коммит не создаётся"
           else
             git commit -m "Дайджест за $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash -q || true
             git push
           fi

@@ -1,25 +1,36 @@
-name: Загрузить архив за период
+name: Загрузить архив заново (повторный OCR)
 
 on:
   workflow_dispatch:
     inputs:
+      dates:
+        description: 'Список дат через запятую (YYYY-MM-DD,YYYY-MM-DD,…). Если заполнен — диапазон ниже игнорируется'
+        required: false
+        default: ''
       date_from:
-        description: 'От (YYYY-MM-DD)'
-        required: true
+        description: 'Или диапазон: от (YYYY-MM-DD)'
+        required: false
+        default: ''
       date_to:
-        description: 'До (YYYY-MM-DD, включительно)'
-        required: true
+        description: 'до (YYYY-MM-DD, включительно)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
 
+concurrency:
+  group: szfo-data
+  cancel-in-progress: false
+
 jobs:
   backfill:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -34,28 +45,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Прогон по диапазону дат
+      - name: Регрессионные тесты (при провале данные не публикуются)
+        run: python -m unittest discover -s tests -v
+
+      - name: Повторная обработка дат
+        env:
+          DATES: ${{ github.event.inputs.dates }}
+          DATE_FROM: ${{ github.event.inputs.date_from }}
+          DATE_TO: ${{ github.event.inputs.date_to }}
         run: |
-          from_date="${{ github.event.inputs.date_from }}"
-          to_date="${{ github.event.inputs.date_to }}"
-          current="$from_date"
-          while [ "$current" != "$(date -I -d "$to_date + 1 day")" ]; do
-            echo ""
-            echo "═══════════════════════════════════════════════"
-            echo "  $current"
-            echo "═══════════════════════════════════════════════"
-            python generate.py --date "$current" || echo "⚠ Пропущено: $current"
-            current=$(date -I -d "$current + 1 day")
+          if [ -n "$DATES" ]; then
+            LIST=$(echo "$DATES" | tr ',;' '  ')
+          elif [ -n "$DATE_FROM" ] && [ -n "$DATE_TO" ]; then
+            LIST=""; cur="$DATE_FROM"
+            while [ "$cur" != "$(date -I -d "$DATE_TO + 1 day")" ]; do
+              LIST="$LIST $cur"; cur=$(date -I -d "$cur + 1 day")
+            done
+          else
+            echo "Укажите список дат или диапазон"; exit 1
+          fi
+          failed=""
+          for d in $LIST; do
+            echo ""; echo "═══════════ $d ═══════════"
+            python generate.py --date "$d" || failed="$failed $d"
           done
+          if [ -n "$failed" ]; then echo "⚠ Не обработаны:$failed"; fi
 
       - name: Коммит и push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add reports/ regions/ index.html
+          git add -A
           if git diff --cached --quiet; then
             echo "Изменений нет"
           else
-            git commit -m "Backfill: ${{ github.event.inputs.date_from }} — ${{ github.event.inputs.date_to }}"
+            git commit -m "Backfill: повторный OCR $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash -q || true
             git push
           fi

@@ -6,9 +6,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: szfo-data
+  cancel-in-progress: false
+
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
@@ -37,5 +42,6 @@ jobs:
             echo "Изменений нет"
           else
             git commit -m "Rebuild: переприменены паттерны регионов $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash -q || true
             git push
           fi

@@ -1351,6 +1351,93 @@ def render_region_html(region_name, people, all_region_counts):
 </html>"""
 
 
+MONTHS_NOM = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль",
+              "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+
+
+def _plural(n, one, few, many):
+    n = abs(n) % 100
+    if 11 <= n <= 14:
+        return many
+    return {1: one, 2: few, 3: few, 4: few}.get(n % 10, many)
+
+
+def render_month_groups(entries):
+    """Дни, сгруппированные по месяцам в раскрывающиеся блоки <details>.
+    В заголовке месяца — итоги и мини-календарь из точек (одна на день)."""
+    import calendar
+    esc = html_module.escape
+    by_month = {}
+    for e in entries:
+        by_month.setdefault(e["date"][:7], []).append(e)
+
+    chevron = ('<svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true">'
+               '<path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" '
+               'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    out = []
+    for i, ym in enumerate(sorted(by_month, reverse=True)):
+        days = sorted(by_month[ym], key=lambda x: x["date"], reverse=True)
+        year, month = int(ym[:4]), int(ym[5:7])
+        n_days = len(days)
+        n_award = sum(1 for e in days if e["stats"]["awarding"] > 0)
+        n_szfo = sum(e["stats"]["szfo"] for e in days)
+
+        # Мини-календарь: все дни месяца по порядку
+        by_day = {int(e["date"][8:10]): e for e in days}
+        last = max(by_day)
+        dots = []
+        for d in range(1, max(last, 1) + 1):
+            e = by_day.get(d)
+            iso = f"{ym}-{d:02d}"
+            if not e:
+                cls, tip = "nodata", "нет данных"
+            elif e["stats"]["szfo"] > 0:
+                cls, tip = "szfo", f'из СЗФО: {e["stats"]["szfo"]}'
+            elif e["stats"]["awarding"] > 0:
+                cls, tip = "award", "указы без СЗФО"
+            else:
+                cls, tip = "", "указов нет"
+            dots.append(f'<i class="{cls}" title="{d} — {tip}"></i>')
+
+        stats = [f'<span><b>{n_days}</b> {_plural(n_days, "день", "дня", "дней")}</span>']
+        if n_award:
+            stats.append(f'<span><b>{n_award}</b> {_plural(n_award, "день", "дня", "дней")} с указами</span>')
+            stats.append(f'<span><b>{n_szfo}</b> из СЗФО</span>')
+        else:
+            stats.append('<span class="muted">наградных указов нет</span>')
+
+        rows = []
+        for e in days:
+            szfo, awarding = e["stats"]["szfo"], e["stats"]["awarding"]
+            rows.append(f"""
+          <a class="entry{' empty' if szfo == 0 else ''}" data-awarding="{1 if awarding else 0}"
+             data-szfo="{1 if szfo else 0}" href="reports/{esc(e['date'])}.html">
+            <div class="entry-date">{esc(format_display_date(e['date']))}</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>{awarding}</b></span>
+              <span>Из СЗФО: <b>{szfo}</b></span>
+            </div>
+          </a>""")
+
+        out.append(f"""
+      <details class="month" data-month="{ym}"{' open' if i == 0 else ''}>
+        <summary>
+          {chevron}
+          <span class="month-name">{MONTHS_NOM[month - 1]} {year}</span>
+          <span class="month-stats">{''.join(stats)}</span>
+          <span class="month-strip" aria-hidden="true">{''.join(dots)}</span>
+        </summary>
+        <div class="month-days">{''.join(rows)}
+        </div>
+      </details>""")
+
+    legend = ('<div class="month-legend">'
+              '<span><i class="szfo"></i>есть награждённые из СЗФО</span>'
+              '<span><i class="award"></i>указы без СЗФО</span>'
+              '<span><i></i>наградных указов нет</span></div>')
+    return legend + "".join(out)
+
+
 def render_index_html(index_data, region_counts):
     esc = html_module.escape
     entries = sorted(index_data["reports"], key=lambda x: x["date"], reverse=True)
@@ -1376,24 +1463,7 @@ def render_index_html(index_data, region_counts):
     total_awarding = sum(1 for e in entries if e["stats"]["awarding"] > 0)
     total_szfo_days = sum(1 for e in entries if e["stats"]["szfo"] > 0)
 
-    rows_html = ""
-    for e in entries:
-        szfo = e["stats"]["szfo"]
-        awarding = e["stats"]["awarding"]
-        empty_class = " empty" if szfo == 0 else ""
-        # data-атрибуты для JS-фильтрации
-        has_awarding = "1" if awarding > 0 else "0"
-        has_szfo = "1" if szfo > 0 else "0"
-        rows_html += f"""
-        <a class="entry{empty_class}" data-awarding="{has_awarding}" data-szfo="{has_szfo}"
-           href="reports/{esc(e['date'])}.html">
-          <div class="entry-date">{esc(format_display_date(e['date']))}</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>{awarding}</b></span>
-            <span>Из СЗФО: <b>{szfo}</b></span>
-          </div>
-        </a>"""
-
+    rows_html = render_month_groups(entries)
     if not entries:
         rows_html = '<div class="no-results">Дайджесты пока не сгенерированы.</div>'
 
@@ -1411,6 +1481,9 @@ def render_index_html(index_data, region_counts):
       </button>
     </div>
     <div class="index-filter-empty" hidden>В этом фильтре нет дней.</div>
+    <div class="months-toolbar">
+      <button type="button" class="months-toggle" id="months-toggle">Развернуть все месяцы</button>
+    </div>
     '''
 
     total_szfo = sum(e["stats"]["szfo"] for e in entries)
@@ -1431,13 +1504,49 @@ def render_index_html(index_data, region_counts):
 .hero .sub {{ font-size: 14px; color: #6b6b6b; }}
 .summary {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
            margin-bottom: 20px; }}
-.entries {{ background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-           overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
+.entries {{ display: flex; flex-direction: column; gap: 10px; }}
+.month {{ background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+         overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
+.month.hidden {{ display: none; }}
+.month > summary {{ list-style: none; cursor: pointer; display: grid;
+                   grid-template-columns: auto 1fr auto; align-items: center;
+                   gap: 6px 16px; padding: 16px 20px; user-select: none;
+                   transition: background .15s; }}
+.month > summary::-webkit-details-marker {{ display: none; }}
+.month > summary:hover {{ background: #faf7f0; }}
+.month > summary:focus-visible {{ outline: 2px solid #b8860b; outline-offset: -2px; }}
+.month[open] > summary {{ border-bottom: 1px solid #e8e2d5; }}
+.month-chevron {{ width: 18px; height: 18px; color: #7d1e2a;
+                  transition: transform .2s; flex-shrink: 0; }}
+.month[open] .month-chevron {{ transform: rotate(90deg); }}
+.month-name {{ font-family: Georgia, serif; font-size: 18px; color: #5c1620; }}
+.month-stats {{ display: flex; flex-wrap: wrap; justify-content: flex-end;
+                gap: 4px 14px; font-size: 12.5px; color: #6b6b6b; }}
+.month-stats b {{ color: #7d1e2a; font-weight: 600; font-variant-numeric: tabular-nums; }}
+.month-stats .muted {{ color: #a39a8c; }}
+.month-strip {{ grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 3px; }}
+.month-strip i {{ width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }}
+.month-strip i.award {{ background: #d9b45b; }}
+.month-strip i.szfo {{ background: #7d1e2a; }}
+.month-strip i.nodata {{ background: transparent; box-shadow: inset 0 0 0 1px #ece6d8; }}
+.month-legend {{ display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px;
+                 color: #6b6b6b; margin: -2px 2px 12px; }}
+.month-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
+.month-legend i {{ width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }}
+.month-legend i.award {{ background: #d9b45b; }}
+.month-legend i.szfo {{ background: #7d1e2a; }}
+.months-toolbar {{ display: flex; justify-content: flex-end; margin: -4px 0 8px; }}
+.months-toggle {{ border: none; background: none; color: #7d1e2a; font: inherit;
+                  font-size: 13px; cursor: pointer; padding: 4px 2px;
+                  border-bottom: 1px dotted #b8860b; }}
+.months-toggle:hover {{ border-bottom-style: solid; }}
 .entry {{ display: flex; justify-content: space-between; align-items: center;
          padding: 16px 24px; border-bottom: 1px solid #e8e2d5;
          color: inherit; text-decoration: none; transition: background 0.15s; }}
 .entry:hover {{ background: #faf7f0; }}
 .entry:last-child {{ border-bottom: none; }}
+.month .entry {{ padding: 13px 20px 13px 54px; }}
+.entry.empty .entry-date {{ font-size: 15px; }}
 .entry-date {{ font-family: Georgia, serif; font-size: 16px; color: #5c1620; }}
 .entry-stats {{ display: flex; gap: 20px; font-size: 13px; color: #6b6b6b; }}
 .entry-stats b {{ color: #7d1e2a; font-weight: 600; }}
@@ -1469,8 +1578,16 @@ def render_index_html(index_data, region_counts):
                        background: white; border: 1px dashed #e8e2d5;
                        border-radius: 10px; }}
 @media (max-width: 640px) {{
-  .index-filter {{ border-radius: 12px; }}
-  .index-filter-btn {{ font-size: 12.5px; padding: 8px 10px; }}
+  .index-filter {{ flex-direction: column; gap: 4px; border-radius: 14px; }}
+  .index-filter-btn {{ font-size: 13.5px; padding: 10px 14px; min-width: 0;
+                       justify-content: space-between; white-space: normal;
+                       border-radius: 10px; }}
+  .month > summary {{ grid-template-columns: auto 1fr; padding: 14px 16px; }}
+  .month-stats {{ grid-column: 2; justify-content: flex-start; }}
+  .month-strip {{ grid-column: 2; }}
+  .month .entry {{ padding: 11px 16px 11px 44px; gap: 10px; }}
+  .month .entry-date {{ font-size: 14.5px; }}
+  .entry-stats {{ gap: 10px; font-size: 12px; white-space: nowrap; }}
 }}
 </style>
 </head>
@@ -1499,8 +1616,38 @@ def render_index_html(index_data, region_counts):
   const entries = document.querySelectorAll('.entries .entry');
   const emptyMsg = document.querySelector('.index-filter-empty');
   const entriesList = document.getElementById('entries-list');
+  const months = document.querySelectorAll('.month');
+  const toggle = document.getElementById('months-toggle');
+  const KEY = 'szfo-open-months';
+  let current = 'all';
+
+  // Какие месяцы раскрыты (только для фильтра «Все»), запоминаем в браузере
+  function loadOpen(){{
+    try {{ const v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : null; }}
+    catch (e) {{ return null; }}
+  }}
+  function saveOpen(){{
+    if (current !== 'all') return;
+    try {{
+      localStorage.setItem(KEY, JSON.stringify(
+        [...months].filter(m => m.open).map(m => m.dataset.month)));
+    }} catch (e) {{}}
+  }}
+  function updateToggle(){{
+    const shown = [...months].filter(m => !m.classList.contains('hidden'));
+    const allOpen = shown.length && shown.every(m => m.open);
+    toggle.textContent = allOpen ? 'Свернуть все месяцы' : 'Развернуть все месяцы';
+    toggle.parentElement.hidden = shown.length < 2;
+  }}
+  function restoreOpen(){{
+    const saved = loadOpen();
+    months.forEach((m, i) => {{
+      m.open = saved ? saved.includes(m.dataset.month) : i === 0;
+    }});
+  }}
 
   function applyFilter(name){{
+    current = name;
     let visible = 0;
     entries.forEach(el => {{
       let show = true;
@@ -1509,6 +1656,13 @@ def render_index_html(index_data, region_counts):
       el.classList.toggle('hidden', !show);
       if (show) visible++;
     }});
+    months.forEach(m => {{
+      const any = m.querySelector('.entry:not(.hidden)');
+      m.classList.toggle('hidden', !any);
+    }});
+    if (name === 'all') restoreOpen();
+    else months.forEach(m => {{ m.open = !m.classList.contains('hidden'); }});
+    updateToggle();
     buttons.forEach(b => {{
       const isActive = b.dataset.filter === name;
       b.classList.toggle('active', isActive);
@@ -1529,6 +1683,14 @@ def render_index_html(index_data, region_counts):
     else url.searchParams.set('filter', name);
     history.replaceState({{}}, '', url);
   }}
+
+  months.forEach(m => m.addEventListener('toggle', () => {{ saveOpen(); updateToggle(); }}));
+  toggle.addEventListener('click', () => {{
+    const shown = [...months].filter(m => !m.classList.contains('hidden'));
+    const open = !shown.every(m => m.open);
+    shown.forEach(m => {{ m.open = open; }});
+    saveOpen(); updateToggle();
+  }});
 
   buttons.forEach(btn => btn.addEventListener('click', () => {{
     const name = btn.dataset.filter;

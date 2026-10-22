@@ -240,7 +240,9 @@ def trim_by_markers(s):
         if m and 20 < m.start() < cut:
             cut = m.start()
     s = strip_barcode_tail(s[:cut])
-    return re.sub(r"[\s.,]+[0-9A-Za-z]{1,3}\s*$", "", s).strip()
+    s = re.sub(r"[\s.,]+[0-9A-Za-z]{1,3}\s*$", "", s)
+    # Одиночная заглавная буква без точки в конце — OCR-мусор (инициалы всегда с точкой)
+    return re.sub(r"\s+[А-ЯЁ]\s*$", "", s).strip()
 
 
 def preprocess_multiline_award_headers(text):

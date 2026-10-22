@@ -117,13 +117,49 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .hero .sub { font-size: 14px; color: #6b6b6b; }
 .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
            margin-bottom: 20px; }
-.entries { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-           overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.entries { display: flex; flex-direction: column; gap: 10px; }
+.month { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
+         overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.month.hidden { display: none; }
+.month > summary { list-style: none; cursor: pointer; display: grid;
+                   grid-template-columns: auto 1fr auto; align-items: center;
+                   gap: 6px 16px; padding: 16px 20px; user-select: none;
+                   transition: background .15s; }
+.month > summary::-webkit-details-marker { display: none; }
+.month > summary:hover { background: #faf7f0; }
+.month > summary:focus-visible { outline: 2px solid #b8860b; outline-offset: -2px; }
+.month[open] > summary { border-bottom: 1px solid #e8e2d5; }
+.month-chevron { width: 18px; height: 18px; color: #7d1e2a;
+                  transition: transform .2s; flex-shrink: 0; }
+.month[open] .month-chevron { transform: rotate(90deg); }
+.month-name { font-family: Georgia, serif; font-size: 18px; color: #5c1620; }
+.month-stats { display: flex; flex-wrap: wrap; justify-content: flex-end;
+                gap: 4px 14px; font-size: 12.5px; color: #6b6b6b; }
+.month-stats b { color: #7d1e2a; font-weight: 600; font-variant-numeric: tabular-nums; }
+.month-stats .muted { color: #a39a8c; }
+.month-strip { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 3px; }
+.month-strip i { width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }
+.month-strip i.award { background: #d9b45b; }
+.month-strip i.szfo { background: #7d1e2a; }
+.month-strip i.nodata { background: transparent; box-shadow: inset 0 0 0 1px #ece6d8; }
+.month-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px;
+                 color: #6b6b6b; margin: -2px 2px 12px; }
+.month-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.month-legend i { width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }
+.month-legend i.award { background: #d9b45b; }
+.month-legend i.szfo { background: #7d1e2a; }
+.months-toolbar { display: flex; justify-content: flex-end; margin: -4px 0 8px; }
+.months-toggle { border: none; background: none; color: #7d1e2a; font: inherit;
+                  font-size: 13px; cursor: pointer; padding: 4px 2px;
+                  border-bottom: 1px dotted #b8860b; }
+.months-toggle:hover { border-bottom-style: solid; }
 .entry { display: flex; justify-content: space-between; align-items: center;
          padding: 16px 24px; border-bottom: 1px solid #e8e2d5;
          color: inherit; text-decoration: none; transition: background 0.15s; }
 .entry:hover { background: #faf7f0; }
 .entry:last-child { border-bottom: none; }
+.month .entry { padding: 13px 20px 13px 54px; }
+.entry.empty .entry-date { font-size: 15px; }
 .entry-date { font-family: Georgia, serif; font-size: 16px; color: #5c1620; }
 .entry-stats { display: flex; gap: 20px; font-size: 13px; color: #6b6b6b; }
 .entry-stats b { color: #7d1e2a; font-weight: 600; }
@@ -155,8 +191,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                        background: white; border: 1px dashed #e8e2d5;
                        border-radius: 10px; }
 @media (max-width: 640px) {
-  .index-filter { border-radius: 12px; }
-  .index-filter-btn { font-size: 12.5px; padding: 8px 10px; }
+  .index-filter { flex-direction: column; gap: 4px; border-radius: 14px; }
+  .index-filter-btn { font-size: 13.5px; padding: 10px 14px; min-width: 0;
+                       justify-content: space-between; white-space: normal;
+                       border-radius: 10px; }
+  .month > summary { grid-template-columns: auto 1fr; padding: 14px 16px; }
+  .month-stats { grid-column: 2; justify-content: flex-start; }
+  .month-strip { grid-column: 2; }
+  .month .entry { padding: 11px 16px 11px 44px; gap: 10px; }
+  .month .entry-date { font-size: 14.5px; }
+  .entry-stats { gap: 10px; font-size: 12px; white-space: nowrap; }
 }
 </style>
 </head>
@@ -192,1040 +236,1093 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </button>
     </div>
     <div class="index-filter-empty" hidden>В этом фильтре нет дней.</div>
+    <div class="months-toolbar">
+      <button type="button" class="months-toggle" id="months-toggle">Развернуть все месяцы</button>
+    </div>
     
-  <div class="entries" id="entries-list">
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-21.html">
-          <div class="entry-date">21 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-20.html">
-          <div class="entry-date">20 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-19.html">
-          <div class="entry-date">19 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-18.html">
-          <div class="entry-date">18 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-17.html">
-          <div class="entry-date">17 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-16.html">
-          <div class="entry-date">16 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-10-15.html">
-          <div class="entry-date">15 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>20</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-14.html">
-          <div class="entry-date">14 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-13.html">
-          <div class="entry-date">13 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-10-12.html">
-          <div class="entry-date">12 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>26</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-11.html">
-          <div class="entry-date">11 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-10.html">
-          <div class="entry-date">10 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-09.html">
-          <div class="entry-date">9 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-08.html">
-          <div class="entry-date">8 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-07.html">
-          <div class="entry-date">7 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-06.html">
-          <div class="entry-date">6 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-05.html">
-          <div class="entry-date">5 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-04.html">
-          <div class="entry-date">4 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-03.html">
-          <div class="entry-date">3 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-02.html">
-          <div class="entry-date">2 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-10-01.html">
-          <div class="entry-date">1 октября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-30.html">
-          <div class="entry-date">30 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-29.html">
-          <div class="entry-date">29 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>16</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-28.html">
-          <div class="entry-date">28 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>25</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-27.html">
-          <div class="entry-date">27 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-26.html">
-          <div class="entry-date">26 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-25.html">
-          <div class="entry-date">25 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-24.html">
-          <div class="entry-date">24 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-23.html">
-          <div class="entry-date">23 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-22.html">
-          <div class="entry-date">22 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-21.html">
-          <div class="entry-date">21 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>5</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-20.html">
-          <div class="entry-date">20 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="1" data-szfo="0"
-           href="reports/2026-09-19.html">
-          <div class="entry-date">19 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-18.html">
-          <div class="entry-date">18 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>10</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-17.html">
-          <div class="entry-date">17 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-16.html">
-          <div class="entry-date">16 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-15.html">
-          <div class="entry-date">15 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-14.html">
-          <div class="entry-date">14 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-13.html">
-          <div class="entry-date">13 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-12.html">
-          <div class="entry-date">12 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-11.html">
-          <div class="entry-date">11 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-10.html">
-          <div class="entry-date">10 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-09.html">
-          <div class="entry-date">9 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-08.html">
-          <div class="entry-date">8 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-07.html">
-          <div class="entry-date">7 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>32</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-06.html">
-          <div class="entry-date">6 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-09-05.html">
-          <div class="entry-date">5 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>2</b></span>
-            <span>Из СЗФО: <b>11</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-04.html">
-          <div class="entry-date">4 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-03.html">
-          <div class="entry-date">3 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-02.html">
-          <div class="entry-date">2 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-09-01.html">
-          <div class="entry-date">1 сентября 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-31.html">
-          <div class="entry-date">31 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-30.html">
-          <div class="entry-date">30 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-29.html">
-          <div class="entry-date">29 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-28.html">
-          <div class="entry-date">28 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-27.html">
-          <div class="entry-date">27 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-26.html">
-          <div class="entry-date">26 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-25.html">
-          <div class="entry-date">25 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-08-24.html">
-          <div class="entry-date">24 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>2</b></span>
-            <span>Из СЗФО: <b>36</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-23.html">
-          <div class="entry-date">23 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-22.html">
-          <div class="entry-date">22 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="1" data-szfo="0"
-           href="reports/2026-08-21.html">
-          <div class="entry-date">21 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-20.html">
-          <div class="entry-date">20 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-19.html">
-          <div class="entry-date">19 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-18.html">
-          <div class="entry-date">18 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-17.html">
-          <div class="entry-date">17 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-16.html">
-          <div class="entry-date">16 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-15.html">
-          <div class="entry-date">15 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-14.html">
-          <div class="entry-date">14 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-13.html">
-          <div class="entry-date">13 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-08-12.html">
-          <div class="entry-date">12 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>22</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-11.html">
-          <div class="entry-date">11 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-10.html">
-          <div class="entry-date">10 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-09.html">
-          <div class="entry-date">9 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-08.html">
-          <div class="entry-date">8 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-07.html">
-          <div class="entry-date">7 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-08-06.html">
-          <div class="entry-date">6 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>28</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-05.html">
-          <div class="entry-date">5 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-08-04.html">
-          <div class="entry-date">4 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>23</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-03.html">
-          <div class="entry-date">3 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-02.html">
-          <div class="entry-date">2 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-08-01.html">
-          <div class="entry-date">1 августа 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-31.html">
-          <div class="entry-date">31 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-30.html">
-          <div class="entry-date">30 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-29.html">
-          <div class="entry-date">29 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-28.html">
-          <div class="entry-date">28 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-27.html">
-          <div class="entry-date">27 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-26.html">
-          <div class="entry-date">26 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-25.html">
-          <div class="entry-date">25 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-24.html">
-          <div class="entry-date">24 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-23.html">
-          <div class="entry-date">23 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-22.html">
-          <div class="entry-date">22 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-21.html">
-          <div class="entry-date">21 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-07-20.html">
-          <div class="entry-date">20 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>13</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-19.html">
-          <div class="entry-date">19 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-18.html">
-          <div class="entry-date">18 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-17.html">
-          <div class="entry-date">17 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-16.html">
-          <div class="entry-date">16 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-15.html">
-          <div class="entry-date">15 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-14.html">
-          <div class="entry-date">14 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-07-13.html">
-          <div class="entry-date">13 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>14</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-12.html">
-          <div class="entry-date">12 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-11.html">
-          <div class="entry-date">11 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-10.html">
-          <div class="entry-date">10 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-07-09.html">
-          <div class="entry-date">9 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>2</b></span>
-            <span>Из СЗФО: <b>23</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-08.html">
-          <div class="entry-date">8 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-07.html">
-          <div class="entry-date">7 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-06.html">
-          <div class="entry-date">6 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-05.html">
-          <div class="entry-date">5 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-04.html">
-          <div class="entry-date">4 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-03.html">
-          <div class="entry-date">3 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-02.html">
-          <div class="entry-date">2 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-07-01.html">
-          <div class="entry-date">1 июля 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-30.html">
-          <div class="entry-date">30 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-29.html">
-          <div class="entry-date">29 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-28.html">
-          <div class="entry-date">28 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-27.html">
-          <div class="entry-date">27 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-06-26.html">
-          <div class="entry-date">26 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>2</b></span>
-            <span>Из СЗФО: <b>29</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-25.html">
-          <div class="entry-date">25 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-24.html">
-          <div class="entry-date">24 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-23.html">
-          <div class="entry-date">23 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-22.html">
-          <div class="entry-date">22 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry" data-awarding="1" data-szfo="1"
-           href="reports/2026-06-21.html">
-          <div class="entry-date">21 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>1</b></span>
-            <span>Из СЗФО: <b>17</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-20.html">
-          <div class="entry-date">20 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-19.html">
-          <div class="entry-date">19 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-18.html">
-          <div class="entry-date">18 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-17.html">
-          <div class="entry-date">17 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-16.html">
-          <div class="entry-date">16 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a>
-        <a class="entry empty" data-awarding="0" data-szfo="0"
-           href="reports/2026-06-15.html">
-          <div class="entry-date">15 июня 2026</div>
-          <div class="entry-stats">
-            <span>Наградных: <b>0</b></span>
-            <span>Из СЗФО: <b>0</b></span>
-          </div>
-        </a></div>
+  <div class="entries" id="entries-list"><div class="month-legend"><span><i class="szfo"></i>есть награждённые из СЗФО</span><span><i class="award"></i>указы без СЗФО</span><span><i></i>наградных указов нет</span></div>
+      <details class="month" data-month="2026-10" open>
+        <summary>
+          <svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="month-name">Октябрь 2026</span>
+          <span class="month-stats"><span><b>21</b> день</span><span><b>2</b> дня с указами</span><span><b>46</b> из СЗФО</span></span>
+          <span class="month-strip" aria-hidden="true"><i class="" title="1 — указов нет"></i><i class="" title="2 — указов нет"></i><i class="" title="3 — указов нет"></i><i class="" title="4 — указов нет"></i><i class="" title="5 — указов нет"></i><i class="" title="6 — указов нет"></i><i class="" title="7 — указов нет"></i><i class="" title="8 — указов нет"></i><i class="" title="9 — указов нет"></i><i class="" title="10 — указов нет"></i><i class="" title="11 — указов нет"></i><i class="szfo" title="12 — из СЗФО: 26"></i><i class="" title="13 — указов нет"></i><i class="" title="14 — указов нет"></i><i class="szfo" title="15 — из СЗФО: 20"></i><i class="" title="16 — указов нет"></i><i class="" title="17 — указов нет"></i><i class="" title="18 — указов нет"></i><i class="" title="19 — указов нет"></i><i class="" title="20 — указов нет"></i><i class="" title="21 — указов нет"></i></span>
+        </summary>
+        <div class="month-days">
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-21.html">
+            <div class="entry-date">21 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-20.html">
+            <div class="entry-date">20 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-19.html">
+            <div class="entry-date">19 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-18.html">
+            <div class="entry-date">18 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-17.html">
+            <div class="entry-date">17 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-16.html">
+            <div class="entry-date">16 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-10-15.html">
+            <div class="entry-date">15 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>20</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-14.html">
+            <div class="entry-date">14 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-13.html">
+            <div class="entry-date">13 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-10-12.html">
+            <div class="entry-date">12 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>26</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-11.html">
+            <div class="entry-date">11 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-10.html">
+            <div class="entry-date">10 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-09.html">
+            <div class="entry-date">9 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-08.html">
+            <div class="entry-date">8 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-07.html">
+            <div class="entry-date">7 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-06.html">
+            <div class="entry-date">6 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-05.html">
+            <div class="entry-date">5 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-04.html">
+            <div class="entry-date">4 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-03.html">
+            <div class="entry-date">3 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-02.html">
+            <div class="entry-date">2 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-10-01.html">
+            <div class="entry-date">1 октября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+        </div>
+      </details>
+      <details class="month" data-month="2026-09">
+        <summary>
+          <svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="month-name">Сентябрь 2026</span>
+          <span class="month-stats"><span><b>30</b> дней</span><span><b>7</b> дней с указами</span><span><b>99</b> из СЗФО</span></span>
+          <span class="month-strip" aria-hidden="true"><i class="" title="1 — указов нет"></i><i class="" title="2 — указов нет"></i><i class="" title="3 — указов нет"></i><i class="" title="4 — указов нет"></i><i class="szfo" title="5 — из СЗФО: 11"></i><i class="" title="6 — указов нет"></i><i class="szfo" title="7 — из СЗФО: 32"></i><i class="" title="8 — указов нет"></i><i class="" title="9 — указов нет"></i><i class="" title="10 — указов нет"></i><i class="" title="11 — указов нет"></i><i class="" title="12 — указов нет"></i><i class="" title="13 — указов нет"></i><i class="" title="14 — указов нет"></i><i class="" title="15 — указов нет"></i><i class="" title="16 — указов нет"></i><i class="" title="17 — указов нет"></i><i class="szfo" title="18 — из СЗФО: 10"></i><i class="award" title="19 — указы без СЗФО"></i><i class="" title="20 — указов нет"></i><i class="szfo" title="21 — из СЗФО: 5"></i><i class="" title="22 — указов нет"></i><i class="" title="23 — указов нет"></i><i class="" title="24 — указов нет"></i><i class="" title="25 — указов нет"></i><i class="" title="26 — указов нет"></i><i class="" title="27 — указов нет"></i><i class="szfo" title="28 — из СЗФО: 25"></i><i class="szfo" title="29 — из СЗФО: 16"></i><i class="" title="30 — указов нет"></i></span>
+        </summary>
+        <div class="month-days">
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-30.html">
+            <div class="entry-date">30 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-29.html">
+            <div class="entry-date">29 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>16</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-28.html">
+            <div class="entry-date">28 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>25</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-27.html">
+            <div class="entry-date">27 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-26.html">
+            <div class="entry-date">26 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-25.html">
+            <div class="entry-date">25 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-24.html">
+            <div class="entry-date">24 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-23.html">
+            <div class="entry-date">23 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-22.html">
+            <div class="entry-date">22 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-21.html">
+            <div class="entry-date">21 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>5</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-20.html">
+            <div class="entry-date">20 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="1"
+             data-szfo="0" href="reports/2026-09-19.html">
+            <div class="entry-date">19 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-18.html">
+            <div class="entry-date">18 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>10</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-17.html">
+            <div class="entry-date">17 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-16.html">
+            <div class="entry-date">16 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-15.html">
+            <div class="entry-date">15 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-14.html">
+            <div class="entry-date">14 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-13.html">
+            <div class="entry-date">13 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-12.html">
+            <div class="entry-date">12 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-11.html">
+            <div class="entry-date">11 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-10.html">
+            <div class="entry-date">10 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-09.html">
+            <div class="entry-date">9 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-08.html">
+            <div class="entry-date">8 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-07.html">
+            <div class="entry-date">7 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>32</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-06.html">
+            <div class="entry-date">6 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-09-05.html">
+            <div class="entry-date">5 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>2</b></span>
+              <span>Из СЗФО: <b>11</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-04.html">
+            <div class="entry-date">4 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-03.html">
+            <div class="entry-date">3 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-02.html">
+            <div class="entry-date">2 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-09-01.html">
+            <div class="entry-date">1 сентября 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+        </div>
+      </details>
+      <details class="month" data-month="2026-08">
+        <summary>
+          <svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="month-name">Август 2026</span>
+          <span class="month-stats"><span><b>31</b> день</span><span><b>5</b> дней с указами</span><span><b>109</b> из СЗФО</span></span>
+          <span class="month-strip" aria-hidden="true"><i class="" title="1 — указов нет"></i><i class="" title="2 — указов нет"></i><i class="" title="3 — указов нет"></i><i class="szfo" title="4 — из СЗФО: 23"></i><i class="" title="5 — указов нет"></i><i class="szfo" title="6 — из СЗФО: 28"></i><i class="" title="7 — указов нет"></i><i class="" title="8 — указов нет"></i><i class="" title="9 — указов нет"></i><i class="" title="10 — указов нет"></i><i class="" title="11 — указов нет"></i><i class="szfo" title="12 — из СЗФО: 22"></i><i class="" title="13 — указов нет"></i><i class="" title="14 — указов нет"></i><i class="" title="15 — указов нет"></i><i class="" title="16 — указов нет"></i><i class="" title="17 — указов нет"></i><i class="" title="18 — указов нет"></i><i class="" title="19 — указов нет"></i><i class="" title="20 — указов нет"></i><i class="award" title="21 — указы без СЗФО"></i><i class="" title="22 — указов нет"></i><i class="" title="23 — указов нет"></i><i class="szfo" title="24 — из СЗФО: 36"></i><i class="" title="25 — указов нет"></i><i class="" title="26 — указов нет"></i><i class="" title="27 — указов нет"></i><i class="" title="28 — указов нет"></i><i class="" title="29 — указов нет"></i><i class="" title="30 — указов нет"></i><i class="" title="31 — указов нет"></i></span>
+        </summary>
+        <div class="month-days">
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-31.html">
+            <div class="entry-date">31 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-30.html">
+            <div class="entry-date">30 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-29.html">
+            <div class="entry-date">29 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-28.html">
+            <div class="entry-date">28 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-27.html">
+            <div class="entry-date">27 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-26.html">
+            <div class="entry-date">26 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-25.html">
+            <div class="entry-date">25 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-08-24.html">
+            <div class="entry-date">24 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>2</b></span>
+              <span>Из СЗФО: <b>36</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-23.html">
+            <div class="entry-date">23 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-22.html">
+            <div class="entry-date">22 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="1"
+             data-szfo="0" href="reports/2026-08-21.html">
+            <div class="entry-date">21 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-20.html">
+            <div class="entry-date">20 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-19.html">
+            <div class="entry-date">19 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-18.html">
+            <div class="entry-date">18 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-17.html">
+            <div class="entry-date">17 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-16.html">
+            <div class="entry-date">16 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-15.html">
+            <div class="entry-date">15 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-14.html">
+            <div class="entry-date">14 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-13.html">
+            <div class="entry-date">13 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-08-12.html">
+            <div class="entry-date">12 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>22</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-11.html">
+            <div class="entry-date">11 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-10.html">
+            <div class="entry-date">10 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-09.html">
+            <div class="entry-date">9 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-08.html">
+            <div class="entry-date">8 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-07.html">
+            <div class="entry-date">7 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-08-06.html">
+            <div class="entry-date">6 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>28</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-05.html">
+            <div class="entry-date">5 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-08-04.html">
+            <div class="entry-date">4 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>23</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-03.html">
+            <div class="entry-date">3 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-02.html">
+            <div class="entry-date">2 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-08-01.html">
+            <div class="entry-date">1 августа 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+        </div>
+      </details>
+      <details class="month" data-month="2026-07">
+        <summary>
+          <svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="month-name">Июль 2026</span>
+          <span class="month-stats"><span><b>31</b> день</span><span><b>3</b> дня с указами</span><span><b>50</b> из СЗФО</span></span>
+          <span class="month-strip" aria-hidden="true"><i class="" title="1 — указов нет"></i><i class="" title="2 — указов нет"></i><i class="" title="3 — указов нет"></i><i class="" title="4 — указов нет"></i><i class="" title="5 — указов нет"></i><i class="" title="6 — указов нет"></i><i class="" title="7 — указов нет"></i><i class="" title="8 — указов нет"></i><i class="szfo" title="9 — из СЗФО: 23"></i><i class="" title="10 — указов нет"></i><i class="" title="11 — указов нет"></i><i class="" title="12 — указов нет"></i><i class="szfo" title="13 — из СЗФО: 14"></i><i class="" title="14 — указов нет"></i><i class="" title="15 — указов нет"></i><i class="" title="16 — указов нет"></i><i class="" title="17 — указов нет"></i><i class="" title="18 — указов нет"></i><i class="" title="19 — указов нет"></i><i class="szfo" title="20 — из СЗФО: 13"></i><i class="" title="21 — указов нет"></i><i class="" title="22 — указов нет"></i><i class="" title="23 — указов нет"></i><i class="" title="24 — указов нет"></i><i class="" title="25 — указов нет"></i><i class="" title="26 — указов нет"></i><i class="" title="27 — указов нет"></i><i class="" title="28 — указов нет"></i><i class="" title="29 — указов нет"></i><i class="" title="30 — указов нет"></i><i class="" title="31 — указов нет"></i></span>
+        </summary>
+        <div class="month-days">
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-31.html">
+            <div class="entry-date">31 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-30.html">
+            <div class="entry-date">30 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-29.html">
+            <div class="entry-date">29 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-28.html">
+            <div class="entry-date">28 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-27.html">
+            <div class="entry-date">27 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-26.html">
+            <div class="entry-date">26 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-25.html">
+            <div class="entry-date">25 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-24.html">
+            <div class="entry-date">24 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-23.html">
+            <div class="entry-date">23 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-22.html">
+            <div class="entry-date">22 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-21.html">
+            <div class="entry-date">21 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-07-20.html">
+            <div class="entry-date">20 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>13</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-19.html">
+            <div class="entry-date">19 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-18.html">
+            <div class="entry-date">18 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-17.html">
+            <div class="entry-date">17 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-16.html">
+            <div class="entry-date">16 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-15.html">
+            <div class="entry-date">15 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-14.html">
+            <div class="entry-date">14 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-07-13.html">
+            <div class="entry-date">13 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>14</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-12.html">
+            <div class="entry-date">12 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-11.html">
+            <div class="entry-date">11 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-10.html">
+            <div class="entry-date">10 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-07-09.html">
+            <div class="entry-date">9 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>2</b></span>
+              <span>Из СЗФО: <b>23</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-08.html">
+            <div class="entry-date">8 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-07.html">
+            <div class="entry-date">7 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-06.html">
+            <div class="entry-date">6 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-05.html">
+            <div class="entry-date">5 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-04.html">
+            <div class="entry-date">4 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-03.html">
+            <div class="entry-date">3 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-02.html">
+            <div class="entry-date">2 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-07-01.html">
+            <div class="entry-date">1 июля 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+        </div>
+      </details>
+      <details class="month" data-month="2026-06">
+        <summary>
+          <svg class="month-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="month-name">Июнь 2026</span>
+          <span class="month-stats"><span><b>16</b> дней</span><span><b>2</b> дня с указами</span><span><b>46</b> из СЗФО</span></span>
+          <span class="month-strip" aria-hidden="true"><i class="nodata" title="1 — нет данных"></i><i class="nodata" title="2 — нет данных"></i><i class="nodata" title="3 — нет данных"></i><i class="nodata" title="4 — нет данных"></i><i class="nodata" title="5 — нет данных"></i><i class="nodata" title="6 — нет данных"></i><i class="nodata" title="7 — нет данных"></i><i class="nodata" title="8 — нет данных"></i><i class="nodata" title="9 — нет данных"></i><i class="nodata" title="10 — нет данных"></i><i class="nodata" title="11 — нет данных"></i><i class="nodata" title="12 — нет данных"></i><i class="nodata" title="13 — нет данных"></i><i class="nodata" title="14 — нет данных"></i><i class="" title="15 — указов нет"></i><i class="" title="16 — указов нет"></i><i class="" title="17 — указов нет"></i><i class="" title="18 — указов нет"></i><i class="" title="19 — указов нет"></i><i class="" title="20 — указов нет"></i><i class="szfo" title="21 — из СЗФО: 17"></i><i class="" title="22 — указов нет"></i><i class="" title="23 — указов нет"></i><i class="" title="24 — указов нет"></i><i class="" title="25 — указов нет"></i><i class="szfo" title="26 — из СЗФО: 29"></i><i class="" title="27 — указов нет"></i><i class="" title="28 — указов нет"></i><i class="" title="29 — указов нет"></i><i class="" title="30 — указов нет"></i></span>
+        </summary>
+        <div class="month-days">
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-30.html">
+            <div class="entry-date">30 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-29.html">
+            <div class="entry-date">29 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-28.html">
+            <div class="entry-date">28 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-27.html">
+            <div class="entry-date">27 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-06-26.html">
+            <div class="entry-date">26 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>2</b></span>
+              <span>Из СЗФО: <b>29</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-25.html">
+            <div class="entry-date">25 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-24.html">
+            <div class="entry-date">24 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-23.html">
+            <div class="entry-date">23 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-22.html">
+            <div class="entry-date">22 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry" data-awarding="1"
+             data-szfo="1" href="reports/2026-06-21.html">
+            <div class="entry-date">21 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>1</b></span>
+              <span>Из СЗФО: <b>17</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-20.html">
+            <div class="entry-date">20 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-19.html">
+            <div class="entry-date">19 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-18.html">
+            <div class="entry-date">18 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-17.html">
+            <div class="entry-date">17 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-16.html">
+            <div class="entry-date">16 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+          <a class="entry empty" data-awarding="0"
+             data-szfo="0" href="reports/2026-06-15.html">
+            <div class="entry-date">15 июня 2026</div>
+            <div class="entry-stats">
+              <span>Наградных: <b>0</b></span>
+              <span>Из СЗФО: <b>0</b></span>
+            </div>
+          </a>
+        </div>
+      </details></div>
   <div class="updated">Обновлено: 2026-10-22 05:38:22 UTC · Автоматически ежедневно</div>
 </div>
 <script>
@@ -1234,8 +1331,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   const entries = document.querySelectorAll('.entries .entry');
   const emptyMsg = document.querySelector('.index-filter-empty');
   const entriesList = document.getElementById('entries-list');
+  const months = document.querySelectorAll('.month');
+  const toggle = document.getElementById('months-toggle');
+  const KEY = 'szfo-open-months';
+  let current = 'all';
+
+  // Какие месяцы раскрыты (только для фильтра «Все»), запоминаем в браузере
+  function loadOpen(){
+    try { const v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : null; }
+    catch (e) { return null; }
+  }
+  function saveOpen(){
+    if (current !== 'all') return;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(
+        [...months].filter(m => m.open).map(m => m.dataset.month)));
+    } catch (e) {}
+  }
+  function updateToggle(){
+    const shown = [...months].filter(m => !m.classList.contains('hidden'));
+    const allOpen = shown.length && shown.every(m => m.open);
+    toggle.textContent = allOpen ? 'Свернуть все месяцы' : 'Развернуть все месяцы';
+    toggle.parentElement.hidden = shown.length < 2;
+  }
+  function restoreOpen(){
+    const saved = loadOpen();
+    months.forEach((m, i) => {
+      m.open = saved ? saved.includes(m.dataset.month) : i === 0;
+    });
+  }
 
   function applyFilter(name){
+    current = name;
     let visible = 0;
     entries.forEach(el => {
       let show = true;
@@ -1244,6 +1371,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       el.classList.toggle('hidden', !show);
       if (show) visible++;
     });
+    months.forEach(m => {
+      const any = m.querySelector('.entry:not(.hidden)');
+      m.classList.toggle('hidden', !any);
+    });
+    if (name === 'all') restoreOpen();
+    else months.forEach(m => { m.open = !m.classList.contains('hidden'); });
+    updateToggle();
     buttons.forEach(b => {
       const isActive = b.dataset.filter === name;
       b.classList.toggle('active', isActive);
@@ -1264,6 +1398,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     else url.searchParams.set('filter', name);
     history.replaceState({}, '', url);
   }
+
+  months.forEach(m => m.addEventListener('toggle', () => { saveOpen(); updateToggle(); }));
+  toggle.addEventListener('click', () => {
+    const shown = [...months].filter(m => !m.classList.contains('hidden'));
+    const open = !shown.every(m => m.open);
+    shown.forEach(m => { m.open = open; });
+    saveOpen(); updateToggle();
+  });
 
   buttons.forEach(btn => btn.addEventListener('click', () => {
     const name = btn.dataset.filter;

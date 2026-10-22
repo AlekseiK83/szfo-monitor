@@ -593,5 +593,27 @@ class TestMissingDates(unittest.TestCase):
         self.assertEqual(g.compute_missing_dates(), [self.yest.isoformat()])
 
 
+class TestMonthGroups(unittest.TestCase):
+    def test_grouping_and_summary(self):
+        mk = lambda d, aw, sz: {"date": d, "stats": {"documents": 1, "awarding": aw,
+                                                     "awardees": sz, "szfo": sz}}
+        entries = [mk("2026-10-02", 1, 5), mk("2026-10-01", 0, 0),
+                   mk("2026-09-30", 0, 0), mk("2026-09-29", 1, 0)]
+        html = g.render_month_groups(entries)
+        self.assertEqual(html.count('<details class="month"'), 2)
+        self.assertIn('data-month="2026-10" open', html)       # свежий месяц раскрыт
+        self.assertNotIn('data-month="2026-09" open', html)
+        self.assertIn("Октябрь 2026", html)
+        self.assertIn("<b>2</b> дня", html)
+        self.assertIn("<b>5</b> из СЗФО", html)
+        self.assertIn('class="szfo"', html)                     # точка дня с СЗФО
+        self.assertIn('class="award"', html)                    # указ без СЗФО
+        self.assertEqual(html.count('<a class="entry'), 4)
+
+    def test_plural(self):
+        self.assertEqual([g._plural(n, "день", "дня", "дней") for n in (1, 2, 5, 11, 21, 22)],
+                         ["день", "дня", "дней", "дней", "день", "дня"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

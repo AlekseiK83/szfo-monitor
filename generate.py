@@ -37,6 +37,16 @@ SESSION.headers.update({"User-Agent": "SZFO-Monitor/1.0 (public monitoring)"})
 REPORTS_DIR = Path("reports")
 REGIONS_DIR = Path("regions")
 INDEX_JSON = REPORTS_DIR / "index.json"
+# Итог прогона для шага уведомлений (не коммитится — см. .gitignore)
+RUN_SUMMARY = Path("run_summary.json")
+
+
+def write_run_summary(processed_dates, failed_dates):
+    try:
+        RUN_SUMMARY.write_text(json.dumps({"processed": processed_dates, "failed": failed_dates},
+                                          ensure_ascii=False), encoding="utf-8")
+    except Exception as e:
+        print(f"  ⚠ run_summary.json не записан: {e}", flush=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -2186,6 +2196,7 @@ def main():
         dates_to_process = compute_missing_dates()
         if not dates_to_process:
             print("═══ Всё догнано: пропущенных дней нет ═══", flush=True)
+            write_run_summary([], [])
             # Всё равно перерендерим index/regions, чтобы отразить любые
             # ручные изменения в reports/
             region_counts = build_region_pages()
@@ -2207,18 +2218,21 @@ def main():
     # ───── Обрабатываем каждую дату отдельно ─────
     processed = 0
     failed = []
+    done_dates = []
     for i, iso_date in enumerate(dates_to_process, 1):
         if len(dates_to_process) > 1:
             print(f"\n─── [{i}/{len(dates_to_process)}] {iso_date} ───", flush=True)
         try:
             process_one_date(iso_date)
             processed += 1
+            done_dates.append(iso_date)
         except Exception as e:
             print(f"✗ Ошибка при обработке {iso_date}: {e}", flush=True)
             traceback.print_exc()
             failed.append(iso_date)
             # Продолжаем со следующей датой — не падаем целиком
 
+    write_run_summary(done_dates, failed)
     if len(dates_to_process) > 1:
         print(f"\n═══ Обработка завершена: успешно {processed}/{len(dates_to_process)} ═══",
               flush=True)

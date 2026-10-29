@@ -120,37 +120,153 @@ def build_messages(summary, mode, base_url, reports_dir=REPORTS_DIR):
     return [m[:TG_LIMIT] for m in messages]
 
 
-def send(token, chat_ids, text):
-    ok = True
+# ── Отчёт о получателях ──
+# Репозиторий публичный, логи Actions видны всем, поэтому chat_id и имена
+# в логе частично скрываются: видно ровно столько, чтобы узнать «своего».
+
+def mask_chat(chat):
+    """«123456789» → «12•••••89», «@szfo_nagrady» → «@sz•••dy»."""
+    c = str(chat)
+    if c.startswith("@"):
+        name = c[1:]
+        return "@" + (name[:2] + "•••" + name[-2:] if len(name) > 5 else name[:1] + "•••")
+    sign = "-" if c.startswith("-") else ""
+    digits = c.lstrip("-")
+    if len(digits) <= 4:
+        return sign + "•" * len(digits)
+    return sign + digits[:2] + "•" * (len(digits) - 4) + digits[-2:]
+
+
+def mask_name(name):
+    """«Алексей» → «Але…», «Наградные указы СЗФО» → «Нагр…»."""
+    name = (name or "").strip()
+    if not name:
+        return ""
+    keep = 3 if len(name) <= 10 else 4
+    return name[:keep] + "…" if len(name) > keep else name[:1] + "…"
+
+
+def chat_kind(chat, info=None):
+    t = (info or {}).get("type")
+    if t:
+        return {"private": "личный чат", "channel": "канал",
+                "group": "группа", "supergroup": "группа"}.get(t, t)
+    c = str(chat)
+    if c.startswith("@"):
+        return "канал"
+    return "группа или канал" if c.startswith("-") else "личный чат"
+
+
+HINTS = [
+    ("chat not found", "получатель не нажал Start в боте или chat_id с ошибкой"),
+    ("bot was blocked", "получатель заблокировал бота"),
+    ("user is deactivated", "аккаунт получателя удалён"),
+    ("bot is not a member", "бот не добавлен в канал/группу"),
+    ("not enough rights", "у бота нет права публиковать сообщения в канале"),
+    ("need administrator rights", "бот должен быть администратором канала"),
+    ("unauthorized", "неверный токен бота (TELEGRAM_BOT_TOKEN)"),
+    ("too many requests", "слишком много сообщений подряд, Telegram попросил подождать"),
+]
+
+
+def explain(desc):
+    d = (desc or "").lower()
+    for key, hint in HINTS:
+        if key in d:
+            return hint
+    return desc or "неизвестная ошибка"
+
+
+def _post(token, method, data):
+    """(ok, result|описание ошибки). Токен в лог не попадает."""
+    try:
+        r = requests.post(f"https://api.telegram.org/bot{token}/{method}", data=data, timeout=30)
+    except requests.RequestException as ex:
+        return False, f"нет связи с Telegram ({type(ex).__name__})"
+    try:
+        body = r.json()
+    except Exception:
+        body = {}
+    if r.status_code == 200 and body.get("ok", True):
+        return True, body.get("result") or {}
+    return False, body.get("description") or f"HTTP {r.status_code}"
+
+
+def recipient_label(chat, info=None):
+    info = info or {}
+    name = info.get("title") or " ".join(
+        x for x in (info.get("first_name"), info.get("last_name")) if x)
+    label = f"{mask_chat(chat)} · {chat_kind(chat, info)}"
+    return label + (f" · {mask_name(name)}" if name else "")
+
+
+def send(token, chat_ids, text, report=None):
+    """Отправляет text каждому получателю. report: dict chat → (ok, info|ошибка),
+    в него складывается результат по каждому чату."""
+    ok_all = True
     for chat in chat_ids:
-        try:
-            r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
-                              data={"chat_id": chat, "text": text, "parse_mode": "HTML",
-                                    "disable_web_page_preview": "true"},
-                              timeout=30)
-            if r.status_code != 200:
-                # описание ошибки от Telegram, без токена
-                try:
-                    desc = r.json().get("description") or f"HTTP {r.status_code}"
-                except Exception:
-                    desc = f"HTTP {r.status_code}"
-                print(f"⚠ Telegram отклонил сообщение для чата {chat}: {desc}", flush=True)
-                ok = False
-        except requests.RequestException as ex:
-            print(f"⚠ Не удалось связаться с Telegram ({type(ex).__name__})", flush=True)
-            ok = False
-    return ok
+        ok, res = _post(token, "sendMessage", {"chat_id": chat, "text": text, "parse_mode": "HTML",
+                                                "disable_web_page_preview": "true"})
+        ok_all &= ok
+        if report is not None:
+            prev = report.get(chat)
+            if prev is None or prev[0]:      # первая ошибка по чату сохраняется
+                report[chat] = (ok, (res.get("chat") if ok and isinstance(res, dict) else res))
+    return ok_all
+
+
+def print_report(report, title="Получатели"):
+    delivered = [c for c, (ok, _) in report.items() if ok]
+    print(f"\n── {title}: {len(report)} в списке, доставлено {len(delivered)}, "
+          f"не доставлено {len(report) - len(delivered)} ──", flush=True)
+    for chat, (ok, info) in report.items():
+        if ok:
+            print(f"  ✓ {recipient_label(chat, info if isinstance(info, dict) else None)} — доставлено",
+                  flush=True)
+        else:
+            print(f"  ✗ {recipient_label(chat)} — не доставлено: {explain(info)}", flush=True)
+
+
+def check_recipients(token, chat_ids, send_test=False):
+    """Проверка списка без рассылки дайджеста: getChat по каждому получателю,
+    по желанию — тестовое сообщение."""
+    ok_bot, me = _post(token, "getMe", {})
+    if not ok_bot:
+        print(f"✗ Бот недоступен: {explain(me)}", flush=True)
+        return {}
+    print(f"Бот: @{me.get('username', '?')}", flush=True)
+    report = {}
+    for chat in chat_ids:
+        ok, res = _post(token, "getChat", {"chat_id": chat})
+        report[chat] = (ok, res)
+    if send_test:
+        text = ("✅ <b>Тестовое сообщение</b>\nВы подписаны на ежедневные сводки "
+                "дайджеста наградных указов СЗФО.")
+        reachable = [c for c, (ok, _) in report.items() if ok]
+        test_report = {}
+        send(token, reachable, text, test_report)
+        for c, val in test_report.items():
+            if not val[0]:
+                report[c] = val
+    print_report(report, "Проверка получателей" + (" (с тестовым сообщением)" if send_test else ""))
+    return report
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--failure", action="store_true", help="сообщить о сбое прогона")
+    ap.add_argument("--check", action="store_true", help="проверить список получателей")
+    ap.add_argument("--test", action="store_true", help="вместе с --check: разослать тестовое сообщение")
     args = ap.parse_args()
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_ids = [c.strip() for c in os.environ.get("TELEGRAM_CHAT_ID", "").split(",") if c.strip()]
     if not token or not chat_ids:
         print("Telegram не настроен (нет TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID) — пропускаю.")
+        return 0
+
+    if args.check:
+        check_recipients(token, chat_ids, send_test=args.test)
         return 0
 
     if args.failure:
@@ -166,8 +282,11 @@ def main():
             print("Новых дней нет — уведомление не нужно.")
             return 0
 
-    sent = sum(send(token, chat_ids, m) for m in messages)
-    print(f"✓ Отправлено сообщений: {sent}/{len(messages)} в {len(chat_ids)} чат(а/ов)")
+    report = {}
+    for m in messages:
+        send(token, chat_ids, m, report)
+    print(f"Сообщений в рассылке: {len(messages)}", flush=True)
+    print_report(report)
     return 0  # уведомления не должны валить прогон
 
 

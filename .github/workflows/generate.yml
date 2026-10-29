@@ -67,3 +67,20 @@ jobs:
             git pull --rebase --autostash -q || true
             git push
           fi
+
+      - name: Уведомление в Telegram
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_MODE: ${{ vars.TELEGRAM_MODE }}
+        run: python notify_telegram.py
+
+      - name: Уведомление о сбое в Telegram
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          pip install -q requests || true
+          python notify_telegram.py --failure || true

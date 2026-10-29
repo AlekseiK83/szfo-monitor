@@ -1198,15 +1198,6 @@
       }
     },
     {
-      "date": "2026-10-27",
-      "stats": {
-        "documents": 0,
-        "awarding": 0,
-        "awardees": 0,
-        "szfo": 0
-      }
-    },
-    {
       "date": "2026-10-23",
       "stats": {
         "documents": 12,
@@ -1214,7 +1205,16 @@
         "awardees": 332,
         "szfo": 19
       }
+    },
+    {
+      "date": "2026-10-27",
+      "stats": {
+        "documents": 0,
+        "awarding": 0,
+        "awardees": 0,
+        "szfo": 0
+      }
     }
   ],
-  "updated_at": "2026-10-29 05:08:48"
+  "updated_at": "2026-10-29 06:24:32"
 }

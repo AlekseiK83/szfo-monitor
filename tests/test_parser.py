@@ -72,7 +72,7 @@ class Test00Setup(unittest.TestCase):
                     "ukaz_580_2026-08-12.txt", "ukaz_597_2026-08-24.txt",
                     "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt",
                     "ukaz_640_2026-09-05_goroda.txt", "ukaz_670_2026-09-19_abzac.txt",
-                    "fio_anomalies_2026.txt"]
+                    "fio_anomalies_2026.txt", "rp_394_2026-10-23_kollektivy.txt"]
         missing = [n for n in expected if not (FIXTURES / n).exists()]
         self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
 
@@ -389,6 +389,23 @@ class TestAuditOctober(Base):
         html = g.render_fio({"kind": "city", "fio": "г. Ухте"})
         self.assertIn("г. Ухте", html)
         self.assertIn("населённый пункт", html)
+
+
+class TestRasporyazhenie394(Base):
+    """Регресс 23.10.2026: «филиала …» не отделялся от предыдущего коллектива."""
+
+    def test_filial_is_separate_collective(self):
+        recs = parse_fixture("rp_394_2026-10-23_kollektivy.txt", "394-рп", "23.10.2026")
+        coll = [r for r in recs if r["kind"] == "collective"]
+        self.assertEqual(len(coll), 3, [c["position_org"][:60] for c in coll])
+        rostov = next(c for c in coll if "РИНХ" in c["position_org"])
+        self.assertNotIn("Мурман", rostov["position_org"])
+        self.assertIsNone(region_of(rostov))
+        murm = next(c for c in coll if "Мурманский арктический" in c["position_org"])
+        self.assertTrue(murm["position_org"].startswith("филиала"))
+        self.assertEqual(region_of(murm), "Мурманская область")
+        self.assertEqual(murm["award"], g.BLAGODARNOST_AWARD)
+        self.check(recs, "Коробцу", "благодарность", None)
 
 
 # ═══════════════════════════════════════════════════════════════════════

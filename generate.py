@@ -1449,6 +1449,32 @@ def render_month_groups(entries):
     return legend + "".join(out)
 
 
+def subscribe_url():
+    """Ссылка на Telegram-канал для кнопки «Подписаться» (переменная репозитория
+    SUBSCRIBE_URL). Принимаются только ссылки Telegram; пусто — кнопки нет."""
+    url = os.environ.get("SUBSCRIBE_URL", "").strip()
+    if url.startswith("@"):
+        url = "https://t.me/" + url[1:]
+    if re.match(r"^https://(?:t\.me|telegram\.me)/[A-Za-z0-9_+/\-]+$", url):
+        return url
+    if url:
+        print(f"  ⚠ SUBSCRIBE_URL не похож на ссылку Telegram — кнопка не показана", flush=True)
+    return ""
+
+
+def render_subscribe_button():
+    url = subscribe_url()
+    if not url:
+        return ""
+    esc = html_module.escape
+    return f'''
+    <a class="subscribe-btn" href="{esc(url)}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.4 4.6 2.9 11.7c-1.3.5-1.2 1.3-.2 1.6l4.7 1.5 1.8 5.6c.2.7.4.9.9.9.4 0 .6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.5c.3-1.3-.5-1.9-1.4-1.6zM9.6 14.4l-.4 4-1.5-4.6 10.6-6.7-8.7 7.3z" fill="currentColor"/></svg>
+      Подписаться на уведомления
+    </a>
+    <div class="subscribe-note">Ежедневная сводка о награждённых из СЗФО — в Telegram</div>'''
+
+
 def render_index_html(index_data, region_counts):
     esc = html_module.escape
     entries = sorted(index_data["reports"], key=lambda x: x["date"], reverse=True)
@@ -1513,6 +1539,14 @@ def render_index_html(index_data, region_counts):
 .hero h1 {{ font-family: Georgia, serif; font-size: 26px; color: #5c1620;
            font-weight: 500; margin-bottom: 6px; }}
 .hero .sub {{ font-size: 14px; color: #6b6b6b; }}
+.subscribe-btn {{ display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
+                  padding: 11px 22px; border-radius: 999px; background: #7d1e2a;
+                  color: white; font-size: 14.5px; font-weight: 500; text-decoration: none;
+                  box-shadow: 0 2px 8px rgba(125,30,42,.25); transition: background .15s, transform .15s; }}
+.subscribe-btn:hover {{ background: #5c1620; transform: translateY(-1px); }}
+.subscribe-btn:focus-visible {{ outline: 2px solid #b8860b; outline-offset: 3px; }}
+.subscribe-btn svg {{ width: 18px; height: 18px; }}
+.subscribe-note {{ font-size: 12.5px; color: #8a8174; margin-top: 8px; }}
 .summary {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
            margin-bottom: 20px; }}
 .entries {{ display: flex; flex-direction: column; gap: 10px; }}
@@ -1609,6 +1643,7 @@ def render_index_html(index_data, region_counts):
     <h1>Мониторинг наградных указов СЗФО</h1>
     <div class="sub">Северо-Западный федеральный округ · 10 регионов ·
                      источник: publication.pravo.gov.ru</div>
+    {render_subscribe_button()}
   </div>
   <div class="summary">
     <div class="stat"><div class="stat-value">{total_all}</div>

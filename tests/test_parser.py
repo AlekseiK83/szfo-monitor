@@ -632,5 +632,24 @@ class TestMonthGroups(unittest.TestCase):
                          ["день", "дня", "дней", "дней", "день", "дня"])
 
 
+class TestSubscribeButton(unittest.TestCase):
+    def html(self, url):
+        import os
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"SUBSCRIBE_URL": url}):
+            return g.render_index_html({"reports": [], "updated_at": ""}, {})
+
+    def test_button_shown_with_channel_link(self):
+        for url in ("https://t.me/szfo_nagrady", "@szfo_nagrady", "https://t.me/+AbC-123_x"):
+            html = self.html(url)
+            self.assertIn("Подписаться на уведомления", html, url)
+            self.assertIn('href="https://t.me/', html)
+
+    def test_no_button_without_or_with_bad_link(self):
+        for url in ("", "https://evil.example.com/x", 'https://t.me/x" onclick="alert(1)'):
+            self.assertNotIn("subscribe-btn\" href", self.html(url), url)
+            self.assertNotIn("Подписаться на уведомления", self.html(url), url)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

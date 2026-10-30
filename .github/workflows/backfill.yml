@@ -53,6 +53,7 @@ jobs:
           DATES: ${{ github.event.inputs.dates }}
           DATE_FROM: ${{ github.event.inputs.date_from }}
           DATE_TO: ${{ github.event.inputs.date_to }}
+          SUBSCRIBE_URL: ${{ vars.SUBSCRIBE_URL }}
         run: |
           if [ -n "$DATES" ]; then
             LIST=$(echo "$DATES" | tr ',;' '  ')

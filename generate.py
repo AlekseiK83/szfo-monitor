@@ -174,13 +174,19 @@ FIO_DASHED = re.compile(
     r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s+([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
     r'\s+(?:[—–]\s+|[(\[{|«"]\s*)(' + PATRONYMIC + r')\b'
 )
+# OCR вставляет тире между фамилией и именем: «МИНАЕВА — Александра Григорьевича - …».
+# Без этого запись приклеивалась к предыдущей. Требуем отчество — для надёжности.
+FIO_DASHED_SURNAME = re.compile(
+    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s*[—–]\s*([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
+    r'\s+(?:[—–]\s+|[(\[{|«"]\s*)?(' + PATRONYMIC + r')\b'
+)
 # «МГИМО Одинцовского филиала…» — аббревиатура + прилагательное, а не Фамилия Имя
 ADJECTIVE_WORD = re.compile(r'(?:ого|его|ский|ской|ская|ское|ских|цкий|цкой|цкая|ного|ной|ный|ная|ное|ных|ых|их)$')
 
 
 def match_fio(line):
     """(fio_raw, остаток строки) или None."""
-    m = FIO_DASHED.match(line)
+    m = FIO_DASHED.match(line) or FIO_DASHED_SURNAME.match(line)
     if m:
         return f"{m.group(1)} {m.group(2)} {m.group(3)}", line[m.end():]
     m = FIO_START.match(line)
@@ -1231,7 +1237,7 @@ def render_report_html(d):
                 regions_html += f'<div class="award-group">' \
                                 f'<div class="award-title">{esc(a["title"])}</div>'
                 for p_ in a["people"]:
-                    pos = (p_.get("position_org") or "")[:260]
+                    pos = (p_.get("position_org") or "")
                     regions_html += f'<div class="awardee">' \
                                     f'{render_fio(p_)}' \
                                     f'<div class="position">{esc(pos)}</div>' \
@@ -1316,7 +1322,7 @@ def render_region_html(region_name, people, all_region_counts):
 
     items_html = ""
     for p in people:
-        pos = (p.get("position_org") or "")[:260]
+        pos = (p.get("position_org") or "")
         iso_date = p["iso_date"]
         display = format_display_date(iso_date)
         items_html += f'''

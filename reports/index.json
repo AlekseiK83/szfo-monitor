@@ -1259,7 +1259,16 @@
         "awardees": 0,
         "szfo": 0
       }
+    },
+    {
+      "date": "2026-11-02",
+      "stats": {
+        "documents": 27,
+        "awarding": 1,
+        "awardees": 138,
+        "szfo": 7
+      }
     }
   ],
-  "updated_at": "2026-11-02 08:44:00"
+  "updated_at": "2026-11-03 10:57:33"
 }

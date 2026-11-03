@@ -169,10 +169,10 @@ FIO_START = re.compile(
 )
 # Отчество (все падежи): Хайдарович-а/-у, Ивановн-а/-е/-у, Ильинична …
 PATRONYMIC = r'[А-ЯЁ][а-яё]+(?:вич|ич)(?:а|у|ем|е)?|[А-ЯЁ][а-яё]+(?:вн|чн)(?:а|ы|е|у|ой)|[А-ЯЁ][а-яё]+\s+(?:оглы|кызы)'
-# OCR вставляет тире между именем и отчеством: «ЗИННУРОВА Ирека — Хайдаровича - …»
+# OCR вставляет тире или скобку перед отчеством: «ЗИННУРОВА Ирека — Хайдаровича», «ПАРХОМУК Татьяне (Сергеевне»
 FIO_DASHED = re.compile(
     r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s+([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
-    r'\s+[—–]\s+(' + PATRONYMIC + r')\b'
+    r'\s+(?:[—–]\s+|[(\[{|«"]\s*)(' + PATRONYMIC + r')\b'
 )
 # «МГИМО Одинцовского филиала…» — аббревиатура + прилагательное, а не Фамилия Имя
 ADJECTIVE_WORD = re.compile(r'(?:ого|его|ский|ской|ская|ское|ских|цкий|цкой|цкая|ного|ной|ный|ная|ное|ных|ых|их)$')
@@ -2199,7 +2199,18 @@ def main():
                              "информацией о том, какой паттерн сработал")
     parser.add_argument("--find-person", metavar="СТРОКА",
                         help="Диагностика: найти по подстроке в ФИО во всех отчётах")
+    parser.add_argument("--needs-run", action="store_true",
+                        help="Только проверить, есть ли необработанные дни (для Actions)")
     args = parser.parse_args()
+
+    if args.needs_run:
+        missing = compute_missing_dates()
+        print("Необработанные дни: " + (", ".join(missing) if missing else "нет"), flush=True)
+        out = os.environ.get("GITHUB_OUTPUT")
+        if out:
+            with open(out, "a", encoding="utf-8") as fh:
+                fh.write(f"needed={'true' if missing else 'false'}\n")
+        return
 
     REPORTS_DIR.mkdir(exist_ok=True)
 

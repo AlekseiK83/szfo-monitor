@@ -59,7 +59,7 @@
       "stats": {
         "documents": 1,
         "awarding": 1,
-        "awardees": 153,
+        "awardees": 154,
         "szfo": 17
       }
     },
@@ -221,7 +221,7 @@
       "stats": {
         "documents": 5,
         "awarding": 2,
-        "awardees": 339,
+        "awardees": 343,
         "szfo": 23
       }
     },
@@ -257,7 +257,7 @@
       "stats": {
         "documents": 5,
         "awarding": 1,
-        "awardees": 248,
+        "awardees": 253,
         "szfo": 14
       }
     },
@@ -455,7 +455,7 @@
       "stats": {
         "documents": 66,
         "awarding": 1,
-        "awardees": 155,
+        "awardees": 156,
         "szfo": 23
       }
     },
@@ -527,7 +527,7 @@
       "stats": {
         "documents": 2,
         "awarding": 1,
-        "awardees": 142,
+        "awardees": 145,
         "szfo": 22
       }
     },
@@ -635,7 +635,7 @@
       "stats": {
         "documents": 12,
         "awarding": 2,
-        "awardees": 427,
+        "awardees": 431,
         "szfo": 36
       }
     },
@@ -743,7 +743,7 @@
       "stats": {
         "documents": 4,
         "awarding": 2,
-        "awardees": 191,
+        "awardees": 193,
         "szfo": 11
       }
     },
@@ -860,7 +860,7 @@
       "stats": {
         "documents": 1,
         "awarding": 1,
-        "awardees": 190,
+        "awardees": 191,
         "szfo": 10
       }
     },
@@ -887,7 +887,7 @@
       "stats": {
         "documents": 2,
         "awarding": 1,
-        "awardees": 97,
+        "awardees": 99,
         "szfo": 5
       }
     },
@@ -950,7 +950,7 @@
       "stats": {
         "documents": 21,
         "awarding": 1,
-        "awardees": 213,
+        "awardees": 214,
         "szfo": 25
       }
     },
@@ -959,8 +959,8 @@
       "stats": {
         "documents": 4,
         "awarding": 1,
-        "awardees": 173,
-        "szfo": 16
+        "awardees": 177,
+        "szfo": 17
       }
     },
     {
@@ -1076,7 +1076,7 @@
       "stats": {
         "documents": 13,
         "awarding": 1,
-        "awardees": 178,
+        "awardees": 181,
         "szfo": 26
       }
     },
@@ -1103,7 +1103,7 @@
       "stats": {
         "documents": 18,
         "awarding": 1,
-        "awardees": 164,
+        "awardees": 168,
         "szfo": 20
       }
     },
@@ -1166,7 +1166,7 @@
       "stats": {
         "documents": 10,
         "awarding": 1,
-        "awardees": 239,
+        "awardees": 241,
         "szfo": 23
       }
     },
@@ -1175,7 +1175,7 @@
       "stats": {
         "documents": 12,
         "awarding": 2,
-        "awardees": 332,
+        "awardees": 339,
         "szfo": 19
       }
     },
@@ -1238,7 +1238,7 @@
       "stats": {
         "documents": 1,
         "awarding": 1,
-        "awardees": 80,
+        "awardees": 81,
         "szfo": 5
       }
     },
@@ -1270,5 +1270,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-03 10:57:33"
+  "updated_at": "2026-11-03 12:59:45"
 }

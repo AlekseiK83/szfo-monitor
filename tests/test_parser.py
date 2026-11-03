@@ -72,7 +72,8 @@ class Test00Setup(unittest.TestCase):
                     "ukaz_580_2026-08-12.txt", "ukaz_597_2026-08-24.txt",
                     "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt",
                     "ukaz_640_2026-09-05_goroda.txt", "ukaz_670_2026-09-19_abzac.txt",
-                    "fio_anomalies_2026.txt", "rp_394_2026-10-23_kollektivy.txt"]
+                    "fio_anomalies_2026.txt", "rp_394_2026-10-23_kollektivy.txt",
+                    "ukaz_705_2026-09-29_tire.txt"]
         missing = [n for n in expected if not (FIXTURES / n).exists()]
         self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
 
@@ -415,6 +416,36 @@ class TestRasporyazhenie394(Base):
         self.assertEqual(region_of(murm), "Мурманская область")
         self.assertEqual(murm["award"], g.BLAGODARNOST_AWARD)
         self.check(recs, "Коробцу", "благодарность", None)
+
+
+class TestDashAfterSurname(Base):
+    """Регресс 29.09 (№ 705): «МИНАЕВА — Александра Григорьевича» склеивался с
+    предыдущей записью, и депутат ЗакС Ленинградской области получал «город Москва»."""
+
+    def test_records_not_glued(self):
+        recs = parse_fixture("ukaz_705_2026-09-29_tire.txt", "705", "29.09.2026")
+        self.assertEqual([r["fio"] for r in recs],
+                         ["Мачинского Сергея Александровича", "Минаева Александра Григорьевича"])
+        mach = self.check(recs, "Мачинского", "II СТЕПЕНИ", "Ленинградская область")
+        self.assertNotIn("Москва", mach["position_org"])
+        self.check(recs, "Минаева", "II СТЕПЕНИ", None)
+
+
+class TestFullPositionShown(unittest.TestCase):
+    def test_long_position_not_truncated(self):
+        # Регресс 22.10: должность Любимцева обрезалась на 260 символах
+        pos = ("ведущему специалисту " + "по обеспечению сохранности объектов " * 8 +
+               '"Кижи", Республика Карелия')
+        p = {"fio": "Любимцеву Александру Юрьевичу", "position_org": pos, "kind": "person",
+             "decree": {"number": "761", "date": "22.10.2026", "eo": "x"}}
+        data = {"date": "2026-10-22", "stats": {"documents": 1, "awarding": 1, "awardees": 1, "szfo": 1},
+                "regions": [{"name": "Республика Карелия", "count": 1,
+                             "awards": [{"title": "ОРДЕНОМ", "people": [p]}]}]}
+        self.assertGreater(len(pos), 260)
+        self.assertIn('&quot;Кижи&quot;, Республика Карелия', g.render_report_html(data))
+        html = g.render_region_html("Республика Карелия", [{**p, "award": "ОРДЕНОМ", "iso_date": "2026-10-22"}],
+                                    {"Республика Карелия": 1})
+        self.assertIn('&quot;Кижи&quot;, Республика Карелия', html)
 
 
 # ═══════════════════════════════════════════════════════════════════════

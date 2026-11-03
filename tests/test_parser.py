@@ -373,6 +373,15 @@ class TestAuditOctober(Base):
         self.assertEqual(rec["fio"], "Зиннурова Ирека Хайдаровича")
         self.assertIn("ОРДЕНОМ ПОЧЕТА", rec["award"])
 
+    def test_bracket_before_patronymic(self):
+        # Регресс 02.11 (№ 415-рп): «ПАРХОМУК Татьяне (Сергеевне - …»
+        text = ("объявить благодарность Президента Российской Федерации:\n"
+                "ПАРХОМУК Татьяне (Сергеевне - главному специалисту\n"
+                "сектора отдела, Воронежская область\n")
+        recs = g.parse_awardees(text, {"number": "415-рп", "date": "02.11.2026", "eo": "x"})
+        self.assertEqual([r["fio"] for r in recs], ["Пархомук Татьяне Сергеевне"])
+        self.assertTrue(recs[0]["position_org"].startswith("главному специалисту"))
+
     def test_abbreviation_line_is_not_fio(self):
         recs = parse_fixture("fio_anomalies_2026.txt", "597", "24.08.2026")
         self.assertFalse([r for r in recs if r["fio"].startswith("Мгимо")])
@@ -604,6 +613,19 @@ class TestMissingDates(unittest.TestCase):
     def test_limit(self):
         self.make_index([self.day(30)])
         self.assertEqual(len(g.compute_missing_dates(max_dates=14)), 14)
+
+    def test_needs_run_flag_for_actions(self):
+        import io, os, contextlib
+        from unittest import mock
+        out_file = Path(self.tmp.name) / "gh_output"
+        for days, expected in ((range(0, 5), "needed=false"), ([3], "needed=true")):
+            self.make_index([self.day(n) for n in days])
+            out_file.write_text("", encoding="utf-8")
+            with mock.patch.dict(os.environ, {"GITHUB_OUTPUT": str(out_file)}), \
+                 mock.patch("sys.argv", ["generate.py", "--needs-run"]), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                g.main()
+            self.assertEqual(out_file.read_text(encoding="utf-8").strip(), expected)
 
     def test_empty_or_broken_index(self):
         g.INDEX_JSON.write_text("не json", encoding="utf-8")

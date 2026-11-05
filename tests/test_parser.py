@@ -614,7 +614,7 @@ class TestMissingDates(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self._orig = g.INDEX_JSON
         g.INDEX_JSON = Path(self.tmp.name) / "index.json"
-        self.yest = date.today() - timedelta(days=1)
+        self.yest = g.msk_today() - timedelta(days=1)
 
     def tearDown(self):
         g.INDEX_JSON = self._orig
@@ -657,6 +657,40 @@ class TestMissingDates(unittest.TestCase):
                  contextlib.redirect_stdout(io.StringIO()):
                 g.main()
             self.assertEqual(out_file.read_text(encoding="utf-8").strip(), expected)
+
+    def test_yesterday_is_moscow_time(self):
+        from datetime import datetime as dt
+        from unittest import mock
+        # 22:30 UTC 4 ноября = 01:30 МСК 5 ноября → «вчера» = 4 ноября
+        with mock.patch.object(g, "datetime") as fake:
+            fake.utcnow.return_value = dt(2026, 11, 4, 22, 30)
+            self.assertEqual(g.msk_today().isoformat(), "2026-11-05")
+            g.INDEX_JSON.write_text(self.json.dumps({"reports": [
+                {"date": "2026-11-03", "stats": {"documents": 0, "awarding": 0, "awardees": 0, "szfo": 0}}]}),
+                encoding="utf-8")
+            self.assertEqual(g.compute_missing_dates(), ["2026-11-04"])
+
+    def test_evening_run_waits_for_midnight(self):
+        from datetime import datetime as dt
+        from unittest import mock
+        self.make_index(["2026-11-03"])
+        slept = []
+        # 19:30 МСК 4 ноября: 4 ноября ещё идёт → ждём до 00:12, потом обрабатываем 4 ноября
+        times = [dt(2026, 11, 4, 16, 30)] + [dt(2026, 11, 4, 21, 12)] * 5
+        with mock.patch.object(g, "datetime", wraps=dt) as fake:
+            fake.utcnow.side_effect = times
+            fake.combine = dt.combine; fake.min = dt.min
+            self.assertTrue(g.wait_for_midnight(sleep=slept.append))
+        self.assertEqual(slept, [4 * 3600 + 42 * 60])
+
+    def test_daytime_run_does_not_wait(self):
+        from datetime import datetime as dt
+        from unittest import mock
+        slept = []
+        with mock.patch.object(g, "datetime", wraps=dt) as fake:
+            fake.utcnow.return_value = dt(2026, 11, 4, 10, 0)     # 13:00 МСК
+            self.assertFalse(g.wait_for_midnight(sleep=slept.append))
+        self.assertEqual(slept, [])
 
     def test_empty_or_broken_index(self):
         g.INDEX_JSON.write_text("не json", encoding="utf-8")

@@ -2146,6 +2146,46 @@ def process_one_date(iso_date):
     return result["stats"]
 
 
+def msk_today():
+    """Сегодняшняя дата по Москве (UTC+3, без перехода на летнее время).
+    Раннеры GitHub живут в UTC: в 00:30 МСК там ещё вчера, и «вчера» по UTC
+    было бы позавчера по Москве."""
+    return (datetime.utcnow() + timedelta(hours=3)).date()
+
+
+WAIT_FROM_HOUR_MSK = 19      # вечерний запуск с этого часа ждёт полуночи
+WAIT_UNTIL = (0, 12)          # …и просыпается в 00:12 МСК
+
+
+def _gh_output(**values):
+    out = os.environ.get("GITHUB_OUTPUT")
+    if out:
+        with open(out, "a", encoding="utf-8") as fh:
+            for k, v in values.items():
+                fh.write(f"{k}={v}\n")
+
+
+def wait_for_midnight(sleep=time.sleep):
+    """Вечерний запуск (после 19:00 МСК): GitHub охотнее выполняет расписание
+    вечером, чем утром. Запуск ждёт 00:12 МСК и сразу обрабатывает только что
+    закончившийся день. Возвращает True, если после ожидания есть что обработать."""
+    now = datetime.utcnow() + timedelta(hours=3)
+    if now.hour < WAIT_FROM_HOUR_MSK:
+        print(f"Сейчас {now:%H:%M} МСК — ждать полуночи не нужно.", flush=True)
+        _gh_output(needed="false")
+        return False
+    wake = datetime.combine(now.date() + timedelta(days=1), datetime.min.time()).replace(
+        hour=WAIT_UNTIL[0], minute=WAIT_UNTIL[1])
+    seconds = int((wake - now).total_seconds())
+    print(f"Сейчас {now:%H:%M} МСК. Жду до {wake:%H:%M} МСК ({seconds // 60} мин), "
+          f"чтобы сразу обработать сегодняшний день.", flush=True)
+    sleep(seconds)
+    missing = compute_missing_dates()
+    print("После ожидания необработанные дни: " + (", ".join(missing) if missing else "нет"), flush=True)
+    _gh_output(needed="true" if missing else "false")
+    return bool(missing)
+
+
 def compute_missing_dates(max_dates=14):
     """Возвращает список ISO-дат, которые надо обработать: все пропущенные
     от (последняя_в_index + 1) до вчерашней включительно. Пустой список,
@@ -2153,7 +2193,7 @@ def compute_missing_dates(max_dates=14):
 
     Ограничение max_dates защищает от очень долгих прогонов, если репозиторий
     молчал недели. За 2 суток дообработается всё (по 14 в день)."""
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = msk_today() - timedelta(days=1)
 
     if not INDEX_JSON.exists():
         return [yesterday.isoformat()]
@@ -2207,15 +2247,18 @@ def main():
                         help="Диагностика: найти по подстроке в ФИО во всех отчётах")
     parser.add_argument("--needs-run", action="store_true",
                         help="Только проверить, есть ли необработанные дни (для Actions)")
+    parser.add_argument("--wait-midnight", action="store_true",
+                        help="Вечерний запуск: дождаться полуночи по Москве (для Actions)")
     args = parser.parse_args()
+
+    if args.wait_midnight:
+        wait_for_midnight()
+        return
 
     if args.needs_run:
         missing = compute_missing_dates()
         print("Необработанные дни: " + (", ".join(missing) if missing else "нет"), flush=True)
-        out = os.environ.get("GITHUB_OUTPUT")
-        if out:
-            with open(out, "a", encoding="utf-8") as fh:
-                fh.write(f"needed={'true' if missing else 'false'}\n")
+        _gh_output(needed="true" if missing else "false")
         return
 
     REPORTS_DIR.mkdir(exist_ok=True)

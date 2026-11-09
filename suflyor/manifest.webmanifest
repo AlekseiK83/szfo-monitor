@@ -1,0 +1,14 @@
+{
+  "name": "Суфлёр — разбор выступлений",
+  "short_name": "Суфлёр",
+  "description": "Запись, расшифровка и разбор презентаций о зарплатном проекте",
+  "lang": "ru",
+  "start_url": "./#new",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1f4",
+  "theme_color": "#17202b",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

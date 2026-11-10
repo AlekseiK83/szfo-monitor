@@ -330,6 +330,16 @@ DEGREE_FIX = {"Г": "I", "П": "II", "Ш": "III", "1": "I", "11": "II", "111": "
 AWARD_DEGREE = re.compile(r'^(?:[IVXLІ1]{1,5}|Г|П|Ш|ГУ|1У|ІУ|IУ|У)\s+(?:СТЕПЕНИ|ЛЕТ)\s*$')
 
 
+# OCR читает римские цифры как буквы и в названиях организаций:
+# «университет императрицы Екатерины П» → «Екатерины II». Только одиночные «П»/«Ш»
+# без точки после слова: инициалы («имени П.М.Спирихина») всегда с точкой.
+_ROMAN_IN_TEXT = re.compile(r'(?<=[А-Яа-яЁё][\s])([ПШ])(?=[\s"»“”,;:)]|$)')
+
+
+def fix_ocr_roman(text):
+    return _ROMAN_IN_TEXT.sub(lambda m: {"П": "II", "Ш": "III"}[m.group(1)], text)
+
+
 def normalize_award(title):
     """Единое написание награды: пробел перед кавычкой, римские цифры степени."""
     t = re.sub(r'\s+', ' ', title).strip()
@@ -369,8 +379,8 @@ def parse_awardees(raw_text, decree_ref):
         if not cur_rec or not cur_award:
             cur_rec = None
             return
-        cur_rec["position_org"] = re.sub(r"^[\s\-—–,]+", "",
-                                         trim_by_markers(cur_rec["position_org"]))
+        cur_rec["position_org"] = fix_ocr_roman(re.sub(r"^[\s\-—–,]+", "",
+                                         trim_by_markers(cur_rec["position_org"])))
         key = (cur_rec["fio"].lower(), cur_award.lower())
         if cur_rec["kind"] == "collective":
             key = key + (cur_rec["position_org"][:120].lower(),)

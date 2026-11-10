@@ -54,14 +54,22 @@ def write_run_summary(processed_dates, failed_dates):
 # ═══════════════════════════════════════════════════════════════════════
 AWARDING_PATTERNS = [
     re.compile(r"о\s+награждении", re.IGNORECASE),
-    re.compile(r"о\s+присвоении\s+поч[её]тного\s+звания", re.IGNORECASE),
+    # «О присвоении почетного звания…» и «О присвоении звания Героя…»
+    re.compile(r"о\s+присвоении\s+(?:поч[её]тн\w+\s+)?звани", re.IGNORECASE),
     re.compile(r"об\s+объявлении\s+благодарности", re.IGNORECASE),
     re.compile(r"о\s+поощрении", re.IGNORECASE),
 ]
 
 
+# Не наградные, хотя содержат «о поощрении»: законы о ратификации соглашений
+# «о поощрении и взаимной защите инвестиций» (№ 191-ФЗ от 26.06.2026)
+NOT_AWARDING = re.compile(r"федеральн\w*\s+закон|ратификац|защит\w*\s+инвестиц", re.IGNORECASE)
+
+
 def is_awarding(doc):
     name = doc.get("complexName") or doc.get("name") or doc.get("title") or ""
+    if NOT_AWARDING.search(name):
+        return False
     return any(p.search(name) for p in AWARDING_PATTERNS)
 
 
@@ -117,7 +125,9 @@ def ocr_pdf(pdf_bytes):
 # ПАРСЕР НАГРАЖДЁННЫХ
 # ═══════════════════════════════════════════════════════════════════════
 AWARD_KW = re.compile(
-    r'^\s*(ОРДЕНОМ|МЕДАЛЬЮ|ЗНАКОМ|ЗВАНИЕМ|ПОЧЁТНЫМ\s+ЗВАНИЕМ|ПОЧЕТНЫМ\s+ЗВАНИЕМ|БЛАГОДАРНОСТЬ)'
+    r'^\s*(ОРДЕНОМ|МЕДАЛЬЮ|ЗНАКОМ|ЗВАНИЕМ|ПОЧЁТНЫМ\s+ЗВАНИЕМ|ПОЧЕТНЫМ\s+ЗВАНИЕМ|БЛАГОДАРНОСТЬ'
+    # Высшие звания печатаются без кавычек: «ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ»
+    r'|ГЕРОЯ\s+(?:ТРУДА\s+)?РОССИЙСКОЙ\s+ФЕДЕРАЦИИ)'
     r'[А-ЯЁ\s"«»,\-.№()]{0,200}\s*$'
 )
 AWARD_QT = re.compile(r'^\s*[«"„][А-ЯЁ ,\-.№()IVX]{5,}[»"“]\s*$')
@@ -132,8 +142,14 @@ AWARD_KEYWORDS_QUOTED = re.compile(
     r'|ЗА\s+БЕЗУПРЕЧНУЮ|ЗА\s+БЛАГОДЕЯНИЕ|ЗА\s+НАСТАВНИЧЕСТВО'
     r'|ЗА\s+РАЗВИТИЕ|ЗА\s+ВЕРНОСТЬ|ЗА\s+БОЕВЫЕ'
     r'|ПУШКИНА|ЛУКИ\s+КРЫМСКОГО|ПИРОГОВА|АЛЕКСАНДРА\s+НЕВСКОГО|ДРУЖБЫ'
-    r'|СЛАВА|ОТЕЧЕСТВОМ'
+    r'|СЛАВА|ОТЕЧЕСТВОМ|Л[ЕЁ]ТЧИК-КОСМОНАВТ'
 )
+
+
+def has_award_keyword(text):
+    """Есть ли признак звания; OCR рвёт слова пробелом: «ЗАСЛУ ЖЕННЫЙ»."""
+    return bool(AWARD_KEYWORDS_QUOTED.search(text) or
+                AWARD_KEYWORDS_QUOTED.search(re.sub(r"\s+", "", text)))
 
 # Splitter общего вида (для указов): «Присвоить …:», «Наградить …:»,
 # «За [что-то] наградить/присвоить/объявить [что-то]». Просто сбрасывает
@@ -177,8 +193,12 @@ FIO_DASHED = re.compile(
 # OCR вставляет тире между фамилией и именем: «МИНАЕВА — Александра Григорьевича - …».
 # Без этого запись приклеивалась к предыдущей. Требуем отчество — для надёжности.
 FIO_DASHED_SURNAME = re.compile(
-    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s*[—–]\s*([А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?)'
+    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s*[—–]\s*([А-ЯЁ][а-яё]+(?:-[А-ЯЁа-яё][а-яё]+)?)'
     r'\s+(?:[—–]\s+|[(\[{|«"]\s*)?(' + PATRONYMIC + r')\b'
+)
+# …и без отчества, но тогда сразу за именем обязателен разделитель « - »
+FIO_DASHED_NO_PATR = re.compile(
+    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s*[—–]\s*([А-ЯЁ][а-яё]+(?:-[А-ЯЁа-яё][а-яё]+)?)(?=\s+[-—–]\s)'
 )
 # «МГИМО Одинцовского филиала…» — аббревиатура + прилагательное, а не Фамилия Имя
 ADJECTIVE_WORD = re.compile(r'(?:ого|его|ский|ской|ская|ское|ских|цкий|цкой|цкая|ного|ной|ный|ная|ное|ных|ых|их)$')
@@ -189,6 +209,9 @@ def match_fio(line):
     m = FIO_DASHED.match(line) or FIO_DASHED_SURNAME.match(line)
     if m:
         return f"{m.group(1)} {m.group(2)} {m.group(3)}", line[m.end():]
+    m = FIO_DASHED_NO_PATR.match(line)
+    if m:
+        return f"{m.group(1)} {m.group(2)}", line[m.end():]
     m = FIO_START.match(line)
     if not m:
         return None
@@ -278,7 +301,7 @@ def preprocess_multiline_award_headers(text):
     )
     def collapse(m):
         content = re.sub(r'\s+', ' ', m.group(2)).strip()
-        if not AWARD_KEYWORDS_QUOTED.search(content):
+        if not has_award_keyword(content):
             return m.group(0)
         return m.group(1) + content + m.group(3)
     return pattern.sub(collapse, text)
@@ -340,9 +363,39 @@ def fix_ocr_roman(text):
     return _ROMAN_IN_TEXT.sub(lambda m: {"П": "II", "Ш": "III"}[m.group(1)], text)
 
 
+# Строка степени/срока под заголовком награды, в том числе искажённая OCR:
+# «П СТЕПЕНИ», «ГСТЕПЕНИ», «ПП СТЕПЕНИ», «П СТЕНЕНИ», «{Г СТЕПЕНИ», «ХХХ ЛЕТ», «СЛЕТ»
+DEGREE_LINE = re.compile(r'^[{(\[|]?\s*([A-Za-zА-ЯЁ0-9]{1,4})\s*(СТЕ[ПН]ЕНИ|ЛЕТ)\.?$')
+SERVICE_YEARS = {"X", "XV", "XX", "XXV", "XXX"}       # знак «За безупречную службу»
+TWO_DEGREE_AWARDS = re.compile(r'МЕДАЛЬЮ\s+ОРДЕНА|МЕДАЛЬЮ\s+"?ЗА\s+ХРАБРОСТЬ')
+
+
+def resolve_degree(award, token, word):
+    """Текст степени/срока для заголовка награды. Где искажение OCR нельзя
+    расшифровать однозначно — честная пометка вместо догадки."""
+    if word == "ЛЕТ":
+        years = token.translate(str.maketrans("ХхУуІ1Г", "XXVVIII"))
+        return f"{years} ЛЕТ" if years in SERVICE_YEARS else "(срок не распознан — см. PDF)"
+    if token in DEGREE_FIX:
+        return f"{DEGREE_FIX[token]} СТЕПЕНИ"
+    if token in ("I", "II", "III", "IV"):
+        return f"{token} СТЕПЕНИ"
+    # У медали ордена «За заслуги перед Отечеством» и медали «За храбрость»
+    # только I и II степени: «ПП», «ИП», «И» — II; «Т», «ТГ», «Г» — I
+    if TWO_DEGREE_AWARDS.search(award):
+        if re.search(r"[ПИ]", token):
+            return "II СТЕПЕНИ"
+        if re.fullmatch(r"[ТГIl1]+", token):
+            return "I СТЕПЕНИ"
+    return "(степень не распознана — см. PDF)"
+
+
 def normalize_award(title):
     """Единое написание награды: пробел перед кавычкой, римские цифры степени."""
     t = re.sub(r'\s+', ' ', title).strip()
+    if re.match(r'^ГЕРОЯ\s', t):
+        t = "Звание " + t   # «Звание ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ»
+    t = re.sub(r'ЗАСЛУ\s+ЖЕНН', 'ЗАСЛУЖЕНН', t)
     # только открывающая кавычка, прилипшая к слову: ОРДЕНА"ЗА → ОРДЕНА "ЗА
     t = re.sub(r'([А-ЯЁ])(["«„])(?=[А-ЯЁ])', r'\1 \2', t)
     return re.sub(r'(?<![А-ЯЁIVX])(ГУ|1У|ІУ|IУ|[ГПШУ]|11?1?|І{1,3})\s+(СТЕПЕНИ)\b',
@@ -413,7 +466,7 @@ def parse_awardees(raw_text, decree_ref):
     def is_award_header(line):
         if AWARD_QT.match(line):
             content = re.sub(r'^[«"„]|[»"“]$', "", line).strip()
-            return bool(AWARD_KEYWORDS_QUOTED.search(content))
+            return has_award_keyword(content)
         return bool(AWARD_KW.match(line))
 
     for page, line in lines:
@@ -455,9 +508,16 @@ def parse_awardees(raw_text, decree_ref):
             continue
 
         # ── «II СТЕПЕНИ» / «XXX ЛЕТ» — продолжение заголовка награды ──
-        if cur_rec is None and cur_award and AWARD_DEGREE.match(line):
-            num, rest_ = line.strip().split(None, 1)
-            cur_award = f"{cur_award} {DEGREE_FIX.get(num, num)} {rest_}"
+        if cur_rec is None and cur_award and DEGREE_LINE.match(line):
+            dm = DEGREE_LINE.match(line)
+            cur_award = f"{cur_award} {resolve_degree(cur_award, dm.group(1), dm.group(2))}"
+            continue
+
+        # ── Вторая строка заголовка с незакрытой кавычкой:
+        #    МЕДАЛЬЮ "ЗА ОТЛИЧИЕ В ОХРАНЕ / ОБЩЕСТВЕННОГО ПОРЯДКА" ──
+        if (cur_rec is None and cur_award and len(re.findall(r'["«»„“]', cur_award)) % 2 == 1
+                and re.fullmatch(r'[А-ЯЁ\s\-,.()№"«»„“]+', line)):
+            cur_award = f"{cur_award} {line.strip()}"
             continue
 
         # ── Физическое лицо ──

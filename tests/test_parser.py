@@ -73,7 +73,7 @@ class Test00Setup(unittest.TestCase):
                     "ukaz_667_2026-09-18.txt", "ukaz_736_2026-10-15.txt",
                     "ukaz_640_2026-09-05_goroda.txt", "ukaz_670_2026-09-19_abzac.txt",
                     "fio_anomalies_2026.txt", "rp_394_2026-10-23_kollektivy.txt",
-                    "ukaz_705_2026-09-29_tire.txt"]
+                    "ukaz_705_2026-09-29_tire.txt", "geroi_2026.txt"]
         missing = [n for n in expected if not (FIXTURES / n).exists()]
         self.assertFalse(missing, f"Нет фикстур в tests/fixtures/: {missing}")
 
@@ -446,6 +446,93 @@ class TestFullPositionShown(unittest.TestCase):
         html = g.render_region_html("Республика Карелия", [{**p, "award": "ОРДЕНОМ", "iso_date": "2026-10-22"}],
                                     {"Республика Карелия": 1})
         self.assertIn('&quot;Кижи&quot;, Республика Карелия', html)
+
+
+class TestHeroTitles(Base):
+    """Регресс 10.11: «ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ» (без кавычек) не считалось
+    наградой — Эйфман, Костин, Зубков (все — Санкт-Петербург) терялись целиком."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.recs = parse_fixture("geroi_2026.txt", "476", "09.07.2026")
+
+    def test_hero_of_labour_spb(self):
+        self.check(self.recs, "Эйфману", "Звание ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ", SPB)
+        self.check(self.recs, "Костину", "Звание ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ", SPB)
+
+    def test_hero_of_russia(self):
+        rec = self.check(self.recs, "Пескову", "Звание ГЕРОЯ РОССИЙСКОЙ ФЕДЕРАЦИИ", None)
+        self.assertNotIn("ТРУДА", rec["award"])
+
+    def test_dash_without_patronymic(self):
+        rec = self.check(self.recs, "Калимуллина Рафика", "ОРДЕНОМ ПОЧЕТА", None)
+        self.assertTrue(rec["position_org"].startswith("испытателя"), rec["position_org"])
+
+    def test_double_name_with_dash(self):
+        text = "ОРДЕНОМ ПОЧЕТА\nМОНГУША —Хонук-оола  Доржуевича  - председателя Совета, Республика Тыва\n"
+        (rec,) = g.parse_awardees(text, {"number": "736", "date": "15.10.2026", "eo": "x"})
+        self.assertEqual(rec["fio"], "Монгуша Хонук-оола Доржуевича")
+
+    def test_awarding_classifier(self):
+        yes = ['Указ "О присвоении звания Героя Российской Федерации"',
+               'Указ "О награждении государственными наградами Российской Федерации"',
+               'Распоряжение "О поощрении"', 'Указ "О присвоении почетного звания"']
+        no = ['Федеральный закон № 191-ФЗ "О ратификации Соглашения ... о поощрении и взаимной защите инвестиций"',
+              'Указ "О Совете при Президенте Российской Федерации"']
+        for name in yes:
+            self.assertTrue(g.is_awarding({"complexName": name}), name)
+        for name in no:
+            self.assertFalse(g.is_awarding({"complexName": name}), name)
+
+
+class TestDegreesAndHeaders(unittest.TestCase):
+    """Аудит 10.11: искажённые OCR степени, сроки службы, перенос заголовка."""
+    MED = 'МЕДАЛЬЮ ОРДЕНА "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ"'
+    ORD = 'ОРДЕНОМ "ЗА ЗАСЛУГИ ПЕРЕД ОТЕЧЕСТВОМ"'
+    ZNAK = 'ЗНАКОМ ОТЛИЧИЯ "ЗА БЕЗУПРЕЧНУЮ СЛУЖБУ"'
+
+    def award_of(self, header, degree_line):
+        text = f"{header}\n{degree_line}\nИВАНОВА Ивана Ивановича - директора, город Москва\n"
+        (rec,) = g.parse_awardees(text, {"number": "1", "date": "01.01.2026", "eo": "x"})
+        return rec["award"]
+
+    def test_medal_degrees(self):
+        for line, deg in [("П СТЕПЕНИ", "II"), ("ПП СТЕПЕНИ", "II"), ("ИП СТЕПЕНИ", "II"),
+                          ("И СТЕПЕНИ.", "II"), ("П СТЕНЕНИ", "II"), ("Г СТЕПЕНИ", "I"),
+                          ("ГСТЕПЕНИ", "I"), ("ТСТЕПЕНИ", "I"), ("ТГ СТЕПЕНИ", "I"), ("{Г СТЕПЕНИ", "I")]:
+            with self.subTest(line=line):
+                self.assertEqual(self.award_of(self.MED, line), f"{self.MED} {deg} СТЕПЕНИ")
+
+    def test_order_degrees(self):
+        self.assertEqual(self.award_of(self.ORD, "ГУ СТЕПЕНИ"), f"{self.ORD} IV СТЕПЕНИ")
+        self.assertEqual(self.award_of(self.ORD, "Ш СТЕПЕНИ"), f"{self.ORD} III СТЕПЕНИ")
+        # у ордена четыре степени — «ТГ» однозначно не расшифровать, не угадываем
+        self.assertIn("степень не распознана", self.award_of(self.ORD, "ТГ СТЕПЕНИ"))
+
+    def test_service_years(self):
+        self.assertEqual(self.award_of(self.ZNAK, "ХХХ ЛЕТ"), f"{self.ZNAK} XXX ЛЕТ")   # русские «Х»
+        self.assertEqual(self.award_of(self.ZNAK, "ХХУ ЛЕТ"), f"{self.ZNAK} XXV ЛЕТ")
+        self.assertEqual(self.award_of(self.ZNAK, "ХХ ЛЕТ"), f"{self.ZNAK} XX ЛЕТ")
+        self.assertIn("срок не распознан", self.award_of(self.ZNAK, "СЛЕТ"))
+
+    def test_header_continues_on_next_line(self):
+        text = ('МЕДАЛЬЮ "ЗА ОТЛИЧИЕ В ОХРАНЕ\nОБЩЕСТВЕННОГО ПОРЯДКА"\n'
+                "ЯЛУНИНА Алексея Владимировича - руководителя аппарата, город Москва\n")
+        (rec,) = g.parse_awardees(text, {"number": "1", "date": "01.01.2026", "eo": "x"})
+        self.assertEqual(rec["award"], 'МЕДАЛЬЮ "ЗА ОТЛИЧИЕ В ОХРАНЕ ОБЩЕСТВЕННОГО ПОРЯДКА"')
+
+    def test_split_word_and_cosmonaut(self):
+        text = ('"ЗАСЛУЖЕННЫЙ ВРАЧ РОССИЙСКОЙ ФЕДЕРАЦИИ"\n'
+                "ПЕТРОВУ Петру Петровичу - врачу, город Москва\n"
+                '"ЗАСЛУ ЖЕННЫЙ ДЕЯТЕЛЬ НАУКИ\nРОССИЙСКОЙ ФЕДЕРАЦИИ"\n'
+                "ЗАЛЕТАЕВУ Дмитрию Владимировичу - доктору биологических наук, город Москва\n"
+                "Присвоить почетное звание\n"
+                '"ЛЕТЧИК-КОСМОНАВТ РОССИЙСКОЙ ФЕДЕРАЦИИ"\n'
+                "ПЕСКОВУ Кириллу Александровичу - космонавту-испытателю, Московская область\n")
+        recs = {r["fio"].split()[0]: r["award"] for r in
+                g.parse_awardees(text, {"number": "1", "date": "01.01.2026", "eo": "x"})}
+        self.assertEqual(recs["Залетаеву"], "ЗАСЛУЖЕННЫЙ ДЕЯТЕЛЬ НАУКИ РОССИЙСКОЙ ФЕДЕРАЦИИ")
+        self.assertEqual(recs["Пескову"], "ЛЕТЧИК-КОСМОНАВТ РОССИЙСКОЙ ФЕДЕРАЦИИ")
 
 
 # ═══════════════════════════════════════════════════════════════════════

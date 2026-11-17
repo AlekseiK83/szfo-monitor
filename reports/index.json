@@ -1166,7 +1166,7 @@
       "stats": {
         "documents": 10,
         "awarding": 1,
-        "awardees": 241,
+        "awardees": 240,
         "szfo": 23
       }
     },
@@ -1175,7 +1175,7 @@
       "stats": {
         "documents": 12,
         "awarding": 2,
-        "awardees": 339,
+        "awardees": 338,
         "szfo": 19
       }
     },
@@ -1396,5 +1396,5 @@
       }
     }
   ],
-  "updated_at": "2026-11-16 21:12:23"
+  "updated_at": "2026-11-17 05:19:36"
 }

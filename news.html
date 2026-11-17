@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
+<title>Назначения и звания в СЗФО — мониторинг новостей</title>
+<style>
+
+:root {
+  color-scheme: light dark;
+  --bg: #f7f3ec; --card: #ffffff; --soft: #faf7f1; --line: #ebe4d6;
+  --ink: #1d1a17; --muted: #6f685f; --faint: #9c9488;
+  --accent: #7d1e2a; --accent-deep: #5c1620; --on-accent: #ffffff;
+  --gold: #b08a3e; --gold-ink: #8a6a2a; --gold-soft: rgba(176,138,62,.14);
+  --dot-empty: #ebe4d6; --dot-award: #d6b263; --btn: #7d1e2a; --btn-hover: #5c1620;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15120f; --card: #1d1915; --soft: #231e19; --line: #322b24;
+    --ink: #ece6dc; --muted: #a8a094; --faint: #7d756a;
+    --accent: #e0969a; --accent-deep: #f0c4c0; --on-accent: #1d1915;
+    --gold: #c9a258; --gold-ink: #d4b06a; --gold-soft: rgba(201,162,88,.16);
+    --dot-empty: #322b24; --dot-award: #a8853c; --btn: #9a3040; --btn-hover: #b03a4b;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink);
+       font-size: 15px; line-height: 1.55; min-height: 100vh;
+       -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+.shell { max-width: 880px; margin: 0 auto; padding: 40px 20px 72px; }
+.nav { margin-bottom: 22px; font-size: 14px; }
+.nav a { color: var(--muted); text-decoration: none; transition: color .15s; }
+.nav a:hover { color: var(--accent); }
+
+.report { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 52px 60px 40px; }
+.report-head { text-align: center; margin-bottom: 30px; }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .14em;
+           text-transform: uppercase; color: var(--gold-ink); margin-bottom: 12px; }
+.report-head h1 { font-family: var(--serif); font-size: 30px; font-weight: 400;
+                  line-height: 1.2; color: var(--accent-deep); }
+.period { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.rule { position: relative; width: 64px; height: 1px; background: var(--gold);
+        margin: 24px auto 0; }
+.rule::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+               background: var(--card); border: 1px solid var(--gold);
+               transform: translate(-50%, -50%) rotate(45deg); }
+
+.report-stats { display: flex; margin-bottom: 34px;
+                border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { flex: 1; text-align: center; padding: 18px 10px; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat-value { font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--accent);
+              font-variant-numeric: lining-nums tabular-nums; }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+              letter-spacing: .08em; margin-top: 8px; }
+
+.region-block { margin-bottom: 36px; }
+.region-header { display: flex; align-items: baseline; gap: 12px; padding-bottom: 8px;
+                 border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.region-header h2,
+.region-header a.region-link { font-family: var(--serif); font-size: 21px; font-weight: 400;
+                               color: var(--accent-deep); text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { color: var(--accent); }
+.region-header a.region-link::after { content: ""; display: inline-block; width: 8px; height: 8px;
+      margin-left: 10px; vertical-align: 3px; border-top: 1.5px solid var(--gold);
+      border-right: 1.5px solid var(--gold); transform: rotate(45deg); }
+.region-header .count { font-size: 12px; color: var(--accent); background: var(--gold-soft);
+                        padding: 1px 9px; border-radius: 999px;
+                        font-variant-numeric: tabular-nums; }
+.award-group { margin-top: 18px; }
+.award-title { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; line-height: 1.45;
+               color: var(--gold-ink); text-transform: uppercase; margin-bottom: 2px; }
+.awardee { padding: 10px 0 11px; border-bottom: 1px solid var(--line); }
+.awardee:last-child { border-bottom: none; }
+.fio { font-weight: 600; font-size: 15.5px; color: var(--ink); }
+.position { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.decree { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.source-link { color: var(--accent); text-decoration: none; white-space: nowrap;
+               border-bottom: 1px solid var(--gold-soft); transition: border-color .15s; }
+.source-link:hover { border-bottom-color: var(--accent); }
+.kind-badge { display: inline-block; margin-left: 6px; padding: 1px 8px;
+              font-size: 10.5px; font-weight: 500; color: var(--gold-ink);
+              background: var(--gold-soft); border-radius: 999px; vertical-align: 2px; }
+
+.no-results { text-align: center; padding: 36px 20px 44px; color: var(--muted);
+              font-family: var(--serif); font-size: 17px; }
+.report-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line);
+                 text-align: center; font-size: 12px; line-height: 1.7; color: var(--faint); }
+.report-footer a { color: var(--muted); }
+
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+              margin: -8px 0 26px; }
+.filter-bar .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                            letter-spacing: .08em; padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer;
+              border: 1px solid var(--line); background: var(--card); color: var(--ink);
+              border-radius: 999px; transition: border-color .15s, background .15s; }
+.filter-btn:hover { border-color: var(--gold); }
+.filter-btn.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.filter-btn .badge { margin-left: 6px; color: var(--faint); font-size: 12px;
+                     font-variant-numeric: tabular-nums; }
+.filter-btn.active .badge { color: var(--on-accent); opacity: .75; }
+
+.region-nav { margin-bottom: 30px; }
+.region-nav .title { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                     letter-spacing: .08em; margin-bottom: 8px; }
+.region-nav .pills { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                     column-gap: 28px; }
+.region-pill { display: flex; align-items: baseline; gap: 10px;
+               padding: 9px 4px 9px 2px; border-bottom: 1px solid var(--line);
+               color: var(--ink); text-decoration: none; font-size: 14.5px;
+               -webkit-tap-highlight-color: transparent;
+               transition: color .15s, background .15s; }
+.region-pill .name { flex: 1; }
+.region-pill::after { content: ""; width: 7px; height: 7px; flex-shrink: 0; margin-right: 3px;
+                      border-top: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold);
+                      align-self: center; transform: rotate(45deg); transition: transform .15s; }
+.region-pill:hover { color: var(--accent); }
+.region-pill:hover::after { transform: translateX(3px) rotate(45deg); }
+.region-pill:active { background: var(--soft); }
+.region-pill.active { color: var(--accent); font-weight: 600; }
+.region-pill .badge { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge, .region-pill.active .badge { color: var(--accent); }
+
+.timeline-item { display: grid; grid-template-columns: 132px 1fr; column-gap: 24px;
+                 padding: 16px 0; border-bottom: 1px solid var(--line); }
+.timeline-item:last-of-type { border-bottom: none; }
+.timeline-item > * { grid-column: 2; }
+.timeline-date { grid-column: 1; grid-row: 1 / span 4; padding-top: 1px;
+                 font-family: var(--serif); font-size: 15px; }
+.timeline-date a { color: var(--muted); text-decoration: none; }
+.timeline-date a:hover { color: var(--accent); }
+.timeline-item .award-name { font-size: 11.5px; font-weight: 600; letter-spacing: .08em;
+                             color: var(--gold-ink); text-transform: uppercase; margin-bottom: 3px; }
+
+@media (max-width: 640px) {
+  body { font-size: 14.5px; }
+  .shell { padding: 22px 14px 48px; }
+  .report { padding: 30px 20px 24px; border-radius: 12px; }
+  .report-head h1 { font-size: 25px; }
+  .stat { padding: 14px 4px; }
+  .stat-value { font-size: 24px; }
+  .stat-label { font-size: 10px; letter-spacing: .04em; }
+  .region-nav .pills { grid-template-columns: 1fr; }
+  .region-pill { padding: 12px 4px 12px 2px; font-size: 15px; }
+  .timeline-item { grid-template-columns: 1fr; }
+  .timeline-date { grid-column: 1; grid-row: auto; font-size: 14px; margin-bottom: 4px; }
+  .timeline-item > * { grid-column: 1; }
+}
+
+
+.ev { padding: 12px 0 13px; border-bottom: 1px solid var(--line); }
+.ev:last-child { border-bottom: none; }
+.ev-top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px;
+          color: var(--muted); margin-bottom: 4px; }
+.ev-type { font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 11px; }
+.ev-type.appointment { color: var(--accent); } .ev-type.title { color: var(--gold-ink); }
+.ev-type.leave { color: var(--faint); }
+.ev-title { font-size: 15.5px; font-weight: 600; }
+.ev-title a { color: var(--ink); text-decoration: none; }
+.ev-title a:hover { color: var(--accent); }
+.ev-sum { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
+.ev-src { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.day-head { font-family: var(--serif); font-size: 19px; color: var(--accent-deep); margin: 28px 0 4px;
+            padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.day-head:first-child { margin-top: 0; }
+.ev.hidden { display: none; }
+.day-block.hidden { display: none; }
+.empty-note { text-align: center; color: var(--muted); padding: 30px 0; font-family: var(--serif);
+              font-size: 17px; }
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="nav"><a href="index.html">← Наградные указы</a></div>
+  <div class="report">
+    <div class="report-head">
+      <div class="eyebrow">Мониторинг новостей СЗФО</div>
+      <h1>Назначения и звания</h1>
+      <div class="period">руководители и заместители в органах власти, ведомствах, учреждениях и крупнейших компаниях ·
+        региональные и генеральские звания</div>
+      <div class="rule"></div>
+    </div>
+    <div class="filter-bar"><span class="filter-label">Регион:</span><button class="filter-btn active" data-region="">Все <span class="badge">12</span></button><button class="filter-btn" data-region="Ленинградская область">Ленинградская область <span class="badge">1</span></button><button class="filter-btn" data-region="Вологодская область">Вологодская область <span class="badge">2</span></button><button class="filter-btn" data-region="Республика Карелия">Республика Карелия <span class="badge">2</span></button><button class="filter-btn" data-region="Псковская область">Псковская область <span class="badge">4</span></button><button class="filter-btn" data-region="Республика Коми">Республика Коми <span class="badge">1</span></button><button class="filter-btn" data-region="Новгородская область">Новгородская область <span class="badge">2</span></button></div>
+    <div class="filter-bar"><span class="filter-label">Тип:</span>
+      <button class="filter-btn active" data-type="">Все</button><button class="filter-btn" data-type="appointment">Назначение <span class="badge">12</span></button><button class="filter-btn" data-type="leave">Отставка <span class="badge">0</span></button><button class="filter-btn" data-type="title">Звание <span class="badge">0</span></button></div>
+    
+    <div class="day-block" data-day="2026-11-17">
+      <div class="day-head">17 ноября 2026</div>
+      <div class="ev" data-region="Республика Коми" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Коми</span> · <span>заместитель</span> · <span>власть</span> · <span>Комиавиатранс</span></div>
+        <div class="ev-title"><a href="https://komiinform.ru/news/303038" target="_blank" rel="noopener">В Росавиации обсудили вопросы функционирования &quot;Комиавиатранс&quot;</a></div>
+        <div class="ev-sum">Заместитель председателя Правительства Коми Эдуард Слабиков в рамках транспортной недели в Москве провел встречу с врио руководителя Росавиации Натальей Андриановой. На встрече обсудили вопросы функционирования АО &quot;Комиавиатранс&quot; и обеспечения полетной программы, сообщает пресс-с…</div>
+        <div class="ev-src">Комиинформ</div>
+      </div>
+      <div class="ev" data-region="Республика Карелия" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Карелия</span> · <span>заместитель</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://gov.karelia.ru/news/17-11-2026-vitse-premerom-pravitelstva-po-sotsialnym-voprosam-naznachena-ekaterina-reutova/" target="_blank" rel="noopener">Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова</a></div>
+        
+        <div class="ev-src">Правительство Республики Карелия</div>
+      </div>
+      <div class="ev" data-region="Республика Карелия" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Карелия</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://stolicaonego.ru/news/v-karelii-naznachili-novogo-vitse-premera-po-sotsialnym-voprosam/" target="_blank" rel="noopener">В Карелии назначили нового вице‑премьера по социальным вопросам Об этом сообщили в Управлении пресс-службы Главы Республики Карелия.</a></div>
+        
+        <div class="ev-src">Столица на Onego</div>
+      </div>
+      <div class="ev" data-region="Псковская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>заместитель</span> · <span>силовые ведомства</span></div>
+        <div class="ev-title"><a href="http://pln-pskov.ru/society/606190.html" target="_blank" rel="noopener">Экс-заместителя прокурора Псковской области назначили заместителем генпрокурора РФ</a></div>
+        <div class="ev-sum">Указом президента Российской Федерации Владимира Путина Олега Логунова назначили заместителем генерального прокурора РФ. [...]</div>
+        <div class="ev-src">Псковская лента новостей</div>
+      </div>
+      <div class="ev" data-region="Псковская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="http://pln-pskov.ru/politics/606206.html" target="_blank" rel="noopener">Станислав Стармолотов избран секретарем Псковского городского отделения «Единой России»</a></div>
+        <div class="ev-sum">Глава города Пскова Станислав Стармолотов избран секретарем Псковского городского отделения партии [...]</div>
+        <div class="ev-src">Псковская лента новостей</div>
+      </div>
+      <div class="ev" data-region="Псковская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://informpskov.ru/news/523265.html" target="_blank" rel="noopener">Очередная сессия Заксобрания Псковской области пройдёт 25 ноября</a></div>
+        <div class="ev-sum">Совет Законодательного Собрания Псковской области утвердил дату очередной сессии – депутаты соберутся 25 ноября. Об этом сообщил председатель Законодательного Собрания Борис Елкин в своём канале в мессенджере MAX. 
+
+ 
+
+ Борис Елкин отметил, что накануне, 24 ноября, пройдут заседа…</div>
+        <div class="ev-src">ПАИ</div>
+      </div>
+      <div class="ev" data-region="Псковская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>заместитель</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="http://pln-pskov.ru/politics/606186.html" target="_blank" rel="noopener">Игорь Дитрих: Комитет по социальной политике начнет полноценную работу после утверждения положения на ближайшей сессии</a></div>
+        <div class="ev-sum">Депутаты активно включились в процесс работы комитета по социальной политике: они изучают документацию и уточняют рабочие моменты, поделился первый заместитель председателя Законодательного Собрания Псковской области Игорь Дитрих в эфире радио « [...]</div>
+        <div class="ev-src">Псковская лента новостей</div>
+      </div>
+      <div class="ev" data-region="Новгородская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Новгородская область</span> · <span>власть</span> · <span>НовГУ</span></div>
+        <div class="ev-title"><a href="https://news.novgorod.ru/news/211004.html" target="_blank" rel="noopener">Вопрос о целевом назначении «Шарматово» на нулевых чтениях бюджета поднял новгородский депутат Шалякин</a></div>
+        <div class="ev-sum">О том, в какую сумму новгородским налогоплательщикам ежегодно обходится правительственная резиденция «Шарматово», и каково ее целевое назначение, у руководителя администрации губернатора Константина Сомова на «нулевых» чтениях бюджета интересовался депутат облдумы от «Яблока» Вик…</div>
+        <div class="ev-src">Новгород.ру</div>
+      </div>
+      <div class="ev" data-region="Ленинградская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Ленинградская область</span> · <span>заместитель</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://www.lenoblzaks.ru/news/senator-dmitrij-vasilenko-utverzhden-v-dolzhnosti-pervogo-zampreda-komiteta-sovfeda" target="_blank" rel="noopener">Сенатор Дмитрий Василенко утвержден в должности первого зампреда Комитета СовФеда 28 октября 2026</a></div>
+        
+        <div class="ev-src">ЗакС Ленинградской области</div>
+      </div>
+      <div class="ev" data-region="Вологодская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Вологодская область</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://krassever.ru/news/kseniya-falameyeva-naznachena-ministrom-informatsionnoy-politiki-vologodskoy-oblasti" target="_blank" rel="noopener">Ксения Фаламеева назначена министром информационной политики Вологодской области</a></div>
+        
+        <div class="ev-src">Красный Север</div>
+      </div>
+    </div>
+    <div class="day-block" data-day="2026-11-16">
+      <div class="day-head">16 ноября 2026</div>
+      <div class="ev" data-region="Вологодская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Вологодская область</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://newsvo.ru/obshchestvo/7562560-georgiy-filimonov-naznachil-novogo-ministra-informacionnoy-politiki" target="_blank" rel="noopener">Георгий Филимонов назначил нового министра информационной политики</a></div>
+        <div class="ev-sum">Экс-министр Елена Пономарева перешла на работу в мэрию Череповца</div>
+        <div class="ev-src">newsvo.ru</div>
+      </div>
+    </div>
+    <div class="day-block" data-day="2026-11-13">
+      <div class="day-head">13 ноября 2026</div>
+      <div class="ev" data-region="Новгородская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Новгородская область</span> · <span>власть</span> · <span>НовГУ</span></div>
+        <div class="ev-title"><a href="https://t.me/novgorodinfo/11400" target="_blank" rel="noopener">Владимир Карпунин назначен исполняющим обязанности министра цифрового развития Новгородской области</a></div>
+        <div class="ev-sum">Владимир Карпунин назначен исполняющим обязанности министра цифрового развития Новгородской области
+ 
+С 17 ноября 2026 года Владимир Карпунин приступит к исполнению обязанностей министра цифрового развития и информационно-коммуникационных технологий Новгородской области.
+ 
+Владим…</div>
+        <div class="ev-src">Официально 53. Новгородская область (Telegram)</div>
+      </div>
+    </div>
+    <div class="report-footer">
+      Источники: официальные сайты и Telegram-каналы правительств, ведомств и ведущих СМИ регионов (news_sources.json).
+      Отбор автоматический по ключевым словам; заголовок ведёт на исходную публикацию.<br>
+      Обновлено 17 ноября 2026, 21:47 МСК
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var region = '', type = '';
+  function apply() {
+    document.querySelectorAll('.ev').forEach(function(el) {
+      var show = (!region || el.dataset.region === region) && (!type || el.dataset.type === type);
+      el.classList.toggle('hidden', !show);
+    });
+    document.querySelectorAll('.day-block').forEach(function(b) {
+      b.classList.toggle('hidden', !b.querySelector('.ev:not(.hidden)'));
+    });
+  }
+  document.querySelectorAll('.filter-btn[data-region]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      region = btn.dataset.region;
+      document.querySelectorAll('.filter-btn[data-region]').forEach(function(b) { b.classList.toggle('active', b === btn); });
+      apply();
+    });
+  });
+  document.querySelectorAll('.filter-btn[data-type]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      type = btn.dataset.type;
+      document.querySelectorAll('.filter-btn[data-type]').forEach(function(b) { b.classList.toggle('active', b === btn); });
+      apply();
+    });
+  });
+})();
+</script>
+</body>
+</html>

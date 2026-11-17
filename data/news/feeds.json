@@ -1,0 +1,14 @@
+{
+ "rosguard": "https://rosguard.gov.ru/feed/rss",
+ "dp": "https://www.dp.ru/news.rss",
+ "29ru": "https://29.ru/rss-feeds/rss.xml",
+ "newsvo": "https://newsvo.ru/yandex.xml",
+ "cherinfo": "https://cherinfo.ru/rss/news",
+ "newkaliningrad": "https://www.newkaliningrad.ru/news/rss.xml",
+ "severpost": "https://severpost.ru/rss.xml",
+ "pln": "https://pln-pskov.ru/rss.php",
+ "informpskov": "https://informpskov.ru/rss.xml",
+ "bnkomi": "https://www.bnkomi.ru/rss/news",
+ "komiinform": "https://komiinform.ru/rss/newsRss",
+ "novgorod_ru": "https://news.novgorod.ru/news/rss"
+}

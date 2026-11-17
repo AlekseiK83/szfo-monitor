@@ -1807,6 +1807,7 @@ def render_index_html(index_data, region_counts):
     <div class="sub">Указы и распоряжения Президента с
       <a href="http://publication.pravo.gov.ru/documents/daily" target="_blank"
          rel="noopener">publication.pravo.gov.ru</a></div>
+    <div class="sub"><a href="news.html">Назначения и звания по новостям регионов →</a></div>
     <div class="rule"></div>
     <div class="summary">
       <div class="stat"><div class="stat-value">{total_all}</div>

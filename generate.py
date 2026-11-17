@@ -204,11 +204,23 @@ FIO_DASHED_NO_PATR = re.compile(
 ADJECTIVE_WORD = re.compile(r'(?:ого|его|ский|ской|ская|ское|ских|цкий|цкой|цкая|ного|ной|ный|ная|ное|ных|ых|их)$')
 
 
+# Мусор OCR перед отчеством: «Олегу’ — Юрьевичу», «Елене Г еннадьевне» (пробел внутри),
+# «Дмитрия ФОлеговича», «Рубену ОЭдуардовичу» (лишняя буква в начале).
+FIO_NOISY_PATR = re.compile(
+    r'^([А-ЯЁ]{2,}(?:-[А-ЯЁ]{2,})?)\s+([А-ЯЁ][а-яё]+(?:-[А-ЯЁа-яё][а-яё]+)?)'
+    r'[\s’\'`´"“”—–(\[{|]+[А-ЯЁ]?([А-ЯЁ])\s?'
+    r'([а-яё]+(?:вич|ич)(?:а|у|ем|е)?|[а-яё]+(?:вн|чн)(?:а|ы|е|у|ой))\b'
+)
+
+
 def match_fio(line):
     """(fio_raw, остаток строки) или None."""
     m = FIO_DASHED.match(line) or FIO_DASHED_SURNAME.match(line)
     if m:
         return f"{m.group(1)} {m.group(2)} {m.group(3)}", line[m.end():]
+    m = FIO_NOISY_PATR.match(line)
+    if m:
+        return f"{m.group(1)} {m.group(2)} {m.group(3)}{m.group(4)}", line[m.end():]
     m = FIO_DASHED_NO_PATR.match(line)
     if m:
         return f"{m.group(1)} {m.group(2)}", line[m.end():]
@@ -326,6 +338,8 @@ HEADING_DONE = re.compile(
 )
 HEADING_GRAMOTA = re.compile(r'поч[её]тн\w*\s+грамот', re.IGNORECASE)
 HEADING_BLAGODARNOST = re.compile(r'объявить\s+благодарност', re.IGNORECASE)
+INLINE_TITLE = re.compile(
+    r'(ГЕРОЯ\s+(?:ТРУДА\s+)?РОССИЙСКОЙ\s+ФЕДЕРАЦИИ)|[«"„]([А-ЯЁ][А-ЯЁ \-,.]{5,120})[»"“]')
 HEADING_COLLECTIVE = re.compile(r'\bколлектив(?:у|ам)\b', re.IGNORECASE)
 
 # ── Коллективы ──
@@ -449,10 +463,14 @@ def parse_awardees(raw_text, decree_ref):
         nonlocal heading, cur_award, collective_mode
         buf = " ".join(heading)
         heading = None
+        inline = INLINE_TITLE.search(buf)
         if HEADING_GRAMOTA.search(buf):
             cur_award = GRAMOTA_AWARD
         elif HEADING_BLAGODARNOST.search(buf):
             cur_award = BLAGODARNOST_AWARD
+        elif inline and (inline.group(1) or has_award_keyword(inline.group(2))):
+            # «…присвоить звание ГЕРОЯ ТРУДА РОССИЙСКОЙ ФЕДЕРАЦИИ» в одной строке
+            cur_award = inline.group(1) or inline.group(2)
         else:
             cur_award = None   # дальше будет заголовок ордена/звания
         collective_mode = bool(HEADING_COLLECTIVE.search(buf))
@@ -519,6 +537,14 @@ def parse_awardees(raw_text, decree_ref):
                 and re.fullmatch(r'[А-ЯЁ\s\-,.()№"«»„“]+', line)):
             cur_award = f"{cur_award} {line.strip()}"
             continue
+
+        # ── Строка внутри незакрытых кавычек («…общества "НЕГУС / ЭКСПО Интернэшнл"…»)
+        #    — продолжение названия организации, а не новое ФИО ──
+        if (fio_m and cur_rec and len(re.findall(r'["«»„“”]', cur_rec["raw"])) % 2 == 1
+                and not re.search(r'(?:' + PATRONYMIC + r')$', fio_m[0])
+                and not re.match(r'\s*[-—–]\s', fio_m[1])):
+            # у людей есть отчество или « - должность», у «ЭКСПО Интернэшнл", город…» — нет
+            fio_m = None
 
         # ── Физическое лицо ──
         if fio_m:

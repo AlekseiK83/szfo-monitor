@@ -50,7 +50,7 @@ PAGE_FILE = Path("news.html")
 KEEP_EVENTS_DAYS = 120       # сколько держать события на странице
 KEEP_SEEN_DAYS = 45          # память дедупликации
 FRESH_DAYS = 4               # новости старше не берём (ленты дают историю)
-TIMEOUT = 25
+TIMEOUT = 15
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; szfo-monitor/1.0; +https://github.com/)",
            "Accept-Language": "ru,en;q=0.5"}
 
@@ -317,8 +317,12 @@ BLOCK_TAG_RE = re.compile(r"</?(?:p|div|br|li|ul|ol|h\d|tr|td|th|table|blockquot
 TAG_RE = re.compile(r"<[^>]+>")
 
 
+COMMENT_RE = re.compile(r"<!--.*?-->", re.S)
+
+
 def strip_tags(s):
-    s = BLOCK_TAG_RE.sub(" ", s or "")
+    s = COMMENT_RE.sub(" ", s or "")
+    s = BLOCK_TAG_RE.sub(" ", s)
     s = TAG_RE.sub("", s)
     s = html_module.unescape(s).replace("\xa0", " ")
     return re.sub(r"[ \t\r\f\v]+", " ", s).strip()
@@ -346,9 +350,10 @@ ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.
 def parse_html_news(page_html, page_url):
     """Заголовки новостей со страницы: ссылки на тот же сайт с осмысленным текстом."""
     host = urlparse(page_url).netloc
-    seen, items = set(), []
+    seen, items, counts = set(), [], {}
+    page_html = COMMENT_RE.sub(" ", page_html)
     for href, inner in ANCHOR_RE.findall(page_html):
-        title = re.sub(r"\s+", " ", strip_tags(inner)).strip()
+        title = re.sub(r"\s+", " ", re.sub(r"<!--|-->", " ", strip_tags(inner))).strip()
         if len(title) < 28 or len(title) > 300 or not re.search(r"[а-яё]", title, re.I):
             continue
         if not re.search(r"\s", title):        # одно слово — это меню
@@ -357,8 +362,10 @@ def parse_html_news(page_html, page_url):
         if urlparse(url).netloc != host or url in seen:
             continue
         seen.add(url)
+        counts[title] = counts.get(title, 0) + 1
         items.append({"title": title, "link": url, "date": "", "summary": ""})
-    return items
+    # один и тот же текст на разных ссылках — это меню или название сайта, не новость
+    return [it for it in items if counts[it["title"]] == 1]
 
 
 TG_MSG_RE = re.compile(r'<div class="tgme_widget_message_wrap[^"]*"(.*?)(?=<div class="tgme_widget_message_wrap|\Z)', re.S)
@@ -553,6 +560,8 @@ def run(today=None, verbose=True):
 
     new_events, statuses = [], []
     for src in cfg["sources"]:
+        if not src.get("enabled", True):
+            continue
         t0 = time.time()
         items, status = fetch_source(src, feeds_cache)
         statuses.append((src["id"], src["name"], status, round(time.time() - t0, 1)))
@@ -608,6 +617,9 @@ def check_sources():
     rows, ok = [], 0
     print(f"{'id':<16} {'тип':<9} {'статус':<48} {'сек':>5}  источник")
     for src in cfg["sources"]:
+        if not src.get("enabled", True):
+            print(f"{src['id']:<16} {src['type']:<9} {'выключен':<48} {'':>5}  {src['name']}")
+            continue
         t0 = time.time()
         items, status = fetch_source(src, feeds_cache)
         dt = time.time() - t0

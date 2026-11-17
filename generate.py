@@ -1247,6 +1247,9 @@ a { color: var(--accent); }
 .region-header a.region-link { font-family: var(--serif); font-size: 21px; font-weight: 400;
                                color: var(--accent-deep); text-decoration: none; flex: 1; }
 .region-header a.region-link:hover { color: var(--accent); }
+.region-header a.region-link::after { content: ""; display: inline-block; width: 8px; height: 8px;
+      margin-left: 10px; vertical-align: 3px; border-top: 1.5px solid var(--gold);
+      border-right: 1.5px solid var(--gold); transform: rotate(45deg); }
 .region-header .count { font-size: 12px; color: var(--accent); background: var(--gold-soft);
                         padding: 1px 9px; border-radius: 999px;
                         font-variant-numeric: tabular-nums; }
@@ -1289,11 +1292,18 @@ a { color: var(--accent); }
                      letter-spacing: .08em; margin-bottom: 8px; }
 .region-nav .pills { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
                      column-gap: 28px; }
-.region-pill { display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
-               padding: 9px 2px; border-bottom: 1px solid var(--line);
+.region-pill { display: flex; align-items: baseline; gap: 10px;
+               padding: 9px 4px 9px 2px; border-bottom: 1px solid var(--line);
                color: var(--ink); text-decoration: none; font-size: 14.5px;
-               transition: color .15s; }
+               -webkit-tap-highlight-color: transparent;
+               transition: color .15s, background .15s; }
+.region-pill .name { flex: 1; }
+.region-pill::after { content: ""; width: 7px; height: 7px; flex-shrink: 0; margin-right: 3px;
+                      border-top: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold);
+                      align-self: center; transform: rotate(45deg); transition: transform .15s; }
 .region-pill:hover { color: var(--accent); }
+.region-pill:hover::after { transform: translateX(3px) rotate(45deg); }
+.region-pill:active { background: var(--soft); }
 .region-pill.active { color: var(--accent); font-weight: 600; }
 .region-pill .badge { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
 .region-pill:hover .badge, .region-pill.active .badge { color: var(--accent); }
@@ -1318,7 +1328,7 @@ a { color: var(--accent); }
   .stat-value { font-size: 24px; }
   .stat-label { font-size: 10px; letter-spacing: .04em; }
   .region-nav .pills { grid-template-columns: 1fr; }
-  .region-pill { padding: 8px 2px; font-size: 14px; }
+  .region-pill { padding: 12px 4px 12px 2px; font-size: 15px; }
   .timeline-item { grid-template-columns: 1fr; }
   .timeline-date { grid-column: 1; grid-row: auto; font-size: 14px; margin-bottom: 4px; }
   .timeline-item > * { grid-column: 1; }
@@ -1444,7 +1454,7 @@ def render_region_html(region_name, people, all_region_counts):
         active = " active" if name == region_name else ""
         nav_pills.append(
             f'<a class="region-pill{active}" href="{esc(slug)}.html">'
-            f'{esc(name)}<span class="badge">{cnt}</span></a>'
+            f'<span class="name">{esc(name)}</span><span class="badge">{cnt}</span></a>'
         )
     nav_html = f'''
     <div class="region-nav">
@@ -1636,7 +1646,7 @@ def render_index_html(index_data, region_counts):
         slug = REGION_SLUG[name]
         nav_pills.append(
             f'<a class="region-pill" href="regions/{esc(slug)}.html">'
-            f'{esc(name)}<span class="badge">{cnt}</span></a>'
+            f'<span class="name">{esc(name)}</span><span class="badge">{cnt}</span></a>'
         )
     nav_html = f'''
     <div class="region-nav">

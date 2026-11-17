@@ -1187,108 +1187,141 @@ def render_fio(p):
 
 
 BASE_CSS = """
+:root {
+  color-scheme: light dark;
+  --bg: #f7f3ec; --card: #ffffff; --soft: #faf7f1; --line: #ebe4d6;
+  --ink: #1d1a17; --muted: #6f685f; --faint: #9c9488;
+  --accent: #7d1e2a; --accent-deep: #5c1620; --on-accent: #ffffff;
+  --gold: #b08a3e; --gold-ink: #8a6a2a; --gold-soft: rgba(176,138,62,.14);
+  --dot-empty: #ebe4d6; --dot-award: #d6b263; --btn: #7d1e2a; --btn-hover: #5c1620;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15120f; --card: #1d1915; --soft: #231e19; --line: #322b24;
+    --ink: #ece6dc; --muted: #a8a094; --faint: #7d756a;
+    --accent: #e0969a; --accent-deep: #f0c4c0; --on-accent: #1d1915;
+    --gold: #c9a258; --gold-ink: #d4b06a; --gold-soft: rgba(201,162,88,.16);
+    --dot-empty: #322b24; --dot-award: #a8853c; --btn: #9a3040; --btn-hover: #b03a4b;
+  }
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-       background: #f6f2ea; color: #1a1a1a; line-height: 1.55; min-height: 100vh; }
-.shell { max-width: 940px; margin: 0 auto; padding: 32px 20px 60px; }
-.nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
-.nav a { color: #7d1e2a; text-decoration: none; }
-.nav a:hover { text-decoration: underline; }
+html { -webkit-text-size-adjust: 100%; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink);
+       font-size: 15px; line-height: 1.55; min-height: 100vh;
+       -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+.shell { max-width: 880px; margin: 0 auto; padding: 40px 20px 72px; }
+.nav { margin-bottom: 22px; font-size: 14px; }
+.nav a { color: var(--muted); text-decoration: none; transition: color .15s; }
+.nav a:hover { color: var(--accent); }
 
-.report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-          padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
-               margin-bottom: 26px; }
-.report-head h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 500;
-                  color: #5c1620; margin-bottom: 8px; }
-.period { font-size: 14px; color: #6b6b6b; }
-.report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-                margin-bottom: 26px; }
-.stat { text-align: center; padding: 16px 12px; background: #faf7f0;
-        border-radius: 8px; border: 1px solid #eee6d3; }
-.stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
-              line-height: 1; margin-bottom: 6px; }
-.stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+.report { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 52px 60px 40px; }
+.report-head { text-align: center; margin-bottom: 30px; }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .14em;
+           text-transform: uppercase; color: var(--gold-ink); margin-bottom: 12px; }
+.report-head h1 { font-family: var(--serif); font-size: 30px; font-weight: 400;
+                  line-height: 1.2; color: var(--accent-deep); }
+.period { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.rule { position: relative; width: 64px; height: 1px; background: var(--gold);
+        margin: 24px auto 0; }
+.rule::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+               background: var(--card); border: 1px solid var(--gold);
+               transform: translate(-50%, -50%) rotate(45deg); }
 
-.region-block { margin-bottom: 26px; }
-.region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
-                 border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
-.marker { color: #b8860b; font-size: 12px; }
-.region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
-                    color: #5c1620; flex: 1; }
-.region-header .count { font-size: 13px; color: #6b6b6b; }
-.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
-                               color: #5c1620; text-decoration: none; flex: 1; }
-.region-header a.region-link:hover { text-decoration: underline; }
-.award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
-.award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
-               text-transform: uppercase; margin-bottom: 8px; }
-.awardee { padding: 6px 0 8px; border-bottom: 1px dotted #e8e2d5; }
+.report-stats { display: flex; margin-bottom: 34px;
+                border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { flex: 1; text-align: center; padding: 18px 10px; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat-value { font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--accent);
+              font-variant-numeric: lining-nums tabular-nums; }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+              letter-spacing: .08em; margin-top: 8px; }
+
+.region-block { margin-bottom: 36px; }
+.region-header { display: flex; align-items: baseline; gap: 12px; padding-bottom: 8px;
+                 border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.region-header h2,
+.region-header a.region-link { font-family: var(--serif); font-size: 21px; font-weight: 400;
+                               color: var(--accent-deep); text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { color: var(--accent); }
+.region-header .count { font-size: 12px; color: var(--accent); background: var(--gold-soft);
+                        padding: 1px 9px; border-radius: 999px;
+                        font-variant-numeric: tabular-nums; }
+.award-group { margin-top: 18px; }
+.award-title { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; line-height: 1.45;
+               color: var(--gold-ink); text-transform: uppercase; margin-bottom: 2px; }
+.awardee { padding: 10px 0 11px; border-bottom: 1px solid var(--line); }
 .awardee:last-child { border-bottom: none; }
-.fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
-.position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
-.decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
-.source-link { color: #7d1e2a; font-style: normal; text-decoration: none;
-               border-bottom: 1px dotted #b8860b; white-space: nowrap; }
-.source-link:hover { border-bottom-style: solid; }
+.fio { font-weight: 600; font-size: 15.5px; color: var(--ink); }
+.position { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.decree { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.source-link { color: var(--accent); text-decoration: none; white-space: nowrap;
+               border-bottom: 1px solid var(--gold-soft); transition: border-color .15s; }
+.source-link:hover { border-bottom-color: var(--accent); }
 .kind-badge { display: inline-block; margin-left: 6px; padding: 1px 8px;
-              font-size: 10.5px; font-weight: 500; color: #7d1e2a;
-              background: rgba(184,134,11,.14); border-radius: 999px;
-              vertical-align: 1px; }
+              font-size: 10.5px; font-weight: 500; color: var(--gold-ink);
+              background: var(--gold-soft); border-radius: 999px; vertical-align: 2px; }
 
-.no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
-.report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
-                 text-align: center; font-size: 12px; color: #6b6b6b; }
-.report-footer a { color: #7d1e2a; text-decoration: none; }
+.no-results { text-align: center; padding: 36px 20px 44px; color: var(--muted);
+              font-family: var(--serif); font-size: 17px; }
+.report-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line);
+                 text-align: center; font-size: 12px; line-height: 1.7; color: var(--faint); }
+.report-footer a { color: var(--muted); }
 
-.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
-              padding: 12px 14px; background: #faf7f0;
-              border: 1px solid #eee6d3; border-radius: 8px; }
-.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                            letter-spacing: 0.5px; align-self: center; padding-right: 4px; }
-.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
-              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
-              transition: all .12s; }
-.filter-btn:hover { background: #fdf6e3; }
-.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
-                     background: rgba(184,134,11,0.15); color: #7d1e2a;
-                     font-size: 11px; border-radius: 999px; }
-.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+              margin: -8px 0 26px; }
+.filter-bar .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                            letter-spacing: .08em; padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer;
+              border: 1px solid var(--line); background: var(--card); color: var(--ink);
+              border-radius: 999px; transition: border-color .15s, background .15s; }
+.filter-btn:hover { border-color: var(--gold); }
+.filter-btn.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.filter-btn .badge { margin-left: 6px; color: var(--faint); font-size: 12px;
+                     font-variant-numeric: tabular-nums; }
+.filter-btn.active .badge { color: var(--on-accent); opacity: .75; }
 
-.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-              padding: 18px 22px; margin-bottom: 20px; }
-.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                     letter-spacing: 0.5px; margin-bottom: 10px; }
-.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
-               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
-               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
-.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.region-pill.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
-                      background: rgba(184,134,11,0.15); color: #7d1e2a;
-                      font-size: 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
-.region-pill:hover .badge,
-.region-pill.active .badge { background: rgba(255,255,255,0.25); color: white; }
+.region-nav { margin-bottom: 30px; }
+.region-nav .title { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                     letter-spacing: .08em; margin-bottom: 8px; }
+.region-nav .pills { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                     column-gap: 28px; }
+.region-pill { display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+               padding: 9px 2px; border-bottom: 1px solid var(--line);
+               color: var(--ink); text-decoration: none; font-size: 14.5px;
+               transition: color .15s; }
+.region-pill:hover { color: var(--accent); }
+.region-pill.active { color: var(--accent); font-weight: 600; }
+.region-pill .badge { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge, .region-pill.active .badge { color: var(--accent); }
 
-.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
-                 padding: 14px 18px; margin-bottom: 10px; }
-.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
-                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
-.timeline-date a { color: #b8860b; text-decoration: none; }
-.timeline-date a:hover { text-decoration: underline; }
-.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
-.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
-                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
-.timeline-item .position { font-size: 13px; color: #6b6b6b; }
-.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+.timeline-item { display: grid; grid-template-columns: 132px 1fr; column-gap: 24px;
+                 padding: 16px 0; border-bottom: 1px solid var(--line); }
+.timeline-item:last-of-type { border-bottom: none; }
+.timeline-item > * { grid-column: 2; }
+.timeline-date { grid-column: 1; grid-row: 1 / span 4; padding-top: 1px;
+                 font-family: var(--serif); font-size: 15px; }
+.timeline-date a { color: var(--muted); text-decoration: none; }
+.timeline-date a:hover { color: var(--accent); }
+.timeline-item .award-name { font-size: 11.5px; font-weight: 600; letter-spacing: .08em;
+                             color: var(--gold-ink); text-transform: uppercase; margin-bottom: 3px; }
 
 @media (max-width: 640px) {
-  .shell { padding: 20px 14px; }
-  .report { padding: 26px 20px; }
-  .report-stats { grid-template-columns: 1fr; }
-  .filter-bar { padding: 10px; }
+  body { font-size: 14.5px; }
+  .shell { padding: 22px 14px 48px; }
+  .report { padding: 30px 20px 24px; border-radius: 12px; }
+  .report-head h1 { font-size: 25px; }
+  .stat { padding: 14px 4px; }
+  .stat-value { font-size: 24px; }
+  .stat-label { font-size: 10px; letter-spacing: .04em; }
+  .region-nav .pills { grid-template-columns: 1fr; }
+  .region-pill { padding: 8px 2px; font-size: 14px; }
+  .timeline-item { grid-template-columns: 1fr; }
+  .timeline-date { grid-column: 1; grid-row: auto; font-size: 14px; margin-bottom: 4px; }
+  .timeline-item > * { grid-column: 1; }
 }
 """
 
@@ -1326,7 +1359,7 @@ def render_report_html(d):
         for r in d["regions"]:
             slug = REGION_SLUG[r["name"]]
             regions_html += f'<div class="region-block" data-region="{slug}">' \
-                            f'<div class="region-header"><span class="marker">▸</span>' \
+                            f'<div class="region-header">' \
                             f'<a class="region-link" href="../regions/{slug}.html">{esc(r["name"])}</a>' \
                             f'<span class="count">{r["count"]}</span></div>'
             for a in r["awards"]:
@@ -1365,6 +1398,8 @@ def render_report_html(d):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
 <title>Дайджест СЗФО за {esc(d["date"])}</title>
 <style>{BASE_CSS}</style>
 </head>
@@ -1373,18 +1408,19 @@ def render_report_html(d):
   <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
-      <h1>Дайджест наградных указов СЗФО</h1>
-      <div class="period">Период: {esc(display_date)}</div>
+      <div class="eyebrow">Дайджест наградных указов СЗФО</div>
+      <h1>{esc(display_date)}</h1>
+      <div class="period">{esc(format_weekday(d["date"]))}</div>
+      <div class="rule"></div>
     </div>
     <div class="report-stats">{stats_html}</div>
     {filter_html}
     {regions_html}
     <div class="report-footer">
       Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
-                    target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
-      Всего в указах награждённых: {d["stats"]["awardees"]} ·
-      Отфильтровано по 10 регионам СЗФО<br>
-      Сгенерировано автоматически: {esc(d.get("generated_at", ""))}
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a> ·
+      всего в документах награждённых: {d["stats"]["awardees"]}, из них по 10 регионам СЗФО: {d["stats"]["szfo"]}<br>
+      Обновлено {esc(format_msk(d.get("generated_at", "")))}
     </div>
   </div>
 </div>
@@ -1440,6 +1476,8 @@ def render_region_html(region_name, people, all_region_counts):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
 <title>{esc(region_name)} — Мониторинг СЗФО</title>
 <style>{BASE_CSS}</style>
 </head>
@@ -1448,9 +1486,11 @@ def render_region_html(region_name, people, all_region_counts):
   <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
+      <div class="eyebrow">Регион СЗФО</div>
       <h1>{esc(region_name)}</h1>
-      <div class="period">Награждённые за всё время: {len(people)} ·
-        период с {esc(format_display_date(date_from))} по {esc(format_display_date(date_to))}</div>
+      <div class="period">{len(people)} {_plural(len(people), "награждённый", "награждённых", "награждённых")} ·
+        с {esc(format_display_date(date_from))} по {esc(format_display_date(date_to))}</div>
+      <div class="rule"></div>
     </div>
     {nav_html}
     {items_html}
@@ -1522,14 +1562,21 @@ def render_month_groups(entries):
         rows = []
         for e in days:
             szfo, awarding = e["stats"]["szfo"], e["stats"]["awarding"]
+            if szfo:
+                tail = (f'<span>{awarding} {_plural(awarding, "указ", "указа", "указов")}</span>'
+                        f'<span class="chip">{szfo} из СЗФО</span>')
+            elif awarding:
+                tail = (f'<span>{awarding} {_plural(awarding, "указ", "указа", "указов")}</span>'
+                        f'<span class="nil">без СЗФО</span>')
+            else:
+                tail = '<span class="nil">указов нет</span>'
+            cls = " empty" if szfo == 0 else ""
+            cls += " nil" if awarding == 0 else ""
             rows.append(f"""
-          <a class="entry{' empty' if szfo == 0 else ''}" data-awarding="{1 if awarding else 0}"
+          <a class="entry{cls}" data-awarding="{1 if awarding else 0}"
              data-szfo="{1 if szfo else 0}" href="reports/{esc(e['date'])}.html">
             <div class="entry-date">{esc(format_display_date(e['date']))}</div>
-            <div class="entry-stats">
-              <span>Наградных: <b>{awarding}</b></span>
-              <span>Из СЗФО: <b>{szfo}</b></span>
-            </div>
+            <div class="entry-stats">{tail}</div>
           </a>""")
 
         out.append(f"""
@@ -1593,7 +1640,7 @@ def render_index_html(index_data, region_counts):
         )
     nav_html = f'''
     <div class="region-nav">
-      <div class="title">Просмотр по региону</div>
+      <div class="title">Регионы · награждённых за всё время</div>
       <div class="pills">{"".join(nav_pills)}</div>
     </div>''' if nav_pills else ""
 
@@ -1633,130 +1680,136 @@ def render_index_html(index_data, region_counts):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
 <title>Мониторинг наградных указов СЗФО</title>
 <style>
 {BASE_CSS}
-.hero {{ text-align: center; padding: 24px 0 32px; }}
-.hero .emblem {{ font-size: 40px; margin-bottom: 12px; }}
-.hero h1 {{ font-family: Georgia, serif; font-size: 26px; color: #5c1620;
-           font-weight: 500; margin-bottom: 6px; }}
-.hero .sub {{ font-size: 14px; color: #6b6b6b; }}
-.subscribe-btn {{ display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
-                  padding: 11px 22px; border-radius: 999px; background: #7d1e2a;
-                  color: white; font-size: 14.5px; font-weight: 500; text-decoration: none;
-                  box-shadow: 0 2px 8px rgba(125,30,42,.25); transition: background .15s, transform .15s; }}
-.subscribe-btn:hover {{ background: #5c1620; transform: translateY(-1px); }}
-.subscribe-btn:focus-visible {{ outline: 2px solid #b8860b; outline-offset: 3px; }}
+.hero {{ text-align: center; padding: 28px 0 40px; }}
+.hero h1 {{ font-family: var(--serif); font-size: 36px; font-weight: 400; line-height: 1.15;
+           color: var(--accent-deep); letter-spacing: -.01em; }}
+.hero .sub {{ font-size: 14px; color: var(--muted); margin-top: 10px; }}
+.hero .sub a {{ color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }}
+.hero .sub a:hover {{ color: var(--accent); border-bottom-color: var(--accent); }}
+.hero .rule::after {{ background: var(--bg); }}
+.summary {{ display: flex; justify-content: center; gap: 0; margin-top: 26px; }}
+.summary .stat {{ flex: 0 1 220px; padding: 2px 16px; }}
+.summary .stat-value {{ font-size: 34px; }}
+.subscribe-btn {{ display: inline-flex; align-items: center; gap: 9px; margin-top: 28px;
+                  padding: 11px 22px; border-radius: 999px; background: var(--btn);
+                  color: #fff; font-size: 14.5px; font-weight: 500; text-decoration: none;
+                  transition: background .15s, transform .15s; }}
+.subscribe-btn:hover {{ background: var(--btn-hover); transform: translateY(-1px); }}
+.subscribe-btn:focus-visible {{ outline: 2px solid var(--gold); outline-offset: 3px; }}
 .subscribe-btn svg {{ width: 18px; height: 18px; }}
-.subscribe-note {{ font-size: 12.5px; color: #8a8174; margin-top: 8px; }}
-.summary {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-           margin-bottom: 20px; }}
+.subscribe-note {{ font-size: 12.5px; color: var(--faint); margin-top: 9px; }}
 .entries {{ display: flex; flex-direction: column; gap: 10px; }}
-.month {{ background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-         overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
+.month {{ background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+         overflow: hidden; }}
 .month.hidden {{ display: none; }}
 .month > summary {{ list-style: none; cursor: pointer; display: grid;
                    grid-template-columns: auto 1fr auto; align-items: center;
-                   gap: 6px 16px; padding: 16px 20px; user-select: none;
+                   gap: 8px 14px; padding: 16px 20px; user-select: none;
                    transition: background .15s; }}
 .month > summary::-webkit-details-marker {{ display: none; }}
-.month > summary:hover {{ background: #faf7f0; }}
-.month > summary:focus-visible {{ outline: 2px solid #b8860b; outline-offset: -2px; }}
-.month[open] > summary {{ border-bottom: 1px solid #e8e2d5; }}
-.month-chevron {{ width: 18px; height: 18px; color: #7d1e2a;
+.month > summary:hover {{ background: var(--soft); }}
+.month > summary:focus-visible {{ outline: 2px solid var(--gold); outline-offset: -2px; }}
+.month[open] > summary {{ border-bottom: 1px solid var(--line); }}
+.month-chevron {{ width: 16px; height: 16px; color: var(--gold);
                   transition: transform .2s; flex-shrink: 0; }}
 .month[open] .month-chevron {{ transform: rotate(90deg); }}
-.month-name {{ font-family: Georgia, serif; font-size: 18px; color: #5c1620; }}
+.month-name {{ font-family: var(--serif); font-size: 19px; color: var(--accent-deep); }}
 .month-stats {{ display: flex; flex-wrap: wrap; justify-content: flex-end;
-                gap: 4px 14px; font-size: 12.5px; color: #6b6b6b; }}
-.month-stats b {{ color: #7d1e2a; font-weight: 600; font-variant-numeric: tabular-nums; }}
-.month-stats .muted {{ color: #a39a8c; }}
+                gap: 4px 14px; font-size: 12.5px; color: var(--muted); }}
+.month-stats b {{ color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }}
+.month-stats .muted {{ color: var(--faint); }}
 .month-strip {{ grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 3px; }}
-.month-strip i {{ width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }}
-.month-strip i.award {{ background: #d9b45b; }}
-.month-strip i.szfo {{ background: #7d1e2a; }}
-.month-strip i.nodata {{ background: transparent; box-shadow: inset 0 0 0 1px #ece6d8; }}
+.month-strip i, .month-legend i {{ width: 8px; height: 8px; border-radius: 50%;
+                                   background: var(--dot-empty); }}
+.month-strip i.award, .month-legend i.award {{ background: var(--dot-award); }}
+.month-strip i.szfo, .month-legend i.szfo {{ background: var(--accent); }}
+.month-strip i.nodata {{ background: transparent; box-shadow: inset 0 0 0 1px var(--dot-empty); }}
 .month-legend {{ display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px;
-                 color: #6b6b6b; margin: -2px 2px 12px; }}
+                 color: var(--muted); margin: 0 2px 12px; }}
 .month-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
-.month-legend i {{ width: 9px; height: 9px; border-radius: 2px; background: #ece6d8; }}
-.month-legend i.award {{ background: #d9b45b; }}
-.month-legend i.szfo {{ background: #7d1e2a; }}
-.months-toolbar {{ display: flex; justify-content: flex-end; margin: -4px 0 8px; }}
-.months-toggle {{ border: none; background: none; color: #7d1e2a; font: inherit;
-                  font-size: 13px; cursor: pointer; padding: 4px 2px;
-                  border-bottom: 1px dotted #b8860b; }}
-.months-toggle:hover {{ border-bottom-style: solid; }}
-.entry {{ display: flex; justify-content: space-between; align-items: center;
-         padding: 16px 24px; border-bottom: 1px solid #e8e2d5;
-         color: inherit; text-decoration: none; transition: background 0.15s; }}
-.entry:hover {{ background: #faf7f0; }}
+.months-toolbar {{ display: flex; justify-content: flex-end; margin: -4px 0 4px; }}
+.months-toggle {{ border: none; background: none; color: var(--muted); font: inherit;
+                  font-size: 13px; cursor: pointer; padding: 4px 2px; }}
+.months-toggle:hover {{ color: var(--accent); }}
+.entry {{ display: flex; justify-content: space-between; align-items: center; gap: 12px;
+         padding: 12px 20px 12px 50px; border-bottom: 1px solid var(--line);
+         color: inherit; text-decoration: none; transition: background .15s; }}
+.entry:hover {{ background: var(--soft); }}
 .entry:last-child {{ border-bottom: none; }}
-.month .entry {{ padding: 13px 20px 13px 54px; }}
-.entry.empty .entry-date {{ font-size: 15px; }}
-.entry-date {{ font-family: Georgia, serif; font-size: 16px; color: #5c1620; }}
-.entry-stats {{ display: flex; gap: 20px; font-size: 13px; color: #6b6b6b; }}
-.entry-stats b {{ color: #7d1e2a; font-weight: 600; }}
-.entry.empty {{ opacity: 0.55; }}
+.entry-date {{ font-family: var(--serif); font-size: 16px; color: var(--ink); }}
+.entry-stats {{ display: flex; align-items: center; gap: 12px; font-size: 13px;
+               color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }}
+.entry-stats .chip {{ color: var(--on-accent); background: var(--accent); font-weight: 600;
+                      font-size: 12px; padding: 2px 10px; border-radius: 999px; }}
+.entry-stats .nil {{ color: var(--faint); }}
+.entry.nil {{ padding-top: 8px; padding-bottom: 8px; }}
+.entry.nil .entry-date {{ font-size: 14.5px; color: var(--faint); }}
+.entry.empty:not(.nil) .entry-date {{ color: var(--muted); }}
 .entry.hidden {{ display: none; }}
-.updated {{ text-align: center; font-size: 12px; color: #999; margin-top: 20px; }}
+.updated {{ text-align: center; font-size: 12px; color: var(--faint); margin-top: 26px; }}
 
 /* Сегментированный фильтр списка дней */
-.index-filter {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
-                 padding: 6px; background: #faf7f0; border: 1px solid #eee6d3;
-                 border-radius: 999px; }}
-.index-filter-btn {{ flex: 1; min-width: 100px; padding: 9px 16px; border: none;
-                     background: transparent; color: #5c1620; font: inherit;
+.index-filter {{ display: flex; gap: 4px; margin-bottom: 12px; padding: 4px;
+                 background: var(--soft); border: 1px solid var(--line); border-radius: 999px; }}
+.index-filter-btn {{ flex: 1; min-width: 100px; padding: 8px 14px; border: none;
+                     background: transparent; color: var(--muted); font: inherit;
                      font-size: 13.5px; border-radius: 999px; cursor: pointer;
-                     transition: all .15s; display: inline-flex;
-                     align-items: center; justify-content: center; gap: 8px;
-                     white-space: nowrap; }}
-.index-filter-btn:hover {{ background: white; }}
-.index-filter-btn.active {{ background: #7d1e2a; color: white;
-                             box-shadow: 0 1px 3px rgba(125,30,42,.25); }}
-.index-filter-btn .badge {{ display: inline-block; padding: 0 8px;
-                            background: rgba(184,134,11,.15); color: #7d1e2a;
-                            font-size: 11.5px; border-radius: 999px;
+                     transition: background .15s, color .15s; display: inline-flex;
+                     align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }}
+.index-filter-btn:hover {{ color: var(--ink); }}
+.index-filter-btn.active {{ background: var(--card); color: var(--accent-deep); font-weight: 600;
+                             box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px var(--line); }}
+.index-filter-btn .badge {{ font-size: 12px; color: var(--faint); font-weight: 400;
                             font-variant-numeric: tabular-nums; }}
-.index-filter-btn.active .badge {{ background: rgba(255,255,255,.22);
-                                    color: white; }}
-.index-filter-empty {{ text-align: center; padding: 30px 20px;
-                       color: #6b6b6b; font-size: 14px;
-                       background: white; border: 1px dashed #e8e2d5;
-                       border-radius: 10px; }}
+.index-filter-btn.active .badge {{ color: var(--accent); }}
+.index-filter-empty {{ text-align: center; padding: 30px 20px; color: var(--muted); font-size: 14px;
+                       background: var(--card); border: 1px dashed var(--line); border-radius: 14px; }}
 @media (max-width: 640px) {{
-  .index-filter {{ flex-direction: column; gap: 4px; border-radius: 14px; }}
-  .index-filter-btn {{ font-size: 13.5px; padding: 10px 14px; min-width: 0;
-                       justify-content: space-between; white-space: normal;
-                       border-radius: 10px; }}
+  .hero {{ padding: 16px 0 30px; }}
+  .hero h1 {{ font-size: 27px; }}
+  .hero .wide {{ display: none; }}
+  .month-strip {{ gap: 2px; }}
+  .month-strip i {{ width: 7px; height: 7px; }}
+  .summary .stat-value {{ font-size: 28px; }}
+  .index-filter {{ flex-direction: column; gap: 2px; border-radius: 14px; }}
+  .index-filter-btn {{ min-width: 0; padding: 9px 14px; justify-content: space-between;
+                       white-space: normal; border-radius: 10px; }}
   .month > summary {{ grid-template-columns: auto 1fr; padding: 14px 16px; }}
   .month-stats {{ grid-column: 2; justify-content: flex-start; }}
   .month-strip {{ grid-column: 2; }}
-  .month .entry {{ padding: 11px 16px 11px 44px; gap: 10px; }}
-  .month .entry-date {{ font-size: 14.5px; }}
-  .entry-stats {{ gap: 10px; font-size: 12px; white-space: nowrap; }}
+  .entry {{ padding: 11px 16px 11px 46px; }}
+  .entry-date {{ font-size: 15px; }}
+  .entry-stats {{ gap: 8px; font-size: 12px; }}
+  .entry-stats > span:first-child:not(:only-child) {{ display: none; }}
 }}
 </style>
 </head>
 <body>
 <div class="shell">
   <div class="hero">
-    <div class="emblem">🏛</div>
+    <div class="eyebrow">Северо-Западный федеральный округ<span class="wide"> · 10 регионов</span></div>
     <h1>Мониторинг наградных указов СЗФО</h1>
-    <div class="sub">Северо-Западный федеральный округ · 10 регионов ·
-                     источник: publication.pravo.gov.ru</div>
+    <div class="sub">Указы и распоряжения Президента с
+      <a href="http://publication.pravo.gov.ru/documents/daily" target="_blank"
+         rel="noopener">publication.pravo.gov.ru</a></div>
+    <div class="rule"></div>
+    <div class="summary">
+      <div class="stat"><div class="stat-value">{total_all}</div>
+        <div class="stat-label">{_plural(total_all, "день", "дня", "дней")} в архиве</div></div>
+      <div class="stat"><div class="stat-value">{total_szfo}</div>
+        <div class="stat-label">награждённых из СЗФО</div></div>
+    </div>
     {render_subscribe_button()}
-  </div>
-  <div class="summary">
-    <div class="stat"><div class="stat-value">{total_all}</div>
-      <div class="stat-label">Дайджестов в архиве</div></div>
-    <div class="stat"><div class="stat-value">{total_szfo}</div>
-      <div class="stat-label">Награждённых из СЗФО (всего)</div></div>
   </div>
   {nav_html}
   {filters_html}
   <div class="entries" id="entries-list">{rows_html}</div>
-  <div class="updated">Обновлено: {esc(last_update)} UTC · Автоматически ежедневно</div>
+  <div class="updated">Обновлено {esc(format_msk(last_update))} · автоматически каждый день</div>
 </div>
 <script>
 (function(){{
@@ -1978,6 +2031,26 @@ def build_region_pages():
 
 MONTHS_RU = ["января", "февраля", "марта", "апреля", "мая", "июня",
              "июля", "августа", "сентября", "октября", "ноября", "декабря"]
+
+
+def format_msk(ts):
+    """'2026-11-10T21:12:39.2Z' или '2026-11-10 21:12:39' (UTC) → '11 ноября 2026, 00:12 МСК'."""
+    try:
+        t = datetime.fromisoformat(str(ts).replace("Z", "").replace(" ", "T")[:19])
+    except ValueError:
+        return str(ts or "")
+    t += timedelta(hours=3)
+    return f"{t.day} {MONTHS_RU[t.month - 1]} {t.year}, {t:%H:%M} МСК"
+
+
+WEEKDAYS_RU = ["понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"]
+
+
+def format_weekday(iso_date):
+    try:
+        return WEEKDAYS_RU[date.fromisoformat(iso_date).weekday()]
+    except ValueError:
+        return ""
 
 
 def format_display_date(iso_date):

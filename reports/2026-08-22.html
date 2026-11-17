@@ -3,110 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
 <title>Дайджест СЗФО за 2026-08-22</title>
 <style>
+:root {
+  color-scheme: light dark;
+  --bg: #f7f3ec; --card: #ffffff; --soft: #faf7f1; --line: #ebe4d6;
+  --ink: #1d1a17; --muted: #6f685f; --faint: #9c9488;
+  --accent: #7d1e2a; --accent-deep: #5c1620; --on-accent: #ffffff;
+  --gold: #b08a3e; --gold-ink: #8a6a2a; --gold-soft: rgba(176,138,62,.14);
+  --dot-empty: #ebe4d6; --dot-award: #d6b263; --btn: #7d1e2a; --btn-hover: #5c1620;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15120f; --card: #1d1915; --soft: #231e19; --line: #322b24;
+    --ink: #ece6dc; --muted: #a8a094; --faint: #7d756a;
+    --accent: #e0969a; --accent-deep: #f0c4c0; --on-accent: #1d1915;
+    --gold: #c9a258; --gold-ink: #d4b06a; --gold-soft: rgba(201,162,88,.16);
+    --dot-empty: #322b24; --dot-award: #a8853c; --btn: #9a3040; --btn-hover: #b03a4b;
+  }
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-       background: #f6f2ea; color: #1a1a1a; line-height: 1.55; min-height: 100vh; }
-.shell { max-width: 940px; margin: 0 auto; padding: 32px 20px 60px; }
-.nav { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 14px; }
-.nav a { color: #7d1e2a; text-decoration: none; }
-.nav a:hover { text-decoration: underline; }
+html { -webkit-text-size-adjust: 100%; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink);
+       font-size: 15px; line-height: 1.55; min-height: 100vh;
+       -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+.shell { max-width: 880px; margin: 0 auto; padding: 40px 20px 72px; }
+.nav { margin-bottom: 22px; font-size: 14px; }
+.nav a { color: var(--muted); text-decoration: none; transition: color .15s; }
+.nav a:hover { color: var(--accent); }
 
-.report { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-          padding: 48px 56px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.report-head { text-align: center; padding-bottom: 22px; border-bottom: 2px solid #b8860b;
-               margin-bottom: 26px; }
-.report-head h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 500;
-                  color: #5c1620; margin-bottom: 8px; }
-.period { font-size: 14px; color: #6b6b6b; }
-.report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-                margin-bottom: 26px; }
-.stat { text-align: center; padding: 16px 12px; background: #faf7f0;
-        border-radius: 8px; border: 1px solid #eee6d3; }
-.stat-value { font-family: Georgia, serif; font-size: 26px; color: #7d1e2a;
-              line-height: 1; margin-bottom: 6px; }
-.stat-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.5px; }
+.report { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 52px 60px 40px; }
+.report-head { text-align: center; margin-bottom: 30px; }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .14em;
+           text-transform: uppercase; color: var(--gold-ink); margin-bottom: 12px; }
+.report-head h1 { font-family: var(--serif); font-size: 30px; font-weight: 400;
+                  line-height: 1.2; color: var(--accent-deep); }
+.period { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.rule { position: relative; width: 64px; height: 1px; background: var(--gold);
+        margin: 24px auto 0; }
+.rule::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+               background: var(--card); border: 1px solid var(--gold);
+               transform: translate(-50%, -50%) rotate(45deg); }
 
-.region-block { margin-bottom: 26px; }
-.region-header { display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px;
-                 border-bottom: 1px solid #e8e2d5; margin-bottom: 14px; }
-.marker { color: #b8860b; font-size: 12px; }
-.region-header h2 { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
-                    color: #5c1620; flex: 1; }
-.region-header .count { font-size: 13px; color: #6b6b6b; }
-.region-header a.region-link { font-family: Georgia, serif; font-size: 19px; font-weight: 500;
-                               color: #5c1620; text-decoration: none; flex: 1; }
-.region-header a.region-link:hover { text-decoration: underline; }
-.award-group { margin-bottom: 16px; padding-left: 14px; border-left: 2px solid #fdf6e3; }
-.award-title { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; color: #7d1e2a;
-               text-transform: uppercase; margin-bottom: 8px; }
-.awardee { padding: 6px 0 8px; border-bottom: 1px dotted #e8e2d5; }
+.report-stats { display: flex; margin-bottom: 34px;
+                border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { flex: 1; text-align: center; padding: 18px 10px; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat-value { font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--accent);
+              font-variant-numeric: lining-nums tabular-nums; }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+              letter-spacing: .08em; margin-top: 8px; }
+
+.region-block { margin-bottom: 36px; }
+.region-header { display: flex; align-items: baseline; gap: 12px; padding-bottom: 8px;
+                 border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.region-header h2,
+.region-header a.region-link { font-family: var(--serif); font-size: 21px; font-weight: 400;
+                               color: var(--accent-deep); text-decoration: none; flex: 1; }
+.region-header a.region-link:hover { color: var(--accent); }
+.region-header .count { font-size: 12px; color: var(--accent); background: var(--gold-soft);
+                        padding: 1px 9px; border-radius: 999px;
+                        font-variant-numeric: tabular-nums; }
+.award-group { margin-top: 18px; }
+.award-title { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; line-height: 1.45;
+               color: var(--gold-ink); text-transform: uppercase; margin-bottom: 2px; }
+.awardee { padding: 10px 0 11px; border-bottom: 1px solid var(--line); }
 .awardee:last-child { border-bottom: none; }
-.fio { font-weight: 500; color: #1a1a1a; font-size: 14.5px; }
-.position { font-size: 13px; color: #6b6b6b; margin-top: 2px; }
-.decree { font-size: 11px; color: #999; margin-top: 3px; font-style: italic; }
-.source-link { color: #7d1e2a; font-style: normal; text-decoration: none;
-               border-bottom: 1px dotted #b8860b; white-space: nowrap; }
-.source-link:hover { border-bottom-style: solid; }
+.fio { font-weight: 600; font-size: 15.5px; color: var(--ink); }
+.position { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.decree { font-size: 12px; color: var(--faint); margin-top: 4px; }
+.source-link { color: var(--accent); text-decoration: none; white-space: nowrap;
+               border-bottom: 1px solid var(--gold-soft); transition: border-color .15s; }
+.source-link:hover { border-bottom-color: var(--accent); }
 .kind-badge { display: inline-block; margin-left: 6px; padding: 1px 8px;
-              font-size: 10.5px; font-weight: 500; color: #7d1e2a;
-              background: rgba(184,134,11,.14); border-radius: 999px;
-              vertical-align: 1px; }
+              font-size: 10.5px; font-weight: 500; color: var(--gold-ink);
+              background: var(--gold-soft); border-radius: 999px; vertical-align: 2px; }
 
-.no-results { text-align: center; padding: 40px 20px; color: #6b6b6b; font-size: 14px; }
-.report-footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid #e8e2d5;
-                 text-align: center; font-size: 12px; color: #6b6b6b; }
-.report-footer a { color: #7d1e2a; text-decoration: none; }
+.no-results { text-align: center; padding: 36px 20px 44px; color: var(--muted);
+              font-family: var(--serif); font-size: 17px; }
+.report-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--line);
+                 text-align: center; font-size: 12px; line-height: 1.7; color: var(--faint); }
+.report-footer a { color: var(--muted); }
 
-.filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
-              padding: 12px 14px; background: #faf7f0;
-              border: 1px solid #eee6d3; border-radius: 8px; }
-.filter-bar .filter-label { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                            letter-spacing: 0.5px; align-self: center; padding-right: 4px; }
-.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #d4cbb8;
-              background: white; color: #5c1620; border-radius: 999px; cursor: pointer;
-              transition: all .12s; }
-.filter-btn:hover { background: #fdf6e3; }
-.filter-btn.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.filter-btn .badge { display: inline-block; margin-left: 6px; padding: 0 6px;
-                     background: rgba(184,134,11,0.15); color: #7d1e2a;
-                     font-size: 11px; border-radius: 999px; }
-.filter-btn.active .badge { background: rgba(255,255,255,0.25); color: white; }
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+              margin: -8px 0 26px; }
+.filter-bar .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                            letter-spacing: .08em; padding-right: 4px; }
+.filter-btn { font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer;
+              border: 1px solid var(--line); background: var(--card); color: var(--ink);
+              border-radius: 999px; transition: border-color .15s, background .15s; }
+.filter-btn:hover { border-color: var(--gold); }
+.filter-btn.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.filter-btn .badge { margin-left: 6px; color: var(--faint); font-size: 12px;
+                     font-variant-numeric: tabular-nums; }
+.filter-btn.active .badge { color: var(--on-accent); opacity: .75; }
 
-.region-nav { background: white; border: 1px solid #e8e2d5; border-radius: 10px;
-              padding: 18px 22px; margin-bottom: 20px; }
-.region-nav .title { font-size: 11px; color: #6b6b6b; text-transform: uppercase;
-                     letter-spacing: 0.5px; margin-bottom: 10px; }
-.region-nav .pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.region-pill { display: inline-flex; align-items: center; padding: 6px 14px;
-               background: #faf7f0; border: 1px solid #eee6d3; border-radius: 999px;
-               color: #5c1620; text-decoration: none; font-size: 13.5px; transition: all .12s; }
-.region-pill:hover { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.region-pill.active { background: #7d1e2a; color: white; border-color: #7d1e2a; }
-.region-pill .badge { display: inline-block; margin-left: 8px; padding: 0 7px;
-                      background: rgba(184,134,11,0.15); color: #7d1e2a;
-                      font-size: 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
-.region-pill:hover .badge,
-.region-pill.active .badge { background: rgba(255,255,255,0.25); color: white; }
+.region-nav { margin-bottom: 30px; }
+.region-nav .title { font-size: 11px; color: var(--muted); text-transform: uppercase;
+                     letter-spacing: .08em; margin-bottom: 8px; }
+.region-nav .pills { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                     column-gap: 28px; }
+.region-pill { display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+               padding: 9px 2px; border-bottom: 1px solid var(--line);
+               color: var(--ink); text-decoration: none; font-size: 14.5px;
+               transition: color .15s; }
+.region-pill:hover { color: var(--accent); }
+.region-pill.active { color: var(--accent); font-weight: 600; }
+.region-pill .badge { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
+.region-pill:hover .badge, .region-pill.active .badge { color: var(--accent); }
 
-.timeline-item { background: white; border: 1px solid #e8e2d5; border-radius: 8px;
-                 padding: 14px 18px; margin-bottom: 10px; }
-.timeline-date { font-size: 12px; color: #b8860b; font-weight: 600;
-                 letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 6px; }
-.timeline-date a { color: #b8860b; text-decoration: none; }
-.timeline-date a:hover { text-decoration: underline; }
-.timeline-item .fio { font-size: 15px; margin-bottom: 4px; }
-.timeline-item .award-name { font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
-                             color: #7d1e2a; text-transform: uppercase; margin-bottom: 6px; }
-.timeline-item .position { font-size: 13px; color: #6b6b6b; }
-.timeline-item .decree { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+.timeline-item { display: grid; grid-template-columns: 132px 1fr; column-gap: 24px;
+                 padding: 16px 0; border-bottom: 1px solid var(--line); }
+.timeline-item:last-of-type { border-bottom: none; }
+.timeline-item > * { grid-column: 2; }
+.timeline-date { grid-column: 1; grid-row: 1 / span 4; padding-top: 1px;
+                 font-family: var(--serif); font-size: 15px; }
+.timeline-date a { color: var(--muted); text-decoration: none; }
+.timeline-date a:hover { color: var(--accent); }
+.timeline-item .award-name { font-size: 11.5px; font-weight: 600; letter-spacing: .08em;
+                             color: var(--gold-ink); text-transform: uppercase; margin-bottom: 3px; }
 
 @media (max-width: 640px) {
-  .shell { padding: 20px 14px; }
-  .report { padding: 26px 20px; }
-  .report-stats { grid-template-columns: 1fr; }
-  .filter-bar { padding: 10px; }
+  body { font-size: 14.5px; }
+  .shell { padding: 22px 14px 48px; }
+  .report { padding: 30px 20px 24px; border-radius: 12px; }
+  .report-head h1 { font-size: 25px; }
+  .stat { padding: 14px 4px; }
+  .stat-value { font-size: 24px; }
+  .stat-label { font-size: 10px; letter-spacing: .04em; }
+  .region-nav .pills { grid-template-columns: 1fr; }
+  .region-pill { padding: 8px 2px; font-size: 14px; }
+  .timeline-item { grid-template-columns: 1fr; }
+  .timeline-date { grid-column: 1; grid-row: auto; font-size: 14px; margin-bottom: 4px; }
+  .timeline-item > * { grid-column: 1; }
 }
 </style>
 </head>
@@ -115,18 +150,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="nav"><a href="../index.html">← Все дайджесты</a></div>
   <div class="report">
     <div class="report-head">
-      <h1>Дайджест наградных указов СЗФО</h1>
-      <div class="period">Период: 22 августа 2026</div>
+      <div class="eyebrow">Дайджест наградных указов СЗФО</div>
+      <h1>22 августа 2026</h1>
+      <div class="period">суббота</div>
+      <div class="rule"></div>
     </div>
     <div class="report-stats"><div class="stat"><div class="stat-value">0</div><div class="stat-label">Документов за день</div></div><div class="stat"><div class="stat-value">0</div><div class="stat-label">Наградных указов</div></div><div class="stat"><div class="stat-value">0</div><div class="stat-label">Награждённых СЗФО</div></div></div>
     
     <div class="no-results">За выбранную дату награждённых из регионов СЗФО не найдено</div>
     <div class="report-footer">
       Источник: <a href="http://publication.pravo.gov.ru/documents/daily"
-                    target="_blank" rel="noopener">publication.pravo.gov.ru</a><br>
-      Всего в указах награждённых: 0 ·
-      Отфильтровано по 10 регионам СЗФО<br>
-      Сгенерировано автоматически: 2026-08-23T07:49:28.456656Z
+                    target="_blank" rel="noopener">publication.pravo.gov.ru</a> ·
+      всего в документах награждённых: 0, из них по 10 регионам СЗФО: 0<br>
+      Обновлено 23 августа 2026, 10:49 МСК
     </div>
   </div>
 </div>

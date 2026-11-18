@@ -1,6 +1,117 @@
 [
  {
   "type": "appointment",
+  "level": "head",
+  "org_class": "business",
+  "region": "Санкт-Петербург",
+  "title": "Ретейлер электроники \"Связь.ON\" с 250 магазинами сменил собственников",
+  "summary": "Банк ПСБ, ЗПИФ \"ГК Связь\" и гендиректор компании Дагмара Иванова продали свои доли в сети магазинов электроники \"Связь.ON\", покупателем выступила проектная компания, которая приобретает активы в интересах инвесторов, выяснили \"Известия\". Сумма сделки составила от 5 до 8 млрд рублей, рассказал источник, знакомый с ходом подготовки. В компании сделку подтвердили, но финансовые детали и имя нового вл",
+  "link": "https://www.dp.ru/a/2026/11/18/retejler-jelektroniki-svjaz",
+  "date": "2026-11-18",
+  "source": "Деловой Петербург",
+  "source_id": "dp",
+  "rank": 3,
+  "person": "Дагмара Иванова",
+  "orgs": []
+ },
+ {
+  "type": "visit",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Санкт-Петербург",
+  "title": "Посещение совместного университета МГУ и Пекинского политехнического института",
+  "summary": "Владимир Путин\nпосетил первый совместный вуз России и Китая – университет МГУ\nи Пекинского политехнического института в Шэньчжэне. В настоящее\nвремя в университете работают 10 факультетов\nи 5 центров – по евразийским исследованиям, сравнительному\nправоведению, искусству, китайскому и русскому языкам.",
+  "link": "http://kremlin.ru/events/president/news/81289",
+  "date": "2026-11-18",
+  "source": "Президент России",
+  "source_id": "kremlin",
+  "rank": 1,
+  "person": "",
+  "orgs": [
+   "Политех"
+  ]
+ },
+ {
+  "type": "status",
+  "level": "head",
+  "org_class": "company",
+  "region": "Санкт-Петербург",
+  "title": "Онлайн47 вошел в ТОП-20 самых цитируемых СМИ Петербурга и Ленобласти за 2026 год",
+  "summary": "",
+  "link": "https://online47.ru/2026/11/18/onlayn47-voshel-v-top-20-samykh-tsitiruemykh-smi-peterburga-i-lenoblasti-za-2026-god-247855",
+  "date": "2026-11-18",
+  "source": "Online47",
+  "source_id": "online47",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Ленобл"
+  ]
+ },
+ {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "force",
+  "region": "Санкт-Петербург",
+  "title": "В Петербурге возбудили дело после ДТП с наездом на двух девушек на Пискарёвском",
+  "summary": "По факту ДТП на Пискарёвском проспекте в Красногвардейском районе, где пострадали две девушки, возбудили уголовное дело, сообщили в ГУ МВД по Петербургу и Ленобласти. Дело возбуждено по ч. 1 ст. 264 УК РФ (нарушение правил дорожного движения, повлёкшее по неосторожности тяжкий вред здоровью). Авария произошла 17 ноября в 12:10 у дома 145 по Пискарёвскому проспекту. 20-летний водитель \"Киа Рио\" нае",
+  "link": "https://www.dp.ru/a/2026/11/18/v-peterburge-vozbudili-delo",
+  "date": "2026-11-18",
+  "source": "Деловой Петербург",
+  "source_id": "dp",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Ленобл"
+  ]
+ },
+ {
+  "type": "launch",
+  "level": "head",
+  "org_class": "business",
+  "region": "Республика Коми",
+  "title": "Сформирован план по строительству шахты \"Усинская\" и ввода в эксплуатацию первой лавы",
+  "summary": "Воркута готова к освоению перспективных запасов Усинского месторождения угля. \n Уже сформирован перечень первоочередных мероприятий по четырем направлениям и утвержден список объектов центральной площадки наклонных стволов для строительства шахты и ввода в эксплуатацию первой лавы. Проектная мощность предприятия составит 5 млн тонн в год. \n Работы планируют начать в рамках расширения производствен",
+  "link": "https://komiinform.ru/news/303066",
+  "date": "2026-11-18",
+  "source": "Комиинформ",
+  "source_id": "komiinform",
+  "rank": 3,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "title",
+  "level": "head",
+  "org_class": "person",
+  "region": "Республика Коми",
+  "title": "Сергей Емельянов стал заслуженным работником Коми",
+  "summary": "",
+  "link": "https://www.bnkomi.ru/data/news/205908/",
+  "date": "2026-11-18",
+  "source": "БНК",
+  "source_id": "bnkomi",
+  "rank": 3,
+  "person": "Сергей Емельянов",
+  "orgs": []
+ },
+ {
+  "type": "leave",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Республика Карелия",
+  "title": "Глава администрации правительства Монголии подал в отставку вслед за президентом",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQXzJydEx3SzloYWpTRE0zc3dQTHdrTldsZ28weUN0cG4xVnA2Y3I4bDBQYi15WndfSUNNZ2dqaGpaa0pSYlVUSVhjdUNoTXU2cHdyc2FFQm9pc1REd2oydV9Ld1ZETXFFei1lZW1nUktkQVU4NkNkMFl5ZFJsZHNJUDh2Ykg0Y1R2ZG1lV0lES0h4dlZ2N2RmWUtjU1Q4Z3h2Y1gyZ3RxMGRSSWY0MEdINDM3OHVIaTNUaTlzYngwUQ?oc=5",
+  "date": "2026-11-18",
+  "source": "Google Новости · Республика Карелия",
+  "source_id": "gnews_kar",
+  "rank": 4,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
   "level": "deputy",
   "org_class": "gov",
   "region": "Республика Карелия",
@@ -13,6 +124,72 @@
   "rank": 1,
   "person": "Екатерина Реутова",
   "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Республика Карелия",
+  "title": "В Карелии назначили нового руководителя пресс-службы правительства - Интернет-журнал",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNR2dMRlJ5ZUJOeWdULVUwWFhlMmtUcGxjT1lGSnJYTE1tbWh5cUEwY1ZBN0E5VU53dkZxUDE5MmMteDhBSGJ4b01QVFZkWFpvcHFqZUdRd0d4VlE0ZWhZRUdOVjdEWkVNdHctYVppeHpWZmxUMVB0WG5YN0sxOHpPdmlXaHc2cDQ0SUNodkJPa2FjTHUtakczRmM5QTJMcmdnYy1IUDd2eDNCdElWdE1r?oc=5",
+  "date": "2026-11-18",
+  "source": "Google Новости · Вологодская область",
+  "source_id": "gnews_vol",
+  "rank": 4,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "force",
+  "region": "Новгородская область",
+  "title": "С участием гособвинителя прокуратуры Новгородской области вынесен приговор по уголовному делу в отношении бывшего федерального судьи о получении взятки",
+  "summary": "",
+  "link": "https://epp.genproc.gov.ru/ru/proc_53/mass-media/news/main/e8705740/",
+  "date": "2026-11-18",
+  "source": "Прокуратура Новгородской области",
+  "source_id": "genproc_53",
+  "rank": 1,
+  "person": "",
+  "orgs": [
+   "НовГУ"
+  ]
+ },
+ {
+  "type": "visit",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Новгородская область",
+  "title": "Дорожные службы Новгородской области готовы к работе зимой",
+  "summary": "Полномочный представитель президента в Северо-Западном федеральном округе Игорь Руденя провёл заседание окружной комиссии по предупреждению и ликвидации чрезвычайных ситуаций. Участники обсудили готовность регионов, в том числе и Новгородской области, к зиме. Первый заместитель губернатора Новгородской области Евгений Богданов доложил о готовности региональной системы предупреждения и ликвидации ч",
+  "link": "https://news.novgorod.ru/news/211010.html",
+  "date": "2026-11-18",
+  "source": "Новгород.ру",
+  "source_id": "novgorod_ru",
+  "rank": 3,
+  "person": "Игорь Руденя",
+  "orgs": [
+   "НовГУ"
+  ]
+ },
+ {
+  "type": "anniversary",
+  "level": "head",
+  "org_class": "company",
+  "region": "Новгородская область",
+  "title": "10:10 18.11.2026 Новгородскому отделению РГО исполнилось 60 лет",
+  "summary": "",
+  "link": "https://53news.ru/novosti/novgorodskomu-otdeleniyu-rgo-ispolnilos-60-let.html",
+  "date": "2026-11-18",
+  "source": "53 новости",
+  "source_id": "53news",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "НовГУ"
+  ]
  },
  {
   "type": "appointment",
@@ -30,19 +207,230 @@
   "orgs": []
  },
  {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "force",
+  "region": "Ленинградская область",
+  "title": "Майор полиции арестован за пьяный наезд под Светогорском и попытку спрятать служебное авто 09:09, 17.11.2026",
+  "summary": "",
+  "link": "https://47news.ru/articles/295805/",
+  "date": "2026-11-18",
+  "source": "47news",
+  "source_id": "47news",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Светогорск"
+  ]
+ },
+ {
+  "type": "title",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Калининградская область",
+  "title": "Депутаты единогласно признали Газманова почётным гражданином области",
+  "summary": "Заксобрание утвердило в двух чтениях закон о присвоении Олегу Газманову почётного звания.",
+  "link": "https://www.newkaliningrad.ru/news/briefs/community/24170299-deputaty-edinoglasno-priznali-gazmanova-pochyetnym-grazhdaninom-oblasti.html",
+  "date": "2026-11-18",
+  "source": "Новый Калининград",
+  "source_id": "newkaliningrad",
+  "rank": 3,
+  "person": "Олегу Газманову",
+  "orgs": []
+ },
+ {
   "type": "appointment",
   "level": "head",
   "org_class": "gov",
-  "region": "Псковская область",
-  "title": "Очередная сессия Заксобрания Псковской области пройдёт 25 ноября",
-  "summary": "Совет Законодательного Собрания Псковской области утвердил дату очередной сессии – депутаты соберутся 25 ноября. Об этом сообщил председатель Законодательного Собрания Борис Елкин в своём канале в мессенджере MAX. \n\n \n\n Борис Елкин отметил, что накануне, 24 ноября, пройдут заседания профильных комитетов, где детально проработают все документы. \n\n Повестка, по словам спикера, включает больше 20 воп",
-  "link": "https://informpskov.ru/news/523265.html",
-  "date": "2026-11-17",
-  "source": "ПАИ",
-  "source_id": "informpskov",
+  "region": "Вологодская область",
+  "title": "Екатерина Демянчук из Вологодской области возглавила пресс-службу правительства Карелии Новым руководителем пресс-службы республики Карелия стала Екатерина Демянчук. В прошлом она занималась информационной повесткой сразу нескольких регионов.",
+  "summary": "",
+  "link": "https://stolicaonego.ru/news/ekaterina-demjanchuk-iz-vologodskoj-oblasti-vozglavila-press-sluzhbu-pravitelstva-karelii/",
+  "date": "2026-11-18",
+  "source": "Столица на Onego",
+  "source_id": "stolicaonego",
   "rank": 3,
-  "person": "Борис Елкин",
+  "person": "Екатерина Демянчук",
   "orgs": []
+ },
+ {
+  "type": "anniversary",
+  "level": "head",
+  "org_class": "company",
+  "region": "Вологодская область",
+  "title": "Вологжанке Галине Барановой исполнилось 100 лет",
+  "summary": "",
+  "link": "https://krassever.ru/news/vologzhanke-galine-baranovoy-ispolnilos-100-let",
+  "date": "2026-11-18",
+  "source": "Красный Север",
+  "source_id": "krassever",
+  "rank": 3,
+  "person": "Вологжанке Галине",
+  "orgs": [
+   "Баранова"
+  ]
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Архангельская область",
+  "title": "Бывшего главврача освободили из-под стражи в Архангельске",
+  "summary": "Ему назначили реальный срок за махинации с данными о диспансеризации",
+  "link": "https://29.ru/text/criminal/2026/11/18/76774378/",
+  "date": "2026-11-18",
+  "source": "29.ru",
+  "source_id": "29ru",
+  "rank": 3,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "launch",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Санкт-Петербург",
+  "title": "На монтаж и запуск сборного ледового катка на стадионе «Балтика» выделяют более 700 тысяч",
+  "summary": "Работы необходимо завершить до 10 декабря 2026 года.",
+  "link": "https://www.newkaliningrad.ru/afisha/sport/news/24170218-na-montazh-i-zapusk-sbornogo-ledovogo-katka-na-stadione-baltika-vydelyayut-bolee-700-tysyach.html",
+  "date": "2026-11-17",
+  "source": "Новый Калининград",
+  "source_id": "newkaliningrad",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Балтика"
+  ]
+ },
+ {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "force",
+  "region": "Санкт-Петербург",
+  "title": "В петербургской компании прошли обыски по делу экс-замминистра обороны Булгакова // У силовиков появились новые претензии к руководству компании",
+  "summary": "Сотрудники Следственного комитета России утром 17 ноября пришли с обысками в петербургскую компанию «Нева-Балт СПб» и квартиру ее генерального директора. Следственные действия связаны с уголовным делом бывшего заместителя министра обороны Дмитрия Булгакова и контрактами Военно-медицинской академии имени Кирова, сообщает «Фонтанка».",
+  "link": "https://www.kommersant.ru/doc/9111290",
+  "date": "2026-11-17",
+  "source": "Коммерсантъ Санкт-Петербург",
+  "source_id": "kommersant_spb",
+  "rank": 2,
+  "person": "Дмитрия Булгакова",
+  "orgs": [
+   "Военно-медицинская академия"
+  ]
+ },
+ {
+  "type": "appointment",
+  "level": "deputy",
+  "org_class": "force",
+  "region": "Псковская область",
+  "title": "Путин назначил нового заместителя генпрокурора РФ",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9MMWJsMFF1aHFrQV9Yam9SU0RoWjFQU1V0T3N6OVpPd0tjV2hDVWswWkgtNjNjTGZ0b3AyRUMzVDR2WmVPOXdBVUMtOG5JdzZXV2R4ZEhmcw?oc=5",
+  "date": "2026-11-17",
+  "source": "Google Новости · Псковская область",
+  "source_id": "gnews_psk",
+  "rank": 4,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "deputy",
+  "org_class": "force",
+  "region": "Псковская область",
+  "title": "Путин назначил Олега Логунова заместителем генерального прокурора России",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNYWRiZUNlT01sWm15ZVZhcFFDUVhPOXVsQ0lpcmZXcXNQdFJJeUJwR0hSVWRTZ21RcHFIMmdLVTd3MmQxZW9PeDI4Q1Ayam1OMHJ2N280R21JbmN1MlR5dTR2bFF0U0h6RHk0RmgwNnFSeUNRVzR1TktoUzNKNjlZaWNKQUQ4SFc1ZnFkM1ZZNUVmZDdOTkxzQUJYZG1hcmR0dWtRbk1sWVo3bGkzYVNsY0ptUVoyY2YwWVFn?oc=5",
+  "date": "2026-11-17",
+  "source": "Google Новости · Псковская область",
+  "source_id": "gnews_psk",
+  "rank": 4,
+  "person": "Олега Логунова",
+  "orgs": []
+ },
+ {
+  "type": "launch",
+  "level": "head",
+  "org_class": "company",
+  "region": "Новгородская область",
+  "title": "\"Авроры\" и \"Сапсаны\" получат новые маршруты после запуска ВСМ",
+  "summary": "После запуска высокоскоростной магистрали (ВСМ) Москва – Санкт-Петербург поезда \"Аврора\" и \"Сапсан\" могут перевести на другие направления, сообщил заместитель генерального директора РЖД Иван Колесников. Название поездов на новых маршрутах сохранятся. Среди возможных маршрутов — Москва – Нижний Новгород, Белгород и Смоленск для \"Сапсанов\", а также Курск, Орёл и Ярославль для \"Авроры\", заявил в инте",
+  "link": "https://www.dp.ru/a/2026/11/17/avrori-i-sapsani-poluchat",
+  "date": "2026-11-17",
+  "source": "Деловой Петербург",
+  "source_id": "dp",
+  "rank": 3,
+  "person": "Иван Колесников",
+  "orgs": [
+   "НовГУ"
+  ]
+ },
+ {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "company",
+  "region": "Ленинградская область",
+  "title": "Производитель плитки из Ленобласти объявил о ликвидации",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPZTBrU2FZdU92OFJ5NXhiZ2IwTm5GOEhkNkVoYVQ5TkdYcDZrLWRmd1JCUUhIbWZLUUNMeUxNcEFIUlBYSWdIMVBNMHhidTh4RnRfV053Yl9xa0dPY1FTbjhmamlwVDNCUkVuaXBjbTlKQnk3VDNhN201TGpkYWhYRg?oc=5",
+  "date": "2026-11-17",
+  "source": "Google Новости · Ленинградская область",
+  "source_id": "gnews_lo",
+  "rank": 4,
+  "person": "",
+  "orgs": [
+   "Ленобл"
+  ]
+ },
+ {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "company",
+  "region": "Вологодская область",
+  "title": "«Фосагро» выкупила 2,9 млн облигаций серии БО-02-01",
+  "summary": "",
+  "link": "https://www.vedomosti.ru/investments/news/2026/11/17/1412628-fosagro-vikupila",
+  "date": "2026-11-17",
+  "source": "Ведомости",
+  "source_id": "vedomosti",
+  "rank": 2,
+  "person": "",
+  "orgs": [
+   "ФосАгро"
+  ]
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "force",
+  "region": "Псковская область",
+  "title": "Новым главой псковского управления ФСБ назначен полковник Василий Дашко",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOYUxzcmZlTHk4ZUdOV3lPbWxkZjJZR3IybWhPejJlRmY4NmN0dmxXdXY0WW92cEV5bmE0VkpSV3V5dzJGZnBnTkM1TnM5aHlnY1lwQ2VpaHhGUmFMRjh0NmNZMGNTN2tQT0xfSU1PckEzak8yU0JzQW1aWVprTlBlUzJuZXlWN3ByM0o2a3RwYUtqZ0FSMnU2U2N6OXgtVHBiOWVNdWVES2RvaU9WaTNDSEdQNEliQmM?oc=5",
+  "date": "2026-11-16",
+  "source": "Google Новости · Псковская область",
+  "source_id": "gnews_psk",
+  "rank": 4,
+  "person": "Василий Дашко",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "company",
+  "region": "Новгородская область",
+  "title": "Кадровые перестановки в Новгородской области: сменился глава минцифры",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiOkFVX3lxTFAxYzNyR2tuU1J3d0d1V2MzaDFPSGZMUjc1YnNmaHlsVXdZOGlqZkFQdnZJbGt0WDFKS0E?oc=5",
+  "date": "2026-11-16",
+  "source": "Google Новости · Новгородская область",
+  "source_id": "gnews_nov",
+  "rank": 4,
+  "person": "",
+  "orgs": [
+   "НовГУ"
+  ]
  },
  {
   "type": "appointment",
@@ -57,6 +445,36 @@
   "source_id": "cherinfo",
   "rank": 3,
   "person": "Ксения Фаламеева",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "force",
+  "region": "Псковская область",
+  "title": "Борис Жамерашвили назначен врио руководителя УФССП по Псковской области",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTFBXS1haNlRwVGZqVjlBZ1d2Y2tRR2sxOUU2REtsZURoR1dNeFFjb2VJd0tsT3U3YnVhT0Z5ZDJLbjlJRDFidllTZmVwaXN1ZjY3Unc?oc=5",
+  "date": "2026-11-14",
+  "source": "Google Новости · Псковская область",
+  "source_id": "gnews_psk",
+  "rank": 4,
+  "person": "Борис Жамерашвили",
+  "orgs": []
+ },
+ {
+  "type": "title",
+  "level": "head",
+  "org_class": "person",
+  "region": "Новгородская область",
+  "title": "Волотовскому трактористу присвоено звание «Почётный работник АПК России»",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiRkFVX3lxTFBDbnU5bzg4ZjIxRzF4SUFLcno5ZjJiNUtWQWszeFJ3Z1VOTWhwdFY3UXZJSGNiSFFlTDdUS0xZT0JfamFQZ3c?oc=5",
+  "date": "2026-11-14",
+  "source": "Google Новости · Новгородская область",
+  "source_id": "gnews_nov",
+  "rank": 4,
+  "person": "",
   "orgs": []
  },
  {

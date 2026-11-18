@@ -240,3 +240,62 @@ class TestPage(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestFirstRunFeedback(unittest.TestCase):
+    """Разбор первого прогона 17.11.2026: лишние события и дубли."""
+
+    def test_summary_cannot_supply_the_verb(self):
+        # глагол в аннотации, в заголовке события нет → не событие
+        self.assertIsNone(det("Вопрос о целевом назначении «Шарматово» на нулевых чтениях бюджета поднял депутат Шалякин",
+                              "Депутат спросил, когда будет назначен руководитель комитета по управлению имуществом."))
+        self.assertIsNone(det("Очередная сессия Заксобрания Псковской области пройдёт 25 ноября",
+                              "Депутаты утвердят председателя комитета по бюджету."))
+        self.assertIsNone(det("В Росавиации обсудили вопросы функционирования «Комиавиатранс»",
+                              "Совещание прошло 17 ноября. Генеральный директор назначен ответственным за программу."))
+
+    def test_party_posts_and_noun_naznachenie(self):
+        self.assertIsNone(det("Станислав Стармолотов избран секретарем Псковского городского отделения «Единой России»"))
+        self.assertIsNone(det("Вопрос о целевом назначении «Шарматово» на нулевых чтениях бюджета поднял новгородский депутат Шалякин"))
+
+    def test_verb_in_first_sentence_still_counts(self):
+        r = det("Новый министр в Вологодской области", "Ксения Фаламеева назначена министром информационной политики.")
+        self.assertIsNotNone(r)
+
+    def test_position_key_merges_same_event(self):
+        a = {"type": "appointment", "region": "Вологодская область",
+             "title": "Георгий Филимонов назначил нового министра информационной политики", "summary": ""}
+        b = {"type": "appointment", "region": "Вологодская область",
+             "title": "Ксения Фаламеева назначена министром информационной политики Вологодской области", "summary": ""}
+        self.assertEqual(nm.position_key(a), nm.position_key(b))
+        c = {"type": "appointment", "region": "Республика Карелия",
+             "title": "Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова", "summary": ""}
+        d = {"type": "appointment", "region": "Республика Карелия",
+             "title": "В Карелии назначили нового вице‑премьера по социальным вопросам", "summary": ""}
+        self.assertEqual(nm.position_key(c), nm.position_key(d))
+        e = {"type": "appointment", "region": "Республика Карелия",
+             "title": "Министром здравоохранения Карелии назначен Михаил Охлопков", "summary": ""}
+        self.assertNotEqual(nm.position_key(c), nm.position_key(e))
+
+    def test_higher_rank_source_wins(self):
+        import tempfile
+        from datetime import date
+        events = [
+            {"type": "appointment", "level": "head", "org_class": "gov", "region": "Республика Карелия",
+             "title": "В Карелии назначили нового вице-премьера по социальным вопросам", "summary": "", "link": "s",
+             "date": "2026-11-17", "source": "Столица на Onego", "source_id": "stolicaonego", "rank": 3,
+             "person": "", "orgs": []},
+            {"type": "appointment", "level": "head", "org_class": "gov", "region": "Республика Карелия",
+             "title": "Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова", "summary": "",
+             "link": "g", "date": "2026-11-17", "source": "Правительство Республики Карелия", "source_id": "kar_gov",
+             "rank": 1, "person": "Екатерина Реутова", "orgs": []}]
+        events.sort(key=lambda e: (e["rank"], e["date"]))
+        seen, kept = {}, []
+        for ev in events:
+            keys = nm.event_keys(ev)
+            if any(k in seen for k in keys):
+                continue
+            for k in keys:
+                seen[k] = "2026-11-17"
+            kept.append(ev)
+        self.assertEqual([e["source_id"] for e in kept], ["kar_gov"])

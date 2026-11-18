@@ -234,6 +234,8 @@ class TestPage(unittest.TestCase):
                 nm.PAGE_FILE = old
         self.assertIn('data-region="Санкт-Петербург"', page)
         self.assertIn("16 ноября 2026", page)
+        self.assertIn('class="day-block" data-day="2026-11-16" open', page)
+        self.assertIn("1 событие", page)
         self.assertIn('class="ev-type title"', page)
         self.assertEqual(page.count('class="ev"'), 2)
 

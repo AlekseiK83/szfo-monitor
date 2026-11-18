@@ -1,38 +1,18 @@
 {
  "date": "2026-11-18",
- "new": [
+ "new": [],
+ "sources_total": 84,
+ "sources_failed": 2,
+ "failed": [
   {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Санкт-Петербург",
-   "title": "В Петербурге сменился глава комитета по информатизации и связи",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNX3JkWUtqcTFJaWNCWFpGeHlyYklJaERrSFo4SzY3V1llU2twR281UVN4WkZ1QkUySmhKTU1mSE1hZU9yQzUydlVSSWZRbzZuamE5NVRyZnRYTXZ4ZDFaVlF3Qm1qMGdtR1otUDVvWXJrdUVHOUNXYWhRTzVOR2JxRmM2WXBjZ2ZrVmZVc0FTc1FReFJENzE5U0gwam1XVE5qSnVlNUtxNmxwaFBNSFE?oc=5",
-   "date": "2026-11-18",
-   "source": "Google Новости · Ленинградская область",
-   "source_id": "gnews_lo",
-   "rank": 4,
-   "person": "",
-   "orgs": []
+   "id": "abnews",
+   "name": "АБН24",
+   "status": "error: ReadTimeout"
   },
   {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Санкт-Петербург",
-   "title": "Юлию Смирнову назначили спецпредставителем губернатора Петербурга",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxPNlZUU3FTUzQ1UllnTnBuWVFZTXFVOHk4Xy1xQk5md3JmWTlhdEJQWU9vVEZka0w0Y1pCcUFiOUh0bFVmbzl2VXlmcVFsa1VydGF6aGZHZXdtX1paWFozT3E2TWdySmZFcnU1SzVITjdGeGtIQllkVWFZSkx1MVJURTQyeUd1RzdDR3RHUXBNbzVLajRTLUJMSlhDTV9oX1ZpOEtfcXlubzA0MHRmZmNKQnJ2d1VOdlAzRTlEZkVTZ0gxVGtIelE?oc=5",
-   "date": "2026-11-18",
-   "source": "Google Новости · Санкт-Петербург",
-   "source_id": "gnews_spb",
-   "rank": 4,
-   "person": "Юлию Смирнову",
-   "orgs": []
+   "id": "nov_gov",
+   "name": "Правительство Новгородской области",
+   "status": "error: ConnectionError"
   }
- ],
- "sources_total": 84,
- "sources_failed": 0,
- "failed": []
+ ]
 }

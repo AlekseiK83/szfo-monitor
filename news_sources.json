@@ -1,5 +1,5 @@
 {
- "_comment": "Источники мониторинга новостей. type: rss (прямой адрес ленты) | site (адрес сайта, лента ищется автоматически, иначе читаются заголовки со страницы news) | telegram (имя публичного канала без @). region: имя региона СЗФО или null для федеральных (тогда регион берётся из текста). Поле verified — true, если адрес подтверждён в ходе исследования; остальные проверяет workflow «Проверка источников новостей». Поле enabled: false — источник выключен (недоступен из GitHub Actions по итогам проверки 17.11.2026), остаётся в списке на случай смены хостинга.",
+ "_comment": "Источники мониторинга новостей. type: rss (прямой адрес ленты) | site (адрес сайта, лента ищется автоматически, иначе читаются заголовки со страницы news) | telegram (имя публичного канала без @). region: имя региона СЗФО или null для федеральных (тогда регион берётся из текста). Поле verified — true, если адрес подтверждён в ходе исследования; остальные проверяет workflow «Проверка источников новостей». Поле enabled: false — источник выключен (недоступен из GitHub Actions по итогам проверки 17.11.2026), остаётся в списке на случай смены хостинга. Поле rank — авторитет источника (1 официальный, 2 федеральные СМИ, 3 региональные СМИ): при совпадении события остаётся запись из источника с меньшим rank.",
  "sources": [
   {
    "id": "kremlin",
@@ -7,7 +7,8 @@
    "type": "rss",
    "url": "http://kremlin.ru/events/all/feed",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "kremlin_tg",
@@ -15,7 +16,8 @@
    "type": "telegram",
    "url": "news_kremlin",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "government",
@@ -23,7 +25,8 @@
    "type": "rss",
    "url": "http://government.ru/all/rss/",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "tass",
@@ -31,7 +34,8 @@
    "type": "rss",
    "url": "https://tass.ru/rss/v2.xml",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 2
   },
   {
    "id": "ria",
@@ -39,7 +43,8 @@
    "type": "rss",
    "url": "https://ria.ru/export/rss2/archive/index.xml",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 2
   },
   {
    "id": "interfax",
@@ -47,7 +52,8 @@
    "type": "rss",
    "url": "https://www.interfax.ru/rss.asp",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 2
   },
   {
    "id": "kommersant_spb",
@@ -55,7 +61,8 @@
    "type": "rss",
    "url": "https://www.kommersant.ru/rss/regions/piter_all.xml",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 2
   },
   {
    "id": "vedomosti",
@@ -63,7 +70,8 @@
    "type": "rss",
    "url": "https://www.vedomosti.ru/rss/news",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 2
   },
   {
    "id": "abnews",
@@ -71,7 +79,8 @@
    "type": "rss",
    "url": "https://abnews.ru/rss/type/feed",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd",
@@ -82,7 +91,8 @@
    "region": null,
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "mvd_tg",
@@ -92,7 +102,8 @@
    "region": null,
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom",
@@ -103,7 +114,8 @@
    "region": null,
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_tg",
@@ -111,7 +123,8 @@
    "type": "telegram",
    "url": "sledcom_press",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "genproc_tg",
@@ -119,7 +132,8 @@
    "type": "telegram",
    "url": "genprocrf",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs",
@@ -130,7 +144,8 @@
    "region": null,
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "mchs_tg",
@@ -138,7 +153,8 @@
    "type": "telegram",
    "url": "mchs_official",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "rosguard",
@@ -147,7 +163,8 @@
    "url": "https://rosguard.gov.ru/",
    "news_url": "https://rosguard.gov.ru/ru/news",
    "region": null,
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "fsin",
@@ -158,7 +175,8 @@
    "region": null,
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "spb_gov",
@@ -168,7 +186,8 @@
    "news_url": "https://www.gov.spb.ru/",
    "region": "Санкт-Петербург",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "spb_smolny_tg",
@@ -176,7 +195,8 @@
    "type": "telegram",
    "url": "smolnypress",
    "region": "Санкт-Петербург",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "spb_beglov_tg",
@@ -184,7 +204,8 @@
    "type": "telegram",
    "url": "a_beglov",
    "region": "Санкт-Петербург",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "spb_zaks",
@@ -194,7 +215,8 @@
    "news_url": "https://www.assembly.spb.ru/",
    "region": "Санкт-Петербург",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "fontanka",
@@ -204,7 +226,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "news_url": "https://www.fontanka.ru/fontanka.rss",
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "dp",
@@ -213,7 +236,8 @@
    "url": "https://www.dp.ru/",
    "news_url": "https://www.dp.ru/",
    "region": "Санкт-Петербург",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "spbdnevnik",
@@ -223,7 +247,8 @@
    "news_url": "https://spbdnevnik.ru/",
    "region": "Санкт-Петербург",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "mvd_78",
@@ -234,7 +259,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_spb",
@@ -245,7 +271,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_78",
@@ -254,7 +281,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_78",
    "news_url": "https://epp.genproc.gov.ru/web/proc_78/mass-media/news",
    "region": "Санкт-Петербург",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_78",
@@ -265,7 +293,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_78",
@@ -276,7 +305,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "lo_gov",
@@ -285,7 +315,8 @@
    "url": "https://lenobl.ru/",
    "news_url": "https://lenobl.ru/ru/dlya-smi/news/",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "lo_tg",
@@ -293,7 +324,8 @@
    "type": "telegram",
    "url": "lenobladminka",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "lo_drozdenko_tg",
@@ -303,7 +335,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "lo_zaks",
@@ -312,7 +345,8 @@
    "url": "https://www.lenoblzaks.ru/",
    "news_url": "https://www.lenoblzaks.ru/news",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "47news",
@@ -321,7 +355,8 @@
    "url": "https://47news.ru/",
    "news_url": "https://47news.ru/",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "online47",
@@ -330,7 +365,8 @@
    "url": "https://online47.ru/",
    "news_url": "https://online47.ru/",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "sledcom_lo",
@@ -341,7 +377,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_47",
@@ -350,7 +387,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_47",
    "news_url": "https://epp.genproc.gov.ru/web/proc_47/mass-media/news",
    "region": "Ленинградская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_47",
@@ -361,7 +399,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "arh_gov",
@@ -371,7 +410,8 @@
    "news_url": "https://dvinaland.ru/",
    "region": "Архангельская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "arh_tg",
@@ -381,7 +421,8 @@
    "region": "Архангельская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "arh_gub_tg",
@@ -389,7 +430,8 @@
    "type": "telegram",
    "url": "tsybulskiy_a",
    "region": "Архангельская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "arh_zaks",
@@ -399,7 +441,8 @@
    "news_url": "https://www.aosd.ru/",
    "region": "Архангельская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "29ru",
@@ -408,7 +451,8 @@
    "url": "https://29.ru/",
    "news_url": "https://29.ru/text/",
    "region": "Архангельская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "region29",
@@ -417,7 +461,8 @@
    "url": "https://region29.ru/",
    "news_url": "https://region29.ru/",
    "region": "Архангельская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "news29",
@@ -426,7 +471,8 @@
    "url": "https://news29.ru/",
    "news_url": "https://news29.ru/",
    "region": "Архангельская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd_29",
@@ -437,7 +483,8 @@
    "region": "Архангельская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_arh",
@@ -448,7 +495,8 @@
    "region": "Архангельская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_29",
@@ -457,7 +505,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_29",
    "news_url": "https://epp.genproc.gov.ru/web/proc_29/mass-media/news",
    "region": "Архангельская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_29",
@@ -468,7 +517,8 @@
    "region": "Архангельская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_29",
@@ -479,7 +529,8 @@
    "region": "Архангельская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "vol_gov",
@@ -489,7 +540,8 @@
    "news_url": "https://vologda-oblast.ru/",
    "region": "Вологодская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "vol_gub_tg",
@@ -497,7 +549,8 @@
    "type": "telegram",
    "url": "filimonov_official",
    "region": "Вологодская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "vol_dvp_tg",
@@ -507,7 +560,8 @@
    "region": "Вологодская область",
    "verified": true,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "vol_zaks",
@@ -517,7 +571,8 @@
    "news_url": "https://vologdazso.ru/",
    "region": "Вологодская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "newsvo",
@@ -526,7 +581,8 @@
    "url": "https://newsvo.ru/",
    "news_url": "https://newsvo.ru/",
    "region": "Вологодская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "krassever",
@@ -535,7 +591,8 @@
    "url": "https://krassever.ru/",
    "news_url": "https://krassever.ru/",
    "region": "Вологодская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "cherinfo",
@@ -544,7 +601,8 @@
    "url": "https://cherinfo.ru/",
    "news_url": "https://cherinfo.ru/",
    "region": "Вологодская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd_35",
@@ -555,7 +613,8 @@
    "region": "Вологодская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_vol",
@@ -566,7 +625,8 @@
    "region": "Вологодская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_35",
@@ -575,7 +635,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_35",
    "news_url": "https://epp.genproc.gov.ru/web/proc_35/mass-media/news",
    "region": "Вологодская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_35",
@@ -586,7 +647,8 @@
    "region": "Вологодская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_35",
@@ -597,7 +659,8 @@
    "region": "Вологодская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "klg_gov",
@@ -607,7 +670,8 @@
    "news_url": "https://gov39.ru/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "klg_tg",
@@ -617,7 +681,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "klg_gub_tg",
@@ -627,7 +692,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "klg_duma",
@@ -637,7 +703,8 @@
    "news_url": "https://duma39.ru/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "klops",
@@ -646,7 +713,8 @@
    "url": "https://klops.ru/",
    "news_url": "https://klops.ru/news",
    "region": "Калининградская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "newkaliningrad",
@@ -655,7 +723,8 @@
    "url": "https://www.newkaliningrad.ru/",
    "news_url": "https://www.newkaliningrad.ru/news/",
    "region": "Калининградская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "newkal_tg",
@@ -663,7 +732,8 @@
    "type": "telegram",
    "url": "newkal",
    "region": "Калининградская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "rugrad",
@@ -673,7 +743,8 @@
    "news_url": "https://rugrad.eu/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "mvd_39",
@@ -684,7 +755,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_klg",
@@ -695,7 +767,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_39",
@@ -704,7 +777,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_39",
    "news_url": "https://epp.genproc.gov.ru/web/proc_39/mass-media/news",
    "region": "Калининградская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_39",
@@ -715,7 +789,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_39",
@@ -726,7 +801,8 @@
    "region": "Калининградская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "mur_gov",
@@ -736,7 +812,8 @@
    "news_url": "https://gov-murman.ru/",
    "region": "Мурманская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "mur_gub_tg",
@@ -744,7 +821,8 @@
    "type": "telegram",
    "url": "andrey_chibis",
    "region": "Мурманская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mur_duma",
@@ -754,7 +832,8 @@
    "news_url": "https://duma-murman.ru/",
    "region": "Мурманская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "bport",
@@ -763,7 +842,8 @@
    "url": "https://b-port.com/",
    "news_url": "https://b-port.com/news",
    "region": "Мурманская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "severpost",
@@ -772,7 +852,8 @@
    "url": "https://severpost.ru/",
    "news_url": "https://severpost.ru/",
    "region": "Мурманская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "tv21_tg",
@@ -780,7 +861,8 @@
    "type": "telegram",
    "url": "tv21_life",
    "region": "Мурманская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd_51",
@@ -791,7 +873,8 @@
    "region": "Мурманская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_mur",
@@ -802,7 +885,8 @@
    "region": "Мурманская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_51",
@@ -811,7 +895,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_51",
    "news_url": "https://epp.genproc.gov.ru/web/proc_51/mass-media/news",
    "region": "Мурманская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_51",
@@ -822,7 +907,8 @@
    "region": "Мурманская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_51",
@@ -833,7 +919,8 @@
    "region": "Мурманская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "kar_gov",
@@ -843,7 +930,8 @@
    "news_url": "https://gov.karelia.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "kar_tg",
@@ -851,7 +939,8 @@
    "type": "telegram",
    "url": "gov_karelia",
    "region": "Республика Карелия",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "kar_gub_tg",
@@ -861,7 +950,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "kar_zaks",
@@ -871,7 +961,8 @@
    "news_url": "https://www.karelia-zs.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "stolicaonego",
@@ -880,7 +971,8 @@
    "url": "https://stolicaonego.ru/",
    "news_url": "https://stolicaonego.ru/news/",
    "region": "Республика Карелия",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "karelinform",
@@ -890,7 +982,8 @@
    "news_url": "https://karelinform.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "rk_karelia",
@@ -900,7 +993,8 @@
    "news_url": "https://rk.karelia.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "mvd_10",
@@ -911,7 +1005,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_kar",
@@ -922,7 +1017,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_10",
@@ -931,7 +1027,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_10",
    "news_url": "https://epp.genproc.gov.ru/web/proc_10/mass-media/news",
    "region": "Республика Карелия",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_10",
@@ -942,7 +1039,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_10",
@@ -953,7 +1051,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "psk_gov",
@@ -964,7 +1063,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "psk_gub_tg",
@@ -974,7 +1074,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "psk_sobranie",
@@ -985,7 +1086,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "pln",
@@ -994,7 +1096,8 @@
    "url": "https://pln-pskov.ru/",
    "news_url": "https://pln-pskov.ru/",
    "region": "Псковская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "informpskov",
@@ -1004,7 +1107,8 @@
    "news_url": "https://informpskov.ru/",
    "region": "Псковская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 3
   },
   {
    "id": "pskovkp_tg",
@@ -1012,7 +1116,8 @@
    "type": "telegram",
    "url": "pskovkp",
    "region": "Псковская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd_60",
@@ -1023,7 +1128,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_psk",
@@ -1034,7 +1140,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_60",
@@ -1043,7 +1150,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_60",
    "news_url": "https://epp.genproc.gov.ru/web/proc_60/mass-media/news",
    "region": "Псковская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_60",
@@ -1054,7 +1162,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_60",
@@ -1065,7 +1174,8 @@
    "region": "Псковская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "komi_gov",
@@ -1076,7 +1186,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "komi_tg",
@@ -1086,7 +1197,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "komi_gub_tg",
@@ -1096,7 +1208,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "komi_gs",
@@ -1107,7 +1220,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "bnkomi",
@@ -1116,7 +1230,8 @@
    "url": "https://www.bnkomi.ru/",
    "news_url": "https://www.bnkomi.ru/",
    "region": "Республика Коми",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "bnkomi_tg",
@@ -1124,7 +1239,8 @@
    "type": "telegram",
    "url": "bnkomi",
    "region": "Республика Коми",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "komiinform",
@@ -1133,7 +1249,8 @@
    "url": "https://komiinform.ru/",
    "news_url": "https://komiinform.ru/news",
    "region": "Республика Коми",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "mvd_11",
@@ -1144,7 +1261,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_komi",
@@ -1155,7 +1273,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_11",
@@ -1164,7 +1283,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_11",
    "news_url": "https://epp.genproc.gov.ru/web/proc_11/mass-media/news",
    "region": "Республика Коми",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_11",
@@ -1175,7 +1295,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_11",
@@ -1186,7 +1307,8 @@
    "region": "Республика Коми",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "nov_gov",
@@ -1196,7 +1318,8 @@
    "news_url": "https://www.novreg.ru/",
    "region": "Новгородская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы"
+   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "rank": 1
   },
   {
    "id": "nov_tg",
@@ -1206,7 +1329,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "nov_official_tg",
@@ -1214,7 +1338,8 @@
    "type": "telegram",
    "url": "novgorodinfo",
    "region": "Новгородская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "nov_gub_tg",
@@ -1224,7 +1349,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "nov_duma",
@@ -1235,7 +1361,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "53news",
@@ -1244,7 +1371,8 @@
    "url": "https://53news.ru/",
    "news_url": "https://53news.ru/novosti",
    "region": "Новгородская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "novgorod_ru",
@@ -1253,7 +1381,8 @@
    "url": "https://news.novgorod.ru/",
    "news_url": "https://news.novgorod.ru/news/",
    "region": "Новгородская область",
-   "verified": true
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "novved",
@@ -1264,7 +1393,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 3
   },
   {
    "id": "mvd_53",
@@ -1275,7 +1405,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "sledcom_nov",
@@ -1286,7 +1417,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "genproc_53",
@@ -1295,7 +1427,8 @@
    "url": "https://epp.genproc.gov.ru/web/proc_53",
    "news_url": "https://epp.genproc.gov.ru/web/proc_53/mass-media/news",
    "region": "Новгородская область",
-   "verified": true
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "mchs_53",
@@ -1306,7 +1439,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   },
   {
    "id": "fsin_53",
@@ -1317,7 +1451,8 @@
    "region": "Новгородская область",
    "verified": false,
    "enabled": false,
-   "note": "проверка 17.11: недоступен из GitHub Actions"
+   "note": "проверка 17.11: недоступен из GitHub Actions",
+   "rank": 1
   }
  ],
  "organizations": {

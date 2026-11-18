@@ -63,8 +63,8 @@ esc = html_module.escape
 
 # ── Назначения ──
 APPOINT_VERB = re.compile(
-    r"\b(?:назнач(?:ен|ена|ены|ил|ила|или|ат|ит|ило|ены)\w*|возглавил[аи]?|возглавит|возглавят|"
-    r"избран[аы]?|избрали|утвержд[её]н[аы]?|утвердил[аи]?|вступил[аи]?\s+в\s+должност|"
+    r"\b(?:назнач(?:ен[аоы]?|ил[аио]?|ат|ит)\b|возглавил[аи]?|возглавит|возглавят|"
+    r"избран[аы]?\b|избрали|утвержд[её]н[аы]?\b|утвердил[аи]?|вступил[аи]?\s+в\s+должност|"
     r"приступил[аи]?\s+к\s+(?:работе|исполнению|обязанност)|стал[аи]?\s+(?:новым\s+)?(?:главой|руководителем|"
     r"директором|начальником|председателем|министром|ректором|прокурором|заместителем|"
     r"вице-|зам|и\.о\.|врио|временным)|станет\s+(?:новым\s+)?(?:главой|руководителем|директором|"
@@ -153,7 +153,10 @@ NOT_OUR_SCOPE = re.compile(
     r"\bФК\b|\bХК\b|капитан\w*\s+команд|школ[аыуе]\b|школы\s+№|детск\w+\s+сад|лице[йя]|гимнази|"
     r"сельск\w+\s+поселен|городск\w+\s+поселен|муниципальн\w+\s+(?:образовани|район|округ)|"
     r"приход|епархи|митрополит|настоятел|батюшк|блогер|шоу|сериал|фильм[аеу]?\b|телешоу|"
-    r"церемони\w+\s+награждения\s+(?:конкурс|премии)|премии\s+«|лауреат)", re.I)
+    r"церемони\w+\s+награждения\s+(?:конкурс|премии)|премии\s+«|лауреат|"
+    r"секретар\w+\s+(?:\S+\s+){0,3}?отделени|парти[ияюе]\b|единой\s+росси|единая\s+россия|\bлдпр\b|\bкпрф\b|"
+    r"справедлив\w+\s+росси|новые\s+люди|избран\w*\s+депутат|целев\w+\s+назначени|по\s+назначению|"
+    r"назначени[ея]\s+(?:платеж|пособи|выплат|пенси|экспертиз|наказани))", re.I)
 # «присвоил имя скверу» — не звание
 NAME_GIVING = re.compile(r"присво\w+\s+(?:им[яе]н?\w*|названи|наименовани|статус|категори|адрес)", re.I)
 # главы районов — только внутри Санкт-Петербурга (это не муниципалитеты)
@@ -161,6 +164,18 @@ DISTRICT_HEAD = re.compile(r"глав\w*\s+(?:администрации\s+)?\S+
 
 DEPUTY = re.compile(r"\b(?:заместител|зампред|вице-|первы[йм]\s+зам|замглав|замначальник|замминистр|"
                     r"замдиректор|замруководител)", re.I)
+
+
+def normalize(text):
+    """Неразрывные и типографские дефисы → обычный, пробелы схлопываем."""
+    return re.sub(r"[ \t]+", " ", (text or "").replace("\u2011", "-").replace("\u2010", "-")
+                  .replace("\u00ad", "").replace("\xa0", " "))
+
+
+def first_sentence(text, limit=180):
+    text = text.strip()
+    m = re.search(r"[.!?]\s", text)
+    return text[:m.end()] if m and m.end() <= limit else text[:limit]
 
 
 def classify_org(text):
@@ -208,8 +223,11 @@ def detect(title, summary, organizations):
 
     {"type": "appointment"|"title"|"leave", "level": "head"|"deputy",
      "org_class": ..., "orgs": [...], "hints": [...]}"""
-    text = f"{title}\n{summary or ''}"
-    head = title + " " + (summary or "")[:300]     # для глаголов важен заголовок и первые фразы
+    title = normalize(title)
+    summary = normalize(summary or "")
+    text = f"{title}\n{summary}"
+    head = title + " " + summary[:300]            # должность и организация — заголовок и начало текста
+    lead = title + " " + first_sentence(summary)  # глагол события — только заголовок и первая фраза
 
     if UNCERTAIN.search(head) or NOT_OUR_SCOPE.search(head):
         return None
@@ -218,19 +236,19 @@ def detect(title, summary, organizations):
     org_class = classify_org(head)
 
     # ── Звание ──
-    tv = TITLE_VERB.search(head)
+    tv = TITLE_VERB.search(lead)
     if tv and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
             and (not WEAK_TITLE_VERB.fullmatch(tv.group(0)) or STRONG_TITLE_NOUN.search(head)):
         return {"type": "title", "level": "head", "org_class": org_class or "person", "orgs": orgs}
 
     # ── Назначение / уход ──
     has_pos = POSITION.search(head)
-    appoint = APPOINT_VERB.search(head) or (BECOME.search(head) and INSTRUMENTAL.search(head))
-    if HEAD_VERB.search(head):
+    appoint = APPOINT_VERB.search(lead) or (BECOME.search(lead) and INSTRUMENTAL.search(lead))
+    if HEAD_VERB.search(lead):
         appoint, has_pos = True, True
     if not has_pos:
         return None
-    leave = LEAVE_VERB.search(head)
+    leave = LEAVE_VERB.search(lead)
     if not appoint and not leave:
         return None
     if not org_class and not orgs:
@@ -541,6 +559,45 @@ def surname(person):
     return words[0].lower() if len(words) == 3 else words[-1].lower()
 
 
+POS_STOP = {"нового", "новым", "новой", "новую", "новый", "новая", "новое", "бывший", "бывшего", "экс",
+            "правительства", "правительство", "области", "областной", "республики", "республика", "края", "региона",
+            "назначен", "назначена", "назначили", "назначил", "стал", "стала", "станет", "возглавил", "возглавила",
+            "исполняющим", "исполняющий", "обязанности", "врио", "временно", "должности", "должность", "пост",
+            "на", "в", "по", "и", "с", "о", "для", "им", "имени", "главы", "губернатора", "который", "которая",
+            "санкт", "петербурга", "петербург", "ленинградской", "ленобласти", "архангельской", "вологодской",
+            "калининградской", "мурманской", "псковской", "новгородской", "карелии", "карелия", "коми",
+            "области", "год", "года"}
+
+
+def position_key(ev):
+    """«министром информационной политики Вологодской области» и
+    «нового министра информационной политики» → один ключ 'минис инфор полит'."""
+    head = normalize(ev["title"] + " " + ev.get("summary", "")[:200])
+    m = POSITION.search(head)
+    if not m:
+        return ""
+    chunk = head[m.start():m.start() + 90].lower().replace("ё", "е")
+    chunk = re.split(r"[.!?;:«»\"()—–]", chunk)[0]
+    stems = []
+    for w in re.findall(r"[а-яa-z][а-яa-z-]+", chunk):
+        if re.match(r"(?:назнач|стал|стан|возглав|избран|утвержд|приступ|вступ|представ|освобо|покин)", w):
+            break                                  # дальше идёт имя или другая часть фразы
+        if w in POS_STOP or len(w) < 3:
+            continue
+        stems.append(w[:5])
+        if len(stems) == 3:
+            break
+    return f"{ev['type']}:{ev['region']}:{' '.join(stems)}" if stems else ""
+
+
+def event_keys(ev):
+    keys = [event_key(ev)]
+    pk = position_key(ev)
+    if pk:
+        keys.append(pk)
+    return keys
+
+
 def event_key(ev):
     person = ev.get("person", "")
     if person:
@@ -558,7 +615,7 @@ def run(today=None, verbose=True):
     today = today or g.msk_today()
     fresh_from = today - timedelta(days=FRESH_DAYS)
 
-    new_events, statuses = [], []
+    candidates, statuses = [], []
     for src in cfg["sources"]:
         if not src.get("enabled", True):
             continue
@@ -579,16 +636,23 @@ def run(today=None, verbose=True):
             if not region:
                 continue
             ev = {"type": det["type"], "level": det["level"], "org_class": det["org_class"],
-                  "region": region, "title": it["title"].strip(), "summary": it.get("summary", "")[:400],
+                  "region": region, "title": normalize(it["title"]).strip(), "summary": normalize(it.get("summary", ""))[:400],
                   "link": it.get("link", ""), "date": (d or today).isoformat(),
-                  "source": src["name"], "source_id": src["id"],
+                  "source": src["name"], "source_id": src["id"], "rank": src.get("rank", 3),
                   "person": extract_person(it["title"]) or extract_person(it.get("summary", "")[:300]),
                   "orgs": sorted({o[1] for o in det["orgs"]})}
-            key = event_key(ev)
-            if key in seen:
-                continue
-            seen[key] = today.isoformat()
-            new_events.append(ev)
+            candidates.append(ev)
+
+    # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
+    candidates.sort(key=lambda e: (e["rank"], e["date"]), reverse=False)
+    new_events = []
+    for ev in candidates:
+        keys = event_keys(ev)
+        if any(k in seen for k in keys):
+            continue
+        for k in keys:
+            seen[k] = today.isoformat()
+        new_events.append(ev)
 
     # ── сохранить ──
     cutoff = (today - timedelta(days=KEEP_EVENTS_DAYS)).isoformat()

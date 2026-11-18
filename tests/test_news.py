@@ -301,3 +301,39 @@ class TestFirstRunFeedback(unittest.TestCase):
                 seen[k] = "2026-11-17"
             kept.append(ev)
         self.assertEqual([e["source_id"] for e in kept], ["kar_gov"])
+
+
+class TestReconcile(unittest.TestCase):
+    """Сохранённые события пересматриваются по текущим правилам при каждом прогоне."""
+
+    def test_first_run_events_are_cleaned(self):
+        cfg = json.loads((Path(__file__).resolve().parent.parent / "news_sources.json").read_text(encoding="utf-8"))
+        mk = lambda title, src, date, region, summary="": {
+            "type": "appointment", "level": "head", "org_class": "gov", "region": region, "title": title,
+            "summary": summary, "link": "", "date": date, "source": src, "source_id": src, "person": "", "orgs": []}
+        events = [
+            mk("В Росавиации обсудили вопросы функционирования \"Комиавиатранс\"", "komiinform", "2026-11-17", "Республика Коми"),
+            mk("Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова", "kar_gov", "2026-11-17", "Республика Карелия"),
+            mk("В Карелии назначили нового вице‑премьера по социальным вопросам", "stolicaonego", "2026-11-17", "Республика Карелия"),
+            mk("Экс-заместителя прокурора Псковской области назначили заместителем генпрокурора РФ", "pln", "2026-11-17", "Псковская область"),
+            mk("Станислав Стармолотов избран секретарем Псковского городского отделения «Единой России»", "pln", "2026-11-17", "Псковская область"),
+            mk("Очередная сессия Заксобрания Псковской области пройдёт 25 ноября", "informpskov", "2026-11-17", "Псковская область"),
+            mk("Игорь Дитрих: Комитет по социальной политике начнет полноценную работу после утверждения положения на ближайшей сессии", "pln", "2026-11-17", "Псковская область"),
+            mk("Вопрос о целевом назначении «Шарматово» на нулевых чтениях бюджета поднял новгородский депутат Шалякин", "novgorod_ru", "2026-11-17", "Новгородская область"),
+            mk("Сенатор Дмитрий Василенко утвержден в должности первого зампреда Комитета СовФеда 28 октября 2026", "lo_zaks", "2026-11-17", "Ленинградская область"),
+            mk("Ксения Фаламеева назначена министром информационной политики Вологодской области", "krassever", "2026-11-17", "Вологодская область"),
+            mk("Георгий Филимонов назначил нового министра информационной политики", "newsvo", "2026-11-16", "Вологодская область"),
+            mk("Владимир Карпунин назначен исполняющим обязанности министра цифрового развития Новгородской области", "nov_official_tg", "2026-11-13", "Новгородская область"),
+        ]
+        kept, seen = nm.reconcile(events, cfg)
+        titles = [e["title"][:30] for e in kept]
+        self.assertEqual(len(kept), 5, titles)
+        sources = {e["source_id"] for e in kept}
+        self.assertIn("kar_gov", sources)          # Карелия — официальный источник
+        self.assertNotIn("stolicaonego", sources)  # дубль склеен
+        vol = [e for e in kept if e["region"] == "Вологодская область"]
+        self.assertEqual(len(vol), 1)
+        self.assertEqual(vol[0]["source_id"], "krassever")   # при равном ранге — заголовок с фамилией
+        self.assertIn("nov_official_tg", sources)
+        self.assertIn("lo_zaks", sources)
+        self.assertTrue(any(e["title"].startswith("Экс-заместителя") for e in kept))

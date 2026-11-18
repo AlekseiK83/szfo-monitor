@@ -422,3 +422,80 @@ class TestExtraEvents(unittest.TestCase):
     def test_appointments_still_win_over_extra(self):
         r = self.ex("Скончавшегося директора Эрмитажа сменил на посту Михаил Пиотровский")
         self.assertEqual(r["type"], "appointment")
+
+
+class TestSecondRunFeedback(unittest.TestCase):
+    """Разбор прогона 18.11 15:00: четыре нерелевантных события."""
+
+    def ex(self, title, summary=""):
+        return nm.detect_all(title, summary, ORGS)
+
+    def test_ownership_change_is_not_appointment_and_needs_known_org(self):
+        r = self.ex("Ретейлер электроники «Связь.ON» с 250 магазинами сменил собственников",
+                    "Банк ПСБ и гендиректор компании Дагмара Иванова продали свои доли в сети магазинов.")
+        self.assertIsNone(r)
+        self.assertEqual(self.ex("Генеральный директор Севмаша сменился: предприятие возглавил Михаил Будниченко")["type"], "appointment")
+
+    def test_foreign_university_not_politeh(self):
+        r = self.ex("Посещение совместного университета МГУ и Пекинского политехнического института",
+                    "Владимир Путин посетил первый совместный вуз России и Китая в Шэньчжэне.")
+        self.assertFalse(r and r["orgs"])
+        self.assertEqual(nm.find_org_names("Ректор Политеха Петра Великого Андрей Рудской", ORGS)[0][1], "Политех Петра Великого")
+
+    def test_media_self_promotion_is_not_status(self):
+        self.assertIsNone(self.ex("Онлайн47 вошел в ТОП-20 самых цитируемых СМИ Петербурга и Ленобласти за 2026 год"))
+
+    def test_criminal_case_needs_a_leader(self):
+        self.assertIsNone(self.ex("В Петербурге возбудили дело после ДТП с наездом на двух девушек на Пискарёвском",
+                                  "Дело возбуждено по ч. 1 ст. 264 УК РФ, сообщили в ГУ МВД по Петербургу и Ленобласти."))
+        self.assertEqual(self.ex("Задержан бывший гендиректор Петрозаводскмаша")["type"], "ownership")
+
+    def test_lenobl_word_is_not_an_organisation(self):
+        self.assertEqual(nm.find_org_names("Губернатор Ленобласти встретился с жителями", ORGS), [])
+
+    def test_aggregator_needs_region_in_text(self):
+        src = {"region": "Республика Карелия", "region_from_text": True}
+        self.assertIsNone(nm.attribute_region(src, "Глава администрации правительства Монголии подал в отставку вслед за президентом", []))
+        self.assertIsNone(nm.attribute_region(src, "Назначен новый министр", []))
+        self.assertEqual(nm.attribute_region(src, "Новый вице-премьер по социальным вопросам назначен в Карелии", []), "Республика Карелия")
+        self.assertIsNone(nm.news_region("Путин посетил совместный вуз в Шэньчжэне"))
+
+    def test_police_crime_news_not_an_event(self):
+        self.assertIsNone(nm.detect_all("Майор полиции арестован за пьяный наезд под Светогорском и попытку спрятать служебное авто", "", ORGS))
+        self.assertEqual(nm.find_org_names("под Светогорском", ORGS), [])
+
+    def test_html_titles_lose_timestamps(self):
+        html = '<a href="/a/1">Майор полиции арестован за пьяный наезд под Светогорском 09:09, 17.11.2026</a><a href="/a/2">13:27 18.11.2026 В Великом Новгороде врачи обсудили изменения крови</a>'
+        titles = [i["title"] for i in nm.parse_html_news(html, "https://47news.ru/")]
+        self.assertEqual(titles, ["Майор полиции арестован за пьяный наезд под Светогорском",
+                                  "В Великом Новгороде врачи обсудили изменения крови"])
+
+    def test_paraphrased_titles_are_one_event(self):
+        a = {"type": "appointment", "region": "Псковская область", "date": "2026-11-18",
+             "title": "Путин назначил нового заместителя генпрокурора РФ"}
+        b = {"type": "appointment", "region": "Псковская область", "date": "2026-11-18",
+             "title": "Путин назначил Олега Логунова заместителем генерального прокурора России"}
+        c = {"type": "appointment", "region": "Псковская область", "date": "2026-11-18",
+             "title": "Путин назначил нового начальника УМВД по Псковской области"}
+        self.assertTrue(nm.similar(a, b))
+        self.assertFalse(nm.similar(a, c))
+        self.assertEqual(nm.position_key({"type": "appointment", "region": "x", "title": a["title"], "summary": ""}),
+                         nm.position_key({"type": "appointment", "region": "x", "title": b["title"], "summary": ""}))
+
+    def test_departmental_title_needs_leader(self):
+        orgs = {}
+        self.assertIsNone(nm.detect("Волотовскому трактористу присвоено звание «Почётный работник АПК России»", "", orgs))
+        self.assertIsNone(nm.detect("Медсестре из Пскова присвоили звание «Заслуженный работник здравоохранения РФ»", "", orgs))
+        self.assertIsNotNone(nm.detect("Главному врачу Псковской областной больницы присвоено звание «Заслуженный врач РФ»", "", orgs))
+        self.assertIsNotNone(nm.detect("Тракторист из Волота стал почётным гражданином Новгородской области", "", orgs))
+        self.assertIsNotNone(nm.detect("Учителю из Выборга присвоено звание «Заслуженный учитель Ленинградской области»", "", orgs))
+        self.assertIsNotNone(nm.detect("Начальнику УМВД по Коми присвоено звание генерал-майора полиции", "", orgs))
+
+    def test_court_routine_is_not_event(self):
+        orgs = ORGS
+        self.assertIsNone(nm.detect_all("С участием гособвинителя прокуратуры Новгородской области вынесен приговор по уголовному делу в отношении бывшего федерального судьи о получении взятки", "", orgs))
+        self.assertIsNone(nm.detect_all("Суд приговорил бывшего директора Водоканала к четырём годам колонии", "", orgs))
+        self.assertIsNone(nm.detect_all("Экс-глава комитета по строительству признан виновным в превышении полномочий", "", orgs))
+        self.assertIsNotNone(nm.detect_all("Задержан директор ГОБУЗ «Новгородская областная клиническая больница»", "", orgs))
+        self.assertEqual(nm.find_org_names("Новгородского района", {"Новгородская область": ["НовГУ"]}), [])
+        self.assertEqual(nm.find_org_names("ректор НовГУ", {"Новгородская область": ["НовГУ"]}), [("Новгородская область", "НовГУ")])

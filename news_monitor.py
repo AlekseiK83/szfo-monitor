@@ -64,7 +64,7 @@ esc = html_module.escape
 # ── Назначения ──
 APPOINT_VERB = re.compile(
     r"\b(?:назнач(?:ен[аоы]?|ил[аио]?|ат|ит)\b|возглавил[аи]?|возглавит|возглавят|"
-    r"избран[аы]?\b|избрали|утвержд[её]н[аы]?\b|утвердил[аио]?\s+(?:\S+\s+){0,3}?(?:в\s+должност|на\s+пост|на\s+должност|кандидатур|"
+    r"избран[аы]?\b|избрали|переизбран[аы]?\b|переизбрали|переназначен[аы]?\b|продлил[аи]?\s+(?:полномочия|контракт)|утвержд[её]н[аы]?\b|утвердил[аио]?\s+(?:\S+\s+){0,3}?(?:в\s+должност|на\s+пост|на\s+должност|кандидатур|"
     r"назначени|состав|структур|главой|руководителем|директором|председателем|министром|заместителем|ректором|прокурором)|вступил[аи]?\s+в\s+должност|"
     r"приступил[аи]?\s+к\s+(?:работе|исполнению|обязанност)|стал[аи]?\s+(?:новым\s+)?(?:главой|руководителем|"
     r"директором|начальником|председателем|министром|ректором|прокурором|заместителем|"
@@ -88,7 +88,7 @@ INSTRUMENTAL = re.compile(
     r"командующим|главврачом|главным\s+(?:врачом|редактором|инженером|архитектором)|и\.\s?о\.|врио)", re.I)
 BECOME = re.compile(r"\bстал[аи]?\b|\bстанет\b|\bстанут\b", re.I)
 LEAVE_VERB = re.compile(
-    r"\b(?:покинул[аи]?\s+(?:пост|должност|свой\s+пост)|покидает\s+(?:пост|должност)|уходит\s+(?:в\s+отставку|с\s+поста|"
+    r"\b(?:покинул[аи]?\s+(?:пост|должност|свой\s+пост)|покидает\s+(?:пост|должност)|покинет\s+(?:пост|должност|свой\s+пост)|покинут\s+(?:пост|должност)|уходит\s+(?:в\s+отставку|с\s+поста|"
     r"с\s+должности)|уш[её]л\s+(?:в\s+отставку|с\s+поста)|ушла\s+(?:в\s+отставку|с\s+поста)|"
     r"отставк[аеиу]|освобожд[её]н[аы]?\s+от\s+должност|освободил[аи]?\s+от\s+должност|"
     r"отправлен[аы]?\s+в\s+отставку|уволен[аы]?|лишил[аи]?сь\s+(?:поста|должности)|сложил[аи]?\s+полномочия)",
@@ -218,7 +218,7 @@ UNCERTAIN = re.compile(
     r"не\s+более\s+\w+\s+звани|закон\w*\s+о\s+звани|положени\w*\s+о\s+звани|порядок\s+присвоения|лиш[её]н|лишил|"
     r"посмертно)", re.I)
 NOT_OUR_SCOPE = re.compile(
-    r"\b(?:тренер|сборн\w+\s+(?:России|страны|команд)|футбольн|хоккейн|волейбольн|баскетбольн|клуб[аеу]?\b|"
+    r"\b(?:возглавил[аи]?\s+(?:совет\w*\s+(?!директоров)|рабоч\w+\s+групп|комисси|штаб|делегаци|оргкомитет|жюри)|общественн\w+\s+совет|экспертн\w+\s+совет|координационн\w+\s+совет|попечительск|наблюдательн\w+\s+совет|тренер|сборн\w+\s+(?:России|страны|команд)|футбольн|хоккейн|волейбольн|баскетбольн|клуб[аеу]?\b|"
     r"\bФК\b|\bХК\b|капитан\w*\s+команд|школ[аыуе]\b|школы\s+№|детск\w+\s+сад|лице[йя]|гимнази|"
     r"сельск\w+\s+поселен|городск\w+\s+поселен|муниципальн\w+\s+(?:образовани|район|округ)|"
     r"приход|епархи|митрополит|настоятел|батюшк|блогер|шоу|сериал|фильм[аеу]?\b|телешоу|"
@@ -436,15 +436,60 @@ NAME_STOP = {
     "вологда", "вологды", "калининград", "калининграда", "архангельск", "архангельска", "сыктывкар",
     "петрозаводск", "череповец", "гатчина", "выборг", "законодательного", "собрания", "областной",
     "областного", "думы", "дума", "государственной", "совета", "совет", "департамента", "комитет",
+    "сенатор", "главврач", "главный", "директор", "руководитель", "руководителем", "первой", "первый", "первым",
+    "технопарка", "вице", "глава", "главой", "депутат", "председатель", "начальник", "ректор", "прокурор",
+    "городской", "городского", "центральной", "детской", "клинической", "областной",
 }
 
 
+# Те, кто назначает: их фамилия в заголовке не делает их героем события
+APPOINTERS = {"путин", "мишустин", "матвиенко", "володин", "беглов", "дрозденко", "парфенчиков", "гольдштейн", "уйба",
+              "цыбульский", "филимонов", "беспрозванных", "алиханов", "чибис", "ведерников", "никитин", "дронов",
+              "бастрыкин", "краснов", "гуцан", "колокольцев", "куренков", "золотов", "гуров", "шойгу", "белоусов"}
+
+
+def name_stem(word):
+    """Фамилия без падежного окончания: Смирнова/Смирнову/Смирновой → смирнов."""
+    low = word.lower().replace("ё", "е")
+    return re.sub(r"(?:ой|ою|ую|ым|им|ом|ем|ей|ого|его|ому|ему|у|а|я|е|ы|и|ю)$", "", low) if len(low) > 4 else low
+
+
+def name_pairs(text):
+    """Ключи «Имя Фамилия» в любом падеже: (3 буквы имени, основа фамилии); назначающие исключены."""
+    keys = set()
+    for words in _name_candidates(text):
+        first, last = words[0], words[-1] if len(words) == 2 else words[0]
+        if len(words) == 3:
+            first, last = words[1], words[0]
+        if first.lower() in NAME_STOP or last.lower() in NAME_STOP or len(first) < 3 or len(last) < 4:
+            continue
+        stem = name_stem(last)
+        if stem in APPOINTERS or name_stem(first) in APPOINTERS:
+            continue
+        keys.add((first.lower().replace("ё", "е")[:3], stem))
+    return keys
+
+
+CAP_RUN_RE = re.compile(r"(?:\b[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?\s*)+")
+
+
+def _name_candidates(text):
+    """Все пары/тройки заглавных слов, включая сдвинутые («Сенатор Дмитрий Василенко» → «Дмитрий Василенко»)."""
+    for run in CAP_RUN_RE.finditer(normalize(text)):
+        words = run.group(0).split()
+        for i in range(len(words) - 1):
+            if i + 2 < len(words) and re.search(r"(?:вич|вна|чна|ич)[а-яё]*$", words[i + 2]):
+                yield words[i:i + 3]
+            yield words[i:i + 2]
+
+
 def extract_person(text):
-    for m in NAME_RE.finditer(text):
-        words = [w for w in m.groups() if w]
+    for words in _name_candidates(text):
         if any(w.lower() in NAME_STOP for w in words[:2]):
             continue
         if len(words) == 2 and (len(words[0]) < 3 or len(words[1]) < 3):
+            continue
+        if name_stem(words[-1]) in APPOINTERS or name_stem(words[0]) in APPOINTERS:   # «Беглов: Смирнова назначена» → Смирнова
             continue
         return " ".join(words)
     return ""
@@ -783,7 +828,7 @@ def surname(person):
     words = person.split()
     if not words:
         return ""
-    return words[0].lower() if len(words) == 3 else words[-1].lower()
+    return name_stem(words[0] if len(words) == 3 else words[-1])
 
 
 POS_STOP = {"нового", "новым", "новой", "новую", "новый", "новая", "новое", "бывший", "бывшего", "экс",
@@ -832,7 +877,10 @@ def position_key(ev):
     return f"{ev['type']}:{ev['region']}:{' '.join(stems)}" if stems else ""
 
 
-NAME_PAIR = re.compile(r"\b([А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+(?:ов|ова|ев|ева|ин|ина|ын|ына|ский|ская|цкий|цкая|ич|ко|ук|юк|ец|енко|ых|их|ой|ая|ый))\b")
+GENERIC_STEMS = {"петер", "санкт", "ленин", "леноб", "облас", "респу", "карел", "архан", "волог", "калин", "мурма", "псков",
+                 "новго", "смени", "сменя", "назна", "глава", "главы", "главо", "главу", "нового", "новым", "новый", "новая", "новой",
+                 "регио", "прави", "губер", "должн", "возгл", "утвер", "стал", "стала", "руков", "предс", "замес", "перву", "первы",
+                 "нович", "назвa", "побыв", "котор", "после", "вслед", "ушел", "ушла", "покин", "отста", "област"}
 
 
 def title_stems(title):
@@ -850,9 +898,13 @@ def similar(a, b):
             return False
     except ValueError:
         return False
-    na, nb = set(NAME_PAIR.findall(a["title"])), set(NAME_PAIR.findall(b["title"]))
-    if na & nb:                                   # одно и то же «Имя Фамилия» в обоих заголовках
+    if name_pairs(a["title"]) & name_pairs(b["title"]):      # одно «Имя Фамилия» (в любом падеже) в обоих заголовках
         return True
+    # заголовок без фамилии («сменился глава комитета по информатизации») целиком раскрыт в тексте другой новости
+    for x, y in ((a, b), (b, a)):
+        spec = title_stems(x["title"]) - GENERIC_STEMS
+        if len(spec) >= 2 and y.get("summary") and spec <= title_stems(y["title"] + " " + y["summary"][:500]):
+            return True
     if a["type"] != b["type"]:
         return False
     sa, sb = title_stems(a["title"]), title_stems(b["title"])
@@ -973,11 +1025,26 @@ def run(today=None, verbose=True):
     recent = [e for e in events if e.get("date", "") >= (today - timedelta(days=4)).isoformat()]
     for ev in candidates:
         keys = event_keys(ev)
-        if any(k in seen for k in keys) or any(similar(ev, e) for e in recent + new_events):
+        match = next((e for e in recent + new_events if similar(ev, e) or set(keys) & set(event_keys(e))), None)
+        if match is not None:
+            # то же событие уже есть; если новый источник авторитетнее — заменяем запись, не уведомляя повторно
+            if priority(ev) < priority(match) and match not in new_events:
+                ev["upgraded"] = True
+                ev["date"] = min(ev["date"], match["date"])
+                events.remove(match)
+                recent.remove(match)
+                new_events.append(ev)
+            elif priority(ev) < priority(match):
+                new_events[new_events.index(match)] = ev
+            for k in keys:
+                seen[k] = today.isoformat()
+            continue
+        if any(k in seen for k in keys):
             continue
         for k in keys:
             seen[k] = today.isoformat()
         new_events.append(ev)
+    fresh_new = [e for e in new_events if not e.pop("upgraded", False)]
 
     # ── сохранить ──
     cutoff = (today - timedelta(days=KEEP_EVENTS_DAYS)).isoformat()
@@ -989,15 +1056,15 @@ def run(today=None, verbose=True):
     save_json(SEEN_FILE, seen)
     save_json(FEEDS_CACHE, feeds_cache)
     errors = [s for s in statuses if s[2].startswith("error")]
-    save_json(RUN_SUMMARY, {"date": today.isoformat(), "new": new_events,
+    save_json(RUN_SUMMARY, {"date": today.isoformat(), "new": fresh_new,
                             "sources_total": len(statuses), "sources_failed": len(errors),
                             "failed": [{"id": s[0], "name": s[1], "status": s[2]} for s in errors]})
     render_page(events, today)
     if verbose:
-        print(f"\nИсточников: {len(statuses)}, с ошибкой: {len(errors)}; новых событий: {len(new_events)}")
-        for ev in new_events:
+        print(f"\nИсточников: {len(statuses)}, с ошибкой: {len(errors)}; новых событий: {len(fresh_new)}")
+        for ev in fresh_new:
             print(f"  [{ev['type']}/{ev['level']}] {ev['region']}: {ev['title'][:100]}")
-    return new_events, statuses
+    return fresh_new, statuses
 
 
 def check_sources():

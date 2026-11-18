@@ -253,6 +253,9 @@ class TestFirstRunFeedback(unittest.TestCase):
                               "Депутат спросил, когда будет назначен руководитель комитета по управлению имуществом."))
         self.assertIsNone(det("Очередная сессия Заксобрания Псковской области пройдёт 25 ноября",
                               "Депутаты утвердят председателя комитета по бюджету."))
+        self.assertIsNone(det("Очередная сессия Заксобрания Псковской области пройдёт 25 ноября",
+                              "Совет Законодательного Собрания утвердил дату сессии. Об этом сообщил председатель Собрания Борис Елкин."))
+        self.assertIsNotNone(det("Заксобрание утвердило Дмитрия Ялова в должности вице-губернатора"))
         self.assertIsNone(det("В Росавиации обсудили вопросы функционирования «Комиавиатранс»",
                               "Совещание прошло 17 ноября. Генеральный директор назначен ответственным за программу."))
 
@@ -337,3 +340,85 @@ class TestReconcile(unittest.TestCase):
         self.assertIn("nov_official_tg", sources)
         self.assertIn("lo_zaks", sources)
         self.assertTrue(any(e["title"].startswith("Экс-заместителя") for e in kept))
+
+
+class TestGoogleNews(unittest.TestCase):
+    def test_source_suffix_stripped(self):
+        xml = ('<rss><channel><link>https://news.google.com/</link><item>'
+               '<title>Ксения Фаламеева назначена министром - Красный Север</title>'
+               '<link>https://news.google.com/x</link><pubDate>Mon, 17 Nov 2026 09:00:00 GMT</pubDate>'
+               '<description>&lt;a&gt;Другой заголовок, в котором кто-то назначен&lt;/a&gt;</description></item></channel></rss>')
+        items = nm.parse_feed(xml)
+        self.assertEqual(items[0]["title"], "Ксения Фаламеева назначена министром")
+        self.assertEqual(items[0]["summary"], "")
+        self.assertEqual(nm.parse_date(items[0]["date"]).isoformat(), "2026-11-17")
+
+
+class TestExtraEvents(unittest.TestCase):
+    """Инфоповоды по ключевым учреждениям и компаниям (кроме назначений и званий)."""
+
+    def ex(self, title, summary=""):
+        return nm.detect_all(title, summary, ORGS)
+
+    def test_obituary(self):
+        r = self.ex("Скончался бывший генеральный директор Севмаша Николай Калистратов")
+        self.assertEqual(r["type"], "obituary")
+        r = self.ex("Ушёл из жизни почётный гражданин Петербурга композитор Андрей Петров")
+        self.assertEqual(r["type"], "obituary")
+        self.assertIsNone(self.ex("В ДТП под Псковом погиб водитель грузовика"))
+
+    def test_visit(self):
+        self.assertEqual(self.ex("Путин посетил Севмаш и принял участие в закладке атомной подводной лодки")["type"], "visit")
+        self.assertEqual(self.ex("Мишустин прибыл в Мурманск и осмотрел строящийся терминал «Лавна»")["type"], "visit")
+        self.assertEqual(self.ex("Глава Росатома Лихачёв открыл новый энергоблок Ленинградской АЭС")["type"], "visit")
+        self.assertIsNone(self.ex("Путин поздравил россиян с Днём народного единства"))
+
+    def test_anniversary(self):
+        self.assertEqual(self.ex("Северсталь отметила 70-летие Череповецкого металлургического комбината")["type"], "anniversary")
+        self.assertEqual(self.ex("Петрозаводскому государственному университету исполнилось 85 лет")["type"], "anniversary")
+        self.assertEqual(self.ex("Архангельский ЦБК празднует 85-летний юбилей")["type"], "anniversary")
+        self.assertIsNone(self.ex("Северсталь отметила 17-летие программы наставничества"))
+        self.assertIsNone(self.ex("Ветеран Севмаша отметил 90-летие со дня рождения"))
+        self.assertIsNone(self.ex("В Вологде 50 лет назад открылся первый универсам"))
+
+    def test_launch(self):
+        self.assertEqual(self.ex("На Балтийском заводе спустили на воду атомный ледокол «Чукотка»")["type"], "launch")
+        self.assertEqual(self.ex("В Усть-Луге запустили первую очередь комплекса по переработке газа за 2 трлн рублей")["type"], "launch")
+        self.assertEqual(self.ex("ФосАгро ввела в эксплуатацию новое производство в Череповце")["type"], "launch")
+        self.assertEqual(self.ex("Акрон подписал контракт на строительство агрегата аммиака")["type"], "launch")
+        self.assertEqual(self.ex("Автотор начал выпуск новой модели")["type"], "launch")
+        self.assertIsNone(self.ex("Эрмитаж открыл выставку импрессионистов"))
+        self.assertIsNone(self.ex("В Пскове открыли отремонтированную детскую площадку во дворе на Рижском"))
+        self.assertIsNone(self.ex("В Петербурге открылся сезон фонтанов"))
+
+    def test_award(self):
+        self.assertEqual(self.ex("Севмаш награждён орденом «За заслуги перед Отечеством» I степени")["type"], "award")
+        self.assertEqual(self.ex("Коллектив ПетрГУ удостоен премии Правительства России в области образования")["type"], "award")
+        self.assertIsNone(self.ex("Победителям городского конкурса рисунков вручили грамоты"))
+
+    def test_status(self):
+        self.assertEqual(self.ex("ИТМО вошёл в топ-100 лучших вузов мира по версии QS")["type"], "status")
+        self.assertEqual(self.ex("Кировский завод включён в перечень системообразующих предприятий России")["type"], "status")
+        self.assertEqual(self.ex("Вологодская областная больница признана лучшей в России по итогам всероссийского конкурса")["type"], "status")
+        self.assertIsNone(self.ex("Команда школы № 7 победила в городском конкурсе чтецов"))
+
+    def test_ownership(self):
+        self.assertEqual(self.ex("Генпрокуратура потребовала изъять акции Кировского завода в доход государства")["type"], "ownership")
+        self.assertEqual(self.ex("Суд признал банкротом Выборгский судостроительный завод")["type"], "ownership")
+        self.assertEqual(self.ex("Задержан бывший гендиректор Петрозаводскмаша")["type"], "ownership")
+        self.assertIsNone(self.ex("Суд признал банкротом петербургского предпринимателя"))
+
+    def test_low_level_positions_excluded(self):
+        self.assertIsNone(self.ex("Начальником отдела кадров комитета по транспорту назначен Иван Петров"))
+        self.assertIsNone(self.ex("Главврачом Тосненской районной больницы назначен Сергей Иванов"))
+        self.assertIsNone(self.ex("Директором Дома культуры в Луге стала Анна Смирнова"))
+
+    def test_new_significant_bodies(self):
+        self.assertEqual(self.ex("Председателем избиркома Ленинградской области избран Михаил Лебединский")["type"], "appointment")
+        self.assertEqual(self.ex("Командующим Северным флотом назначен адмирал Константин Кабанцов")["type"], "appointment")
+        self.assertEqual(self.ex("Уполномоченным по правам ребёнка в Карелии назначена Галина Григорьева")["type"], "appointment")
+        self.assertEqual(self.ex("Новым управляющим Северо-Западным отделением Сбербанка стал Дмитрий Суховерхов")["type"], "appointment")
+
+    def test_appointments_still_win_over_extra(self):
+        r = self.ex("Скончавшегося директора Эрмитажа сменил на посту Михаил Пиотровский")
+        self.assertEqual(r["type"], "appointment")

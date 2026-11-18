@@ -559,3 +559,69 @@ class TestSecondRunFeedback(unittest.TestCase):
         b = {"type": "appointment", "region": "Санкт-Петербург", "date": "2026-11-18",
              "title": "Александр Беглов: Юлия Смирнова назначена на должность специального представителя Губернатора Санкт-Петербурга"}
         self.assertTrue(nm.similar(a, b))
+
+    def test_smirnova_three_headlines_one_event(self):
+        smolny = {"type": "appointment", "region": "Санкт-Петербург", "date": "2026-11-18",
+                  "title": "Александр Беглов: Юлия Смирнова назначена на должность специального представителя Губернатора Санкт-Петербурга",
+                  "summary": "Юлия Смирнова, занимавшая пост председателя Комитета по информатизации и связи, назначена на должность специального представителя Губернатора."}
+        g1 = {"type": "appointment", "region": "Санкт-Петербург", "date": "2026-11-18", "summary": "",
+              "title": "Юлию Смирнову назначили спецпредставителем губернатора Петербурга"}
+        g2 = {"type": "appointment", "region": "Санкт-Петербург", "date": "2026-11-18", "summary": "",
+              "title": "В Петербурге сменился глава комитета по информатизации и связи"}
+        other = {"type": "appointment", "region": "Санкт-Петербург", "date": "2026-11-18", "summary": "",
+                 "title": "В Петербурге назначен новый глава комитета по транспорту"}
+        self.assertTrue(nm.similar(smolny, g1))
+        self.assertTrue(nm.similar(smolny, g2))
+        self.assertFalse(nm.similar(smolny, other))
+        self.assertEqual(nm.extract_person(smolny["title"]), "Юлия Смирнова")
+        self.assertEqual(nm.extract_person("Сенатор Дмитрий Василенко утвержден в должности"), "Дмитрий Василенко")
+        self.assertEqual(nm.surname("Юлию Смирнову"), nm.surname("Юлия Смирнова"))
+        self.assertIsNone(nm.detect_all("Руководитель «Технопарка Санкт-Петербурга» возглавил совет центров компетенций в сфере БПЛА", "", ORGS))
+
+
+import tempfile
+
+
+class TestRunUpgrade(unittest.TestCase):
+    """Второй прогон: то же событие от более авторитетного источника заменяет запись, не уведомляя повторно."""
+
+    def test_authoritative_source_replaces_stored_event(self):
+        import datetime as dt
+        today = dt.date(2026, 11, 18)
+        gnews_ev = {"type": "appointment", "level": "head", "org_class": "gov", "region": "Санкт-Петербург",
+                    "title": "Юлию Смирнову назначили спецпредставителем губернатора Петербурга", "summary": "",
+                    "link": "https://news.google.com/x", "date": "2026-11-18", "source": "Google Новости · СПб",
+                    "source_id": "gnews_spb", "person": "Юлию Смирнову", "orgs": [], "rank": 4}
+        cfg = {"sources": [{"id": "gnews_spb", "name": "Google Новости · СПб", "type": "rss", "url": "u1",
+                            "region": "Санкт-Петербург", "region_from_text": True, "rank": 4},
+                           {"id": "spb_smolny_tg", "name": "Смольный (Telegram)", "type": "telegram", "url": "u2",
+                            "region": "Санкт-Петербург", "rank": 1}],
+               "organizations": {}}
+        fetched = {"u1": [], "u2": [{"title": "Александр Беглов: Юлия Смирнова назначена на должность специального представителя Губернатора Санкт-Петербурга",
+                                     "summary": "Юлия Смирнова, занимавшая пост председателя Комитета по информатизации и связи, назначена на должность специального представителя Губернатора.",
+                                     "link": "https://t.me/smolny/1", "date": "2026-11-18T10:00:00+03:00"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            saved = (nm.SOURCES_FILE, nm.DATA_DIR, nm.EVENTS_FILE, nm.SEEN_FILE, nm.FEEDS_CACHE, nm.RUN_SUMMARY, nm.PAGE_FILE, nm.fetch_source)
+            nm.SOURCES_FILE, nm.DATA_DIR = tmp / "s.json", tmp / "d"
+            nm.EVENTS_FILE, nm.SEEN_FILE, nm.FEEDS_CACHE = nm.DATA_DIR / "e.json", nm.DATA_DIR / "seen.json", nm.DATA_DIR / "f.json"
+            nm.RUN_SUMMARY, nm.PAGE_FILE = tmp / "r.json", tmp / "news.html"
+            nm.fetch_source = lambda src, cache: (fetched[src["url"]], "ok")
+            try:
+                nm.DATA_DIR.mkdir()
+                nm.save_json(nm.SOURCES_FILE, cfg)
+                nm.save_json(nm.EVENTS_FILE, [gnews_ev])
+                new, _ = nm.run(today=today, verbose=False)
+                events = json.loads(nm.EVENTS_FILE.read_text(encoding="utf-8"))
+            finally:
+                (nm.SOURCES_FILE, nm.DATA_DIR, nm.EVENTS_FILE, nm.SEEN_FILE, nm.FEEDS_CACHE, nm.RUN_SUMMARY, nm.PAGE_FILE, nm.fetch_source) = saved
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["source_id"], "spb_smolny_tg")
+        self.assertEqual(new, [])          # повторного уведомления нет
+
+
+class TestVerbForms(unittest.TestCase):
+    def test_future_and_reelection_forms(self):
+        self.assertIsNotNone(nm.detect_all("Главврач Первой городской больницы в Архангельске покинет должность", "", ORGS))
+        self.assertIsNotNone(nm.detect_all("Ректором СПбГУ переизбран Николай Кропачев", "", ORGS))
+        self.assertIsNotNone(nm.detect_all("Губернатор продлил полномочия главы Фонда капремонта Ленобласти", "", ORGS))

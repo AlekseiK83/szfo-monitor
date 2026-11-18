@@ -1634,6 +1634,46 @@ def render_subscribe_button():
     <div class="subscribe-note">Ежедневная сводка о награждённых из СЗФО — в Telegram</div>'''
 
 
+def render_news_banner():
+    """Баннер-переход ко второму потоку (news.html) с живыми цифрами из data/news/events.json."""
+    esc = html_module.escape
+    path = Path("data/news/events.json")
+    events = []
+    if path.exists():
+        try:
+            events = json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            events = []
+    today = msk_today()
+    month_ago = (today - timedelta(days=30)).isoformat()
+    recent = [e for e in events if e.get("date", "") >= month_ago]
+    appointments = sum(1 for e in recent if e.get("type") in ("appointment", "leave"))
+    titles = sum(1 for e in recent if e.get("type") == "title")
+    latest = max((e.get("date", "") for e in events), default="")
+    if recent:
+        parts = []
+        if appointments:
+            parts.append(f"{appointments} {_plural(appointments, 'назначение', 'назначения', 'назначений')}")
+        if titles:
+            parts.append(f"{titles} {_plural(titles, 'звание', 'звания', 'званий')}")
+        meta = "за 30 дней: " + ", ".join(parts)
+        if latest:
+            meta += f" · последнее {esc(format_display_date(latest))}"
+    else:
+        meta = "по новостям правительств, ведомств и ведущих СМИ регионов"
+    return f'''
+  <a class="news-banner" href="news.html">
+    <div class="news-banner-body">
+      <div class="eyebrow">Второй поток · новости регионов</div>
+      <div class="news-banner-title">Назначения и звания</div>
+      <div class="news-banner-text">Новые руководители и заместители в органах власти, ведомствах, учреждениях
+        и крупнейших компаниях СЗФО, региональные и генеральские звания</div>
+      <div class="news-banner-meta">{meta}</div>
+    </div>
+    <div class="news-banner-arrow" aria-hidden="true"></div>
+  </a>'''
+
+
 def render_index_html(index_data, region_counts):
     esc = html_module.escape
     entries = sorted(index_data["reports"], key=lambda x: x["date"], reverse=True)
@@ -1763,6 +1803,24 @@ def render_index_html(index_data, region_counts):
 .entry.hidden {{ display: none; }}
 .updated {{ text-align: center; font-size: 12px; color: var(--faint); margin-top: 26px; }}
 
+/* Баннер второго потока */
+.news-banner {{ display: flex; align-items: center; gap: 20px; margin: 0 0 30px;
+                padding: 22px 26px; background: var(--card); border: 1px solid var(--line);
+                border-left: 3px solid var(--gold); border-radius: 14px; color: inherit;
+                text-decoration: none; transition: border-color .15s, transform .15s, box-shadow .15s; }}
+.news-banner:hover {{ border-color: var(--gold); transform: translateY(-1px);
+                      box-shadow: 0 6px 18px rgba(0,0,0,.05); }}
+.news-banner .eyebrow {{ margin-bottom: 6px; }}
+.news-banner-body {{ flex: 1; min-width: 0; }}
+.news-banner-title {{ font-family: var(--serif); font-size: 23px; line-height: 1.2; color: var(--accent-deep); }}
+.news-banner-text {{ font-size: 13.5px; color: var(--muted); margin-top: 6px; max-width: 560px; }}
+.news-banner-meta {{ font-size: 12.5px; color: var(--accent); margin-top: 10px;
+                     font-variant-numeric: tabular-nums; }}
+.news-banner-arrow {{ width: 14px; height: 14px; flex-shrink: 0; margin-right: 6px;
+                      border-top: 2px solid var(--gold); border-right: 2px solid var(--gold);
+                      transform: rotate(45deg); transition: transform .15s; }}
+.news-banner:hover .news-banner-arrow {{ transform: translateX(4px) rotate(45deg); }}
+
 /* Сегментированный фильтр списка дней */
 .index-filter {{ display: flex; gap: 4px; margin-bottom: 12px; padding: 4px;
                  background: var(--soft); border: 1px solid var(--line); border-radius: 999px; }}
@@ -1781,6 +1839,9 @@ def render_index_html(index_data, region_counts):
                        background: var(--card); border: 1px dashed var(--line); border-radius: 14px; }}
 @media (max-width: 640px) {{
   .hero {{ padding: 16px 0 30px; }}
+  .news-banner {{ padding: 18px 18px; gap: 12px; margin-bottom: 22px; }}
+  .news-banner-title {{ font-size: 20px; }}
+  .news-banner-text {{ font-size: 13px; }}
   .hero h1 {{ font-size: 27px; }}
   .hero .wide {{ display: none; }}
   .month-strip {{ gap: 2px; }}
@@ -1807,7 +1868,6 @@ def render_index_html(index_data, region_counts):
     <div class="sub">Указы и распоряжения Президента с
       <a href="http://publication.pravo.gov.ru/documents/daily" target="_blank"
          rel="noopener">publication.pravo.gov.ru</a></div>
-    <div class="sub"><a href="news.html">Назначения и звания по новостям регионов →</a></div>
     <div class="rule"></div>
     <div class="summary">
       <div class="stat"><div class="stat-value">{total_all}</div>
@@ -1817,6 +1877,7 @@ def render_index_html(index_data, region_counts):
     </div>
     {render_subscribe_button()}
   </div>
+  {render_news_banner()}
   {nav_html}
   {filters_html}
   <div class="entries" id="entries-list">{rows_html}</div>

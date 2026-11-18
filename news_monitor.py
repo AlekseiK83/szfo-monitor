@@ -31,7 +31,7 @@ import re
 import sys
 import time
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
@@ -195,7 +195,7 @@ _ORG_CACHE = {}
 
 
 def org_pattern(name):
-    """«Северсталь» → \bсеверстал\w* : ловим падежи («Северстали», «Севмаша»)."""
+    r"""«Северсталь» → \bсеверстал\w* : ловим падежи («Северстали», «Севмаша»)."""
     pat = _ORG_CACHE.get(name)
     if pat is None:
         words = name.split()
@@ -721,11 +721,32 @@ PAGE_CSS = """
 .ev-title a:hover { color: var(--accent); }
 .ev-sum { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
 .ev-src { font-size: 12px; color: var(--faint); margin-top: 4px; }
-.day-head { font-family: var(--serif); font-size: 19px; color: var(--accent-deep); margin: 28px 0 4px;
-            padding-bottom: 6px; border-bottom: 1px solid var(--line); }
-.day-head:first-child { margin-top: 0; }
+.day-block { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.day-block > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 12px;
+                       padding: 13px 18px; user-select: none; transition: background .15s; }
+.day-block > summary::-webkit-details-marker { display: none; }
+.day-block > summary:hover { background: var(--soft); }
+.day-block[open] > summary { border-bottom: 1px solid var(--line); }
+.day-chevron { width: 8px; height: 8px; flex-shrink: 0; align-self: center; border-top: 1.5px solid var(--gold);
+               border-right: 1.5px solid var(--gold); transform: rotate(45deg); transition: transform .2s; }
+.day-block[open] .day-chevron { transform: rotate(135deg); }
+.day-head { font-family: var(--serif); font-size: 19px; color: var(--accent-deep); flex: 1; }
+.day-weekday { font-size: 13px; color: var(--muted); }
+.day-count { font-size: 12px; color: var(--accent); background: var(--gold-soft); padding: 1px 9px;
+             border-radius: 999px; font-variant-numeric: tabular-nums; }
+.day-body { padding: 4px 18px 6px; }
 .ev.hidden { display: none; }
 .day-block.hidden { display: none; }
+.days-toolbar { display: flex; justify-content: flex-end; margin: -6px 0 8px; }
+.days-toggle { border: none; background: none; color: var(--muted); font: inherit; font-size: 13px;
+               cursor: pointer; padding: 4px 2px; }
+.days-toggle:hover { color: var(--accent); }
+@media (max-width: 640px) {
+  .day-block > summary { padding: 12px 14px; gap: 8px; }
+  .day-head { font-size: 17px; }
+  .day-weekday { display: none; }
+  .day-body { padding: 2px 14px 4px; }
+}
 .empty-note { text-align: center; color: var(--muted); padding: 30px 0; font-family: var(--serif);
               font-size: 17px; }
 """
@@ -747,7 +768,7 @@ def render_page(events, today):
         type_chips.append(f'<button class="filter-btn" data-type="{t}">{lbl} <span class="badge">{n}</span></button>')
 
     blocks = []
-    for day in sorted(by_day, reverse=True):
+    for i, day in enumerate(sorted(by_day, reverse=True)):
         rows = []
         for ev in by_day[day]:
             cls = CLASS_LABEL.get(ev["org_class"], "")
@@ -772,11 +793,21 @@ def render_page(events, today):
         {f'<div class="ev-sum">{esc(summary)}</div>' if summary else ''}
         <div class="ev-src">{esc(ev['source'])}</div>
       </div>""")
+        n = len(by_day[day])
         blocks.append(f"""
-    <div class="day-block" data-day="{day}">
-      <div class="day-head">{esc(g.format_display_date(day))}</div>{''.join(rows)}
-    </div>""")
-    body = "".join(blocks) if blocks else '<div class="empty-note">Событий пока нет — первый прогон ещё не прошёл.</div>'
+    <details class="day-block" data-day="{day}"{' open' if i < 3 else ''}>
+      <summary>
+        <span class="day-chevron"></span>
+        <span class="day-head">{esc(g.format_display_date(day))}</span>
+        <span class="day-weekday">{esc(g.format_weekday(day))}</span>
+        <span class="day-count">{n} {g._plural(n, 'событие', 'события', 'событий')}</span>
+      </summary>
+      <div class="day-body">{''.join(rows)}</div>
+    </details>""")
+    toolbar = ('<div class="days-toolbar"><button class="days-toggle" type="button" data-state="part">'
+               'Раскрыть все дни</button></div>') if len(blocks) > 3 else ""
+    body = (toolbar + "".join(blocks)) if blocks else \
+        '<div class="empty-note">Событий пока нет — первый прогон ещё не прошёл.</div>'
 
     page = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -809,7 +840,7 @@ def render_page(events, today):
     <div class="report-footer">
       Источники: официальные сайты и Telegram-каналы правительств, ведомств и ведущих СМИ регионов (news_sources.json).
       Отбор автоматический по ключевым словам; заголовок ведёт на исходную публикацию.<br>
-      Обновлено {esc(g.format_msk(datetime.utcnow().isoformat()))}
+      Обновлено {esc(g.format_msk(datetime.now(timezone.utc).replace(tzinfo=None).isoformat()))}
     </div>
   </div>
 </div>
@@ -822,9 +853,26 @@ def render_page(events, today):
       el.classList.toggle('hidden', !show);
     }});
     document.querySelectorAll('.day-block').forEach(function(b) {{
-      b.classList.toggle('hidden', !b.querySelector('.ev:not(.hidden)'));
+      var visible = b.querySelectorAll('.ev:not(.hidden)').length;
+      b.classList.toggle('hidden', !visible);
+      var c = b.querySelector('.day-count');
+      if (c) c.textContent = visible + ' ' + plural(visible, 'событие', 'события', 'событий');
     }});
   }}
+  function plural(n, a, b, c) {{
+    var m = n % 100, k = n % 10;
+    if (m >= 11 && m <= 19) return c;
+    if (k === 1) return a;
+    if (k >= 2 && k <= 4) return b;
+    return c;
+  }}
+  var toggle = document.querySelector('.days-toggle');
+  if (toggle) toggle.addEventListener('click', function() {{
+    var open = toggle.dataset.state !== 'all';
+    document.querySelectorAll('.day-block').forEach(function(b) {{ b.open = open; }});
+    toggle.dataset.state = open ? 'all' : 'part';
+    toggle.textContent = open ? 'Свернуть дни' : 'Раскрыть все дни';
+  }});
   document.querySelectorAll('.filter-btn[data-region]').forEach(function(btn) {{
     btn.addEventListener('click', function() {{
       region = btn.dataset.region;

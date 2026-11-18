@@ -163,6 +163,9 @@ TITLE_NOUN = re.compile(
 OBITUARY = re.compile(r"\b(?:скончал[аись]+|умер(?:ла)?\b|уш[её]л\s+из\s+жизни|ушла\s+из\s+жизни|не\s+стало\b|погиб(?:ла)?\b|"
                       r"соболезновани)", re.I)
 ANNIVERSARY = re.compile(r"\b(\d{2,3})(?:-?\s?(?:лет|летие|летия|летний|летию|й)\b|\s+лет)", re.I)
+PERSON_ANNIV = re.compile(r"\b(?:вологжан|петербурж|архангелогород|калининград[кц]|мурманчан|псковичан|новгород[кц]|сыктывкар[кц]|"
+                          r"петрозаводчан|жител\w*|долгожител\w*|ветеран\w*|пенсионер\w*|блокадни\w*|труженик|бабушк|дедушк|"
+                          r"[А-ЯЁ][а-яё]+[еу]\s+[А-ЯЁ][а-яё]+(?:ой|ову|еву|ину|ской|скому|ичу|ичне)\b|(?:ович|евич|овн|евн)[ауе]?\b)", re.I)
 ANNIVERSARY_CTX = re.compile(r"\b(?:юбиле|отмеча|отметил|отпраздн|праздну|исполн(?:яется|илось|ится)|годовщин|со\s+дня\s+(?:основания|создания|образования))", re.I)
 VISIT = re.compile(r"\b(?:Путин|Президент\w*\s+(?:России|РФ|Российской)|Мишустин|премьер-министр|председател\w+\s+правительства\s+(?:России|РФ)|"
                    r"полпред|полномочн\w+\s+представител|Матвиенко|Володин|Патриарх|Патриарх\w*\s+Кирилл|министр\w*\s+(?:\S+\s+){0,3}?(?:России|РФ)|"
@@ -179,7 +182,7 @@ LAUNCH = re.compile(r"\b(?:открыл[аи]?|открыт[аоы]?\b|откр�
 LAUNCH_SCALE = re.compile(r"\b(?:млрд|миллиард|крупнейш|первы[йе]\s+в\s+(?:России|стране|СЗФО|мире|Европе)|единственн\w+\s+в\s+России|"
                           r"завод|производств\w*|цех\w*|терминал|энергоблок|верф|судно|корабл|ледокол|подводн\w+\s+лодк|фрегат|корвет|"
                           r"больниц|перинатальн|онкоцентр|кампус|стадион|мост|развязк|магистрал|\bКАД\b|\bЗСД\b|аэропорт|порт\w*\b|"
-                          r"ТЭЦ|подстанци|котельн|очистн|индустриальн\w+\s+парк|\bОЭЗ\b|технопарк|газопровод|нефтепровод|месторожден|"
+                          r"ТЭЦ|подстанци|очистн|индустриальн\w+\s+парк|\bОЭЗ\b|технопарк|газопровод|нефтепровод|месторожден|"
                           r"строительств|модернизац|реконструкц|инвестиц|агрегат|линии|линию|комплекс)", re.I)
 # для инфоповодов «слухи/планы» исключаем, а «конкурс» и «кандидат» — нет (победа в конкурсе — это и есть статус)
 LAUNCH_OBJECT = re.compile(r"\b(?:выпуск|производств|серийн|на\s+воду|эксплуатаци|строительств|контракт|заложил|первый\s+камень|"
@@ -325,6 +328,10 @@ def detect(title, summary, organizations):
         return None
 
     # ── Назначение / уход ──
+    if CRIMINAL.search(head) and COURT_ROUTINE.search(head):      # «бывшего главврача освободили из-под стражи»
+        return None
+    if re.search(r"назнач\w+\s+(?:ему|ей|им)?\s*(?:реальн|условн|срок|наказан|штраф|дат[уы]|проверк|экспертиз|выплат|пособ|пенси)", lead, re.I):
+        return None
     has_pos = POSITION.search(head)
     appoint = APPOINT_VERB.search(lead) or (BECOME.search(lead) and INSTRUMENTAL.search(lead))
     if HEAD_VERB.search(lead):
@@ -369,7 +376,7 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
     # 3. Круглый юбилей организации (25, 30, 40, 50 … лет)
     am = ANNIVERSARY.search(lead)
-    if am and ANNIVERSARY_CTX.search(head) and known:
+    if am and ANNIVERSARY_CTX.search(head) and known and not PERSON_ANNIV.search(lead):
         n = int(am.group(1))
         if n >= 25 and n % 5 == 0 and not re.search(r"\bлет(?:ие|ия|ию)?\s+(?:со\s+дня\s+рождения|\S+\s+\S+(?:ич|вн)[ауе]?\b)", head, re.I) \
                 and not re.search(r"\bлет\s+назад", head, re.I):
@@ -381,7 +388,9 @@ def detect_extra(title, summary, organizations, region_hint=None):
     strong_launch = bool(lm and orgs and LAUNCH_OBJECT.search(head)
                          and not re.search(r"\b(?:программ|акци[юия]|сотрудничеств|партн[её]рств|сервис|приложени|конкурс|набор|вакансi|выставк)", head, re.I))
     if lm and (strong_launch or LAUNCH_SCALE.search(head)) and (orgs or org_class in ("business", "podved", "gov")) \
-            and not re.search(r"\b(?:ремонт|благоустро|сквер|детск\w+\s+площадк|выставк|фестивал|ярмарк|сезон|навигаци)", head, re.I):
+            and not re.search(r"\b(?:ремонт|благоустро|сквер|детск\w+\s+площадк|выставк|фестивал|ярмарк|сезон|навигаци|"
+                              r"в\s+сел[ео]|в\s+деревн|в\s+пос[её]лке|сельск|каток|катк[аеу]|котельн|ФАП\b|фельдшерск|"
+                              r"сформирован\w*\s+(?:план|перечень)|план\w*\s+по\b|дорожн\w+\s+карт)", head, re.I):
         return {"type": "launch", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 5. Государственная или региональная награда организации либо её руководителю
@@ -478,7 +487,9 @@ def parse_feed(xml_text):
         it["summary"] = strip_tags(it["summary"])[:800]
         it["title"] = strip_tags(it["title"])
         if "news.google.com" in xml_text[:600]:          # «Заголовок - Издание» → «Заголовок»
-            it["title"] = re.sub(r"\s+[-—–]\s+[^-—–]{2,40}$", "", it["title"])
+            parts = re.split(r"\s+[-—–]\s+", it["title"])
+            if len(parts) > 1 and len(parts[-1]) <= 50:
+                it["title"] = " ".join(parts[:-1]).strip()
             it["summary"] = ""                           # в аннотации Google дублирует другие заголовки
     return [it for it in items if it["title"]]
 
@@ -676,6 +687,12 @@ NEWS_REGION_EXTRA = {
 _NEWS_REGION_COMPILED = [(name, [re.compile(p, re.I) for p in pats]) for name, pats in NEWS_REGION_EXTRA.items()]
 
 
+REGION_INSTITUTION = re.compile(r"(?:правительств\w*|администраци\w*|губернатор\w*|глав[аыеу]|министерств\w*|министр\w*|"
+                                r"заксобрани\w*|законодательн\w+\s+собрани\w*|парламент\w*|прокуратур\w*|управлени\w*|"
+                                r"\bУ?МВД|\bУФСБ|\bУФСИН|\bСУ\s+СК|МЧС|Росгварди\w*|суд\w*|университет\w*|больниц\w*|"
+                                r"театр\w*|компани\w*|завод\w*|комбинат\w*|пресс-службы|по)\s+(?:по\s+)?\S*\s*$", re.I)
+
+
 def news_region(text):
     """Регион СЗФО по тексту новости. Побеждает самое раннее упоминание;
     при явном чужом регионе — None (как в generate.match_region)."""
@@ -692,6 +709,14 @@ def news_region(text):
             m = p.search(text)
             if m and (best is None or m.start() < best[0]):
                 best = (m.start(), name)
+    if best:
+        # регион учреждения («правительства Карелии», «УМВД по Коми») важнее региона происхождения («из Вологодской области»)
+        for name, _slug, patterns in g.SZFO_COMPILED:
+            for p in patterns:
+                for m in p.finditer(text):
+                    before = text[max(0, m.start() - 60):m.start()]
+                    if REGION_INSTITUTION.search(before) and not re.search(r"\bиз\s*$", before, re.I):
+                        return name
     return best[1] if best else None
 
 
@@ -777,7 +802,7 @@ def similar(a, b):
     except ValueError:
         return False
     sa, sb = title_stems(a["title"]), title_stems(b["title"])
-    if len(sa) < 3 or len(sb) < 3:
+    if len(sa) < 2 or len(sb) < 2:
         return False
     common = len(sa & sb)
     return common / min(len(sa), len(sb)) >= 0.5
@@ -820,6 +845,7 @@ def reconcile(events, cfg):
     и к уже найденному. Возвращает (events, seen_keys)."""
     organizations = cfg.get("organizations", {})
     ranks = {src["id"]: src.get("rank", 3) for src in cfg.get("sources", [])}
+    srcs = {src["id"]: src for src in cfg.get("sources", [])}
     kept, seen = [], {}
     for ev in events:
         ev["rank"] = ranks.get(ev.get("source_id"), ev.get("rank", 3))
@@ -829,6 +855,11 @@ def reconcile(events, cfg):
         if not det:
             continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
+        src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
+        region = attribute_region(src, ev["title"] + " " + ev.get("summary", "")[:300], det["orgs"])
+        if not region:
+            continue
+        ev["region"] = region
         keys = event_keys(ev)
         if any(k in seen for k in keys) or any(similar(ev, e) for e in kept):
             continue

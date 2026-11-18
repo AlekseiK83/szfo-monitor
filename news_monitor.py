@@ -606,13 +606,51 @@ def event_key(ev):
     return f"{ev['type']}:{norm[:70]}"
 
 
+APPOINTER_FORM = re.compile(r"\b(?:назначил[аи]?|представил[аи]?|сформировал[аи]?|перераспредел\w+|утвердил[аи]?|"
+                            r"освободил[аи]?|отправил[аи]?\s+в\s+отставку|сменил[аи]?)\b", re.I)
+
+
+def priority(ev):
+    """Порядок выбора записи среди дублей: авторитет источника; затем заголовок о назначенном
+    («Фаламеева назначена министром») раньше заголовка о назначившем («Филимонов назначил министра»);
+    затем заголовок с фамилией; затем дата."""
+    return (ev.get("rank", 3), 1 if APPOINTER_FORM.search(ev["title"]) else 0,
+            0 if ev.get("person") else 1, ev.get("date", ""))
+
+
+def reconcile(events, cfg):
+    """Перепроверить сохранённые события по текущим правилам: убрать то, что детектор
+    больше не считает событием, и склеить дубли, оставив самый авторитетный источник.
+    Вызывается при каждом прогоне и при --rebuild, чтобы правки правил применялись
+    и к уже найденному. Возвращает (events, seen_keys)."""
+    organizations = cfg.get("organizations", {})
+    ranks = {src["id"]: src.get("rank", 3) for src in cfg.get("sources", [])}
+    kept, seen = [], {}
+    for ev in events:
+        ev["rank"] = ranks.get(ev.get("source_id"), ev.get("rank", 3))
+        ev["person"] = ev.get("person") or extract_person(ev["title"])
+    for ev in sorted(events, key=priority):
+        det = detect(ev["title"], ev.get("summary", ""), organizations)
+        if not det:
+            continue
+        ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
+        keys = event_keys(ev)
+        if any(k in seen for k in keys):
+            continue
+        for k in keys:
+            seen[k] = ev["date"]
+        kept.append(ev)
+    return kept, seen
+
+
 def run(today=None, verbose=True):
     cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
     organizations = cfg.get("organizations", {})
     feeds_cache = load_json(FEEDS_CACHE, {})
-    seen = load_json(SEEN_FILE, {})
-    events = load_json(EVENTS_FILE, [])
     today = today or g.msk_today()
+    events, seen_from_events = reconcile(load_json(EVENTS_FILE, []), cfg)
+    seen = load_json(SEEN_FILE, {})
+    seen.update(seen_from_events)
     fresh_from = today - timedelta(days=FRESH_DAYS)
 
     candidates, statuses = [], []
@@ -644,7 +682,7 @@ def run(today=None, verbose=True):
             candidates.append(ev)
 
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
-    candidates.sort(key=lambda e: (e["rank"], e["date"]), reverse=False)
+    candidates.sort(key=priority)
     new_events = []
     for ev in candidates:
         keys = event_keys(ev)
@@ -950,8 +988,14 @@ def main():
         check_sources()
         return 0
     if args.rebuild:
-        render_page(load_json(EVENTS_FILE, []), g.msk_today())
-        print("news.html пересобран")
+        cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
+        before = load_json(EVENTS_FILE, [])
+        events, seen = reconcile(before, cfg)
+        events.sort(key=lambda e: (e["date"], e["region"], e["title"]), reverse=True)
+        save_json(EVENTS_FILE, events)
+        save_json(SEEN_FILE, {**load_json(SEEN_FILE, {}), **seen})
+        render_page(events, g.msk_today())
+        print(f"news.html пересобран: событий было {len(before)}, осталось {len(events)}")
         return 0
     if args.notify:
         return notify()

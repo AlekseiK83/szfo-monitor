@@ -499,3 +499,33 @@ class TestSecondRunFeedback(unittest.TestCase):
         self.assertIsNotNone(nm.detect_all("Задержан директор ГОБУЗ «Новгородская областная клиническая больница»", "", orgs))
         self.assertEqual(nm.find_org_names("Новгородского района", {"Новгородская область": ["НовГУ"]}), [])
         self.assertEqual(nm.find_org_names("ректор НовГУ", {"Новгородская область": ["НовГУ"]}), [("Новгородская область", "НовГУ")])
+
+    def test_third_run_feedback(self):
+        orgs = ORGS
+        # регион учреждения важнее региона происхождения
+        self.assertEqual(nm.news_region("Екатерина Демянчук из Вологодской области возглавила пресс-службу правительства Карелии"), "Республика Карелия")
+        self.assertEqual(nm.news_region("Нового руководителя пресс-службы правительства назначили в Карелии"), "Республика Карелия")
+        # юбилей человека — не инфоповод, юбилей вуза — да
+        self.assertIsNone(nm.detect_all("Вологжанке Галине Барановой исполнилось 100 лет", "", orgs))
+        self.assertEqual(nm.detect_all("Петрозаводскому государственному университету исполнилось 85 лет", "", orgs)["type"], "anniversary")
+        # мелкие запуски и планы
+        self.assertIsNone(nm.detect_all("В Новгородском кампусе запустили газовую котельную для подачи тепла", "", orgs))
+        self.assertIsNone(nm.detect_all("В селе Кубенском открыли обновлённый спортивный стадион", "", orgs))
+        self.assertIsNone(nm.detect_all("Сформирован план по строительству шахты «Усинская» и ввода в эксплуатацию", "", orgs))
+        # «назначили срок» и дела бывших — не кадры
+        self.assertIsNone(nm.detect_all("Бывшего главврача освободили из-под стражи в Архангельске", "Ему назначили реальный срок за махинации", orgs))
+        # суффикс Google News с дефисом внутри названия издания
+        xml = '<rss><channel><link>https://news.google.com/rss</link><item><title>В Карелии назначили нового руководителя пресс-службы правительства - Интернет-журнал</title><link>x</link></item></channel></rss>'
+        self.assertEqual(nm.parse_feed(xml)[0]["title"], "В Карелии назначили нового руководителя пресс-службы правительства")
+
+    def test_reconcile_recomputes_region(self):
+        cfg = {"sources": [{"id": "gnews_kar", "region": "Республика Карелия", "region_from_text": True, "rank": 4},
+                           {"id": "kremlin", "rank": 1}], "organizations": ORGS}
+        events = [
+            {"title": "Глава администрации правительства Монголии подал в отставку вслед за премьером", "summary": "", "date": "2026-11-18",
+             "type": "leave", "region": "Республика Карелия", "source_id": "gnews_kar", "source": "g", "link": "a", "level": "head", "org_class": "gov"},
+            {"title": "Посещение совместного университета МГУ и Пекинского политехнического института", "summary": "Владимир Путин посетил вуз в Шэньчжэне", "date": "2026-11-18",
+             "type": "visit", "region": "Санкт-Петербург", "source_id": "kremlin", "source": "k", "link": "b", "level": "head", "org_class": "podved"},
+        ]
+        kept, _ = nm.reconcile(events, cfg)
+        self.assertEqual(kept, [])

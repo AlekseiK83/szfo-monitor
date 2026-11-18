@@ -70,11 +70,12 @@ APPOINT_VERB = re.compile(
     r"директором|начальником|председателем|министром|ректором|прокурором|заместителем|"
     r"вице-|зам|и\.о\.|врио|временным)|станет\s+(?:новым\s+)?(?:главой|руководителем|директором|"
     r"начальником|председателем|министром|ректором|заместителем|вице-|зам)|"
-    r"представил[аи]?\s+(?:нового|новую|коллективу|личному\s+составу)|сменил[аи]?|сменит|"
+    r"представил[аи]?\s+(?:нового|новую|коллективу|личному\s+составу)|сменил[аи]?\s+(?:\S+\s+){0,2}?(?:на\s+посту|в\s+должности|"
+    r"на\s+должности|главу|руководител|директор|начальник|председател|министр|ректор|прокурор)|сменит\s+(?:\S+\s+){0,2}?(?:на\s+посту|главу|руководител|директор)|"
     r"новы[йм]\s+(?:глав[аы]|руководител|директор|начальник|председател|министр|ректор|прокурор|"
     r"зам|вице-)|новая\s+(?:глава|руководитель|директор|начальник|председатель|министр)|"
     r"врио|временно\s+исполняющ|и\.\s?о\.\s+(?:глав|руковод|директор|начальник|министр|председател|прокурор)|"
-    r"сменил[аи]?сь|сменился|сформировал[аи]?\s+(?:новое\s+)?правительств|перераспредел\w+\s+полномочи|"
+    r"сменил(?:ся|ась|ись)\s+(?:\S+\s+){0,2}?(?:глав|руководител|директор|начальник|председател|министр|ректор|прокурор|гендиректор)|сформировал[аи]?\s+(?:новое\s+)?правительств|перераспредел\w+\s+полномочи|"
     r"нов\w+\s+состав\w*\s+правительств|обновил[аи]?\s+(?:состав|правительств)|кадров\w+\s+(?:перестановк|изменени|решени))",
     re.I)
 # «возглавил комитет» — должность следует из глагола, отдельного слова-должности не нужно
@@ -138,7 +139,17 @@ TITLE_VERB = re.compile(
     re.I)
 # слабые глаголы («вручили», «пополнили») считаются только с сильным существительным
 WEAK_TITLE_VERB = re.compile(r"\b(?:вручил[аи]?|вручен[аы]?|пополнил[аи]?)\b", re.I)
-STRONG_TITLE_NOUN = re.compile(r"(?:звани[еяюй]|почётн|почетн|заслуженн|народн\w+\s+(?:артист|художник|учител|врач))", re.I)
+STRONG_TITLE_NOUN = re.compile(r"(?:звани[еяюй]|почётн|почетн|заслуженн|народн\w+\s+(?:артист|художник|учител|врач))", re.I)# Звания, важные сами по себе (независимо от должности): почётный гражданин, региональные почётные
+# звания, народные артисты/художники, генеральские и адмиральские звания. Прочие («Почётный работник
+# АПК России», «Заслуженный работник РФ», просто «звание») учитываются только у руководителей.
+CORE_TITLE = re.compile(
+    r"(?:почётн\w+\s+граждан\w*|почетн\w+\s+граждан\w*|почётн\w+\s+благотворител\w*|почетн\w+\s+благотворител\w*|"
+    r"(?:заслуженн|почётн|почетн)\w+\s+\w+\s+(?:Санкт-Петербурга|Ленинградской|Архангельской|Вологодской|"
+    r"Калининградской|Мурманской|Псковской|Новгородской|Республики\s+(?:Карелия|Коми)|Карелии|Коми)|"
+    r"народн\w+\s+(?:артист|художник|учител|врач)|генерал-майор|генерал-лейтенант|генерал-полковник|"
+    r"генерал\s+армии|контр-адмирал|вице-адмирал|\bгенерал[аеу]?\b|погон\w*\s+генерал|"
+    r"высш\w+\s+(?:офицер|начальствующ))", re.I)
+
 TITLE_NOUN = re.compile(
     r"(?:звани[еяюй]|почётн\w+\s+граждан\w*|почетн\w+\s+граждан\w*|почётн\w+\s+благотворител\w*|почетн\w+\s+благотворител\w*|"
     r"заслуженн\w+\s+(?:работник|учител|врач|артист|деятел|строител|юрист|эконом|энергетик|мастер|"
@@ -174,6 +185,9 @@ LAUNCH_SCALE = re.compile(r"\b(?:млрд|миллиард|крупнейш|пе
 LAUNCH_OBJECT = re.compile(r"\b(?:выпуск|производств|серийн|на\s+воду|эксплуатаци|строительств|контракт|заложил|первый\s+камень|"
                            r"лини[июя]|агрегат|цех|завод|терминал|энергоблок|судн[оа]|корабл|ледокол|мощност|месторожден|скважин|"
                            r"печ[ьи]\b|домн|стан\b|установк|комплекс|участок|очеред[ьи])", re.I)
+COURT_ROUTINE = re.compile(r"гособвинител|государственн\w+\s+обвин|вынес\w*\s+приговор|приговор\w*\s+вынес|суд\s+(?:вынес|приговорил|признал|назначил\s+наказ)|приговорил|признан\w*\s+виновн|бывш\w+\s+(?:судь|глав|начальник|директор|руководител|министр|заместител|замест|чиновник|депутат|мэр|сотрудник)|экс-", re.I)
+CRIMINAL = re.compile(r"обыск|задержан|арестован|уголовн|приговор|под\s+стражу|домашн\w+\s+арест|арест\w*", re.I)
+MEDIA_SELF = re.compile(r"\b(?:цитируем|СМИ\b|медиа|телеканал\w*\s+(?:вош|стал|призна)|издани[ея]\s+(?:вош|стал|призна)|подписчик|просмотр)", re.I)
 UNCERTAIN_EXTRA = re.compile(r"\b(?:может\s+(?:стать|быть|получить)|могут\s+(?:стать|получить)|планиру|намерен|собира[еюя]тся|предлож|предлага|"
                              r"обсужда|слух|рассматрива|не\s+исключ|хотят|готовится|готовятся|в\s+планах|ожида[её]тся|прогноз)", re.I)
 ORG_AWARD = re.compile(r"\b(?:награжд[её]н[аоы]?|награди\w+|вручил[аи]?|вручен[аоы]?|удостоен[аоы]?|присужден[аоы]?|присудил[аи]?|получил[аи]?|стал[аи]?\s+лауреат)", re.I)
@@ -254,8 +268,9 @@ _ORG_CACHE = {}
 def org_pattern(name):
     r"""«Северсталь» → \bсеверстал\w* : ловим падежи («Северстали», «Севмаша»)."""
     pat = _ORG_CACHE.get(name)
-    if pat is None and name.isupper() and len(name) <= 8:
-        # аббревиатура: только целиком и с учётом регистра («ОСК», но не «Москва», «АВАР» ≠ «авария»)
+    mixed = " " not in name and len(name) <= 10 and re.search(r"[а-яё][А-ЯЁ]", name) is not None   # НовГУ, СевГУ, РусГидро
+    if pat is None and ((name.isupper() and len(name) <= 8) or mixed):
+        # аббревиатура: только целиком и с учётом регистра («ОСК», но не «Москва», «НовГУ», но не «Новгородского»)
         pat = re.compile(r"(?<![А-ЯЁA-Za-zа-яё])" + re.escape(name) + r"(?![А-ЯЁA-Za-zа-яё])")
         _ORG_CACHE[name] = pat
     if pat is None:
@@ -304,7 +319,10 @@ def detect(title, summary, organizations):
     tv = TITLE_VERB.search(lead)
     if tv and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
             and (not WEAK_TITLE_VERB.fullmatch(tv.group(0)) or STRONG_TITLE_NOUN.search(head)):
-        return {"type": "title", "level": "head", "org_class": org_class or "person", "orgs": orgs}
+        # ведомственные и общероссийские звания интересны только у руководителей
+        if CORE_TITLE.search(head) or POSITION.search(head):
+            return {"type": "title", "level": "head", "org_class": org_class or "person", "orgs": orgs}
+        return None
 
     # ── Назначение / уход ──
     has_pos = POSITION.search(head)
@@ -371,13 +389,19 @@ def detect_extra(title, summary, organizations, region_hint=None):
         return {"type": "award", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 6. Федеральный статус, рейтинг, победа во всероссийском конкурсе
-    if STATUS.search(lead) and (orgs or (org_class in ("podved", "business", "gov")
+    if STATUS.search(lead) and not MEDIA_SELF.search(head) and (orgs or (org_class in ("podved", "business", "gov")
                                          and re.search(r"\b(?:всероссийск|федеральн|национальн|России|стран[ыеу]|международн)", head, re.I))):
         return {"type": "status", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 7. Смена собственника, банкротство, уголовное преследование руководства — только для компаний из словаря
-    if OWNERSHIP.search(lead) and orgs:
-        return {"type": "ownership", "level": "head", "org_class": org_class or "company", "orgs": orgs}
+    om = OWNERSHIP.search(lead)
+    if om and orgs:
+        criminal = CRIMINAL.search(om.group(0)) is not None
+        # судебная рутина прокуратуры (приговоры, гособвинение, дела бывших чиновников) — не кадровое событие
+        if criminal and COURT_ROUTINE.search(lead):
+            return None
+        if not criminal or has_pos:        # «задержан гендиректор» — да, «возбудили дело после ДТП» — нет
+            return {"type": "ownership", "level": "head", "org_class": org_class or "company", "orgs": orgs}
     return None
 
 
@@ -490,6 +514,7 @@ def discover_feed(page_html, base_url):
     return None
 
 
+TIME_STAMP = re.compile(r"(?:^\s*\d{1,2}:\d{2}[,\s]+\d{2}\.\d{2}\.\d{4}\s*|\s*\d{1,2}:\d{2}(?:[,\s]+\d{2}\.\d{2}\.\d{4})?\s*$|^\s*\d{2}\.\d{2}\.\d{4}\s*)")
 ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
@@ -500,6 +525,7 @@ def parse_html_news(page_html, page_url):
     page_html = COMMENT_RE.sub(" ", page_html)
     for href, inner in ANCHOR_RE.findall(page_html):
         title = re.sub(r"\s+", " ", re.sub(r"<!--|-->", " ", strip_tags(inner))).strip()
+        title = TIME_STAMP.sub("", title).strip()          # «09:09, 17.11.2026» в конце, «13:27 18.11.2026» в начале
         if len(title) < 28 or len(title) > 300 or not re.search(r"[а-яё]", title, re.I):
             continue
         if not re.search(r"\s", title):        # одно слово — это меню
@@ -628,7 +654,10 @@ NEWS_FOREIGN = re.compile(
     r"белгород|липецк|тамбов|брянск|смоленск|рязан|ульяновск|пенз|оренбург|киров|ижевск|чебоксар|"
     r"ставропол|севастопол|симферопол|магадан|камчатк|сахалин|якутск|чит[аеы]\b|кемеров|кузбасс|барнаул|"
     r"тольятти|магнитогорск|сургут|югр[аеы]|ямал|донецк|луганск|запорожск|херсонск|ивановск|костром|"
-    r"владимирск|орловск|курган)", re.I)
+    r"владимирск|орловск|курган|"
+    r"монголи|украин|белорус|беларус|казахстан|кита[йя]\b|китайск|\bсша\b|америк|герман|франц|турци|\bиран|инди[ияю]\b|япон|коре[йя]|"
+    r"узбекистан|киргиз|таджик|армени|азербайджан|грузи[яи]|молдав|сири[яи]|израил|египт|вьетнам|шэньчжэн|пекин|минск|астан|ташкент|"
+    r"абхази|венесуэл|бразили|африк|европ[аеы]\b|евросоюз|\bнато\b|\bоон\b)", re.I)
 
 
 # Разговорные и газетные имена регионов, которых нет в словаре для указов
@@ -673,7 +702,7 @@ def attribute_region(src, text, orgs):
         return from_text
     if orgs:
         return orgs[0][0]
-    if src.get("region"):
+    if src.get("region") and not src.get("region_from_text"):
         if g._has_foreign_region(text) or NEWS_FOREIGN.search(text):   # региональное СМИ пишет о чужом регионе
             return None
         return src["region"]
@@ -697,10 +726,25 @@ POS_STOP = {"нового", "новым", "новой", "новую", "новы�
             "области", "год", "года"}
 
 
+ABBREV = [(r"\bгенпрокурор", "генеральный прокурор"), (r"\bгендиректор", "генеральный директор"),
+          (r"\bзамглав", "заместитель глав"), (r"\bзампред", "заместитель председател"),
+          (r"\bзамминистр", "заместитель министр"), (r"\bзамдиректор", "заместитель директор"),
+          (r"\bзамруководител", "заместитель руководител"), (r"\bзамначальник", "заместитель начальник"),
+          (r"\bи\.\s?о\.", "врио"), (r"\bглавврач", "главный врач"), (r"\bхудрук", "художественный руководитель"),
+          (r"\bинформполитик", "информационной политик"), (r"\bминздрав", "министерство здравоохранения"),
+          (r"\bминобр", "министерство образования"), (r"\bминтранс", "министерство транспорта")]
+
+
+def expand_abbrev(text):
+    for pat, full in ABBREV:
+        text = re.sub(pat, full, text, flags=re.I)
+    return text
+
+
 def position_key(ev):
     """«министром информационной политики Вологодской области» и
     «нового министра информационной политики» → один ключ 'минис инфор полит'."""
-    head = normalize(ev["title"] + " " + ev.get("summary", "")[:200])
+    head = expand_abbrev(normalize(ev["title"] + " " + ev.get("summary", "")[:200]))
     m = POSITION.search(head)
     if not m:
         return ""
@@ -716,6 +760,27 @@ def position_key(ev):
         if len(stems) == 3:
             break
     return f"{ev['type']}:{ev['region']}:{' '.join(stems)}" if stems else ""
+
+
+def title_stems(title):
+    words = re.findall(r"[а-яёa-z][а-яёa-z-]{3,}", expand_abbrev(normalize(title)).lower().replace("ё", "е"))
+    return {w[:5] for w in words if w not in POS_STOP}
+
+
+def similar(a, b):
+    """Два заголовка об одном событии: регион и тип совпадают, даты рядом, общих основ слов не меньше половины."""
+    if a["type"] != b["type"] or a["region"] != b["region"]:
+        return False
+    try:
+        if abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) > 3:
+            return False
+    except ValueError:
+        return False
+    sa, sb = title_stems(a["title"]), title_stems(b["title"])
+    if len(sa) < 3 or len(sb) < 3:
+        return False
+    common = len(sa & sb)
+    return common / min(len(sa), len(sb)) >= 0.5
 
 
 def event_keys(ev):
@@ -765,7 +830,7 @@ def reconcile(events, cfg):
             continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
         keys = event_keys(ev)
-        if any(k in seen for k in keys):
+        if any(k in seen for k in keys) or any(similar(ev, e) for e in kept):
             continue
         for k in keys:
             seen[k] = ev["date"]
@@ -814,9 +879,10 @@ def run(today=None, verbose=True):
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
     candidates.sort(key=priority)
     new_events = []
+    recent = [e for e in events if e.get("date", "") >= (today - timedelta(days=4)).isoformat()]
     for ev in candidates:
         keys = event_keys(ev)
-        if any(k in seen for k in keys):
+        if any(k in seen for k in keys) or any(similar(ev, e) for e in recent + new_events):
             continue
         for k in keys:
             seen[k] = today.isoformat()

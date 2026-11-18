@@ -1,5 +1,5 @@
 {
- "_comment": "Источники мониторинга новостей. type: rss (прямой адрес ленты) | site (адрес сайта, лента ищется автоматически, иначе читаются заголовки со страницы news) | telegram (имя публичного канала без @). region: имя региона СЗФО или null для федеральных (тогда регион берётся из текста). Поле verified — true, если адрес подтверждён в ходе исследования; остальные проверяет workflow «Проверка источников новостей». Поле enabled: false — источник выключен (недоступен из GitHub Actions по итогам проверки 17.11.2026), остаётся в списке на случай смены хостинга. Поле rank — авторитет источника (1 официальный, 2 федеральные СМИ, 3 региональные СМИ, 4 агрегатор Google Новостей — у него ссылки через редирект, поэтому при дубле побеждает прямой источник): при совпадении события остаётся запись из источника с меньшим rank. Раздел organizations — база знаний ключевых учреждений и компаний по регионам: названия ловятся в любом падеже; для них срабатывают инфоповоды «юбилей», «запуск», «награда», «статус», «собственность», «визит» и «утрата».",
+ "_comment": "Источники мониторинга новостей. type: rss (прямой адрес ленты) | site (адрес сайта, лента ищется автоматически, иначе читаются заголовки со страницы news) | telegram (имя публичного канала без @). region: имя региона СЗФО или null для федеральных (тогда регион берётся из текста). Поле verified — true, если адрес подтверждён в ходе исследования; остальные проверяет workflow «Проверка источников новостей». Поле enabled: false — источник выключен (недоступен из GitHub Actions по итогам проверки 17.11.2026), остаётся в списке на случай смены хостинга. Поле rank — авторитет источника (1 официальный, 2 федеральные СМИ, 3 региональные СМИ, 4 агрегатор Google Новостей — у него ссылки через редирект, поэтому при дубле побеждает прямой источник): при совпадении события остаётся запись из источника с меньшим rank. Раздел organizations — база знаний ключевых учреждений и компаний по регионам: названия ловятся в любом падеже; для них срабатывают инфоповоды «юбилей», «запуск», «награда», «статус», «собственность», «визит» и «утрата». Поле region_from_text: true — регион источника не подставляется, событие берётся только если регион назван в тексте (для агрегаторов).",
  "sources": [
   {
    "id": "kremlin",
@@ -186,8 +186,9 @@
    "news_url": "https://www.gov.spb.ru/",
    "region": "Санкт-Петербург",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "spb_smolny_tg",
@@ -215,8 +216,9 @@
    "news_url": "https://www.assembly.spb.ru/",
    "region": "Санкт-Петербург",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "fontanka",
@@ -226,8 +228,9 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "news_url": "https://www.fontanka.ru/fontanka.rss",
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 3
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 3,
+   "enabled": false
   },
   {
    "id": "dp",
@@ -246,8 +249,7 @@
    "url": "https://spbdnevnik.ru/",
    "news_url": "https://spbdnevnik.ru/",
    "region": "Санкт-Петербург",
-   "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "verified": true,
    "rank": 3
   },
   {
@@ -410,8 +412,9 @@
    "news_url": "https://dvinaland.ru/",
    "region": "Архангельская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "arh_tg",
@@ -441,8 +444,9 @@
    "news_url": "https://www.aosd.ru/",
    "region": "Архангельская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "29ru",
@@ -540,8 +544,9 @@
    "news_url": "https://vologda-oblast.ru/",
    "region": "Вологодская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "vol_gub_tg",
@@ -571,8 +576,9 @@
    "news_url": "https://vologdazso.ru/",
    "region": "Вологодская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "newsvo",
@@ -670,8 +676,9 @@
    "news_url": "https://gov39.ru/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "klg_tg",
@@ -703,8 +710,9 @@
    "news_url": "https://duma39.ru/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "klops",
@@ -733,7 +741,9 @@
    "url": "newkal",
    "region": "Калининградская область",
    "verified": true,
-   "rank": 3
+   "rank": 3,
+   "enabled": false,
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство"
   },
   {
    "id": "rugrad",
@@ -743,8 +753,9 @@
    "news_url": "https://rugrad.eu/",
    "region": "Калининградская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 3
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 3,
+   "enabled": false
   },
   {
    "id": "mvd_39",
@@ -811,8 +822,7 @@
    "url": "https://gov-murman.ru/",
    "news_url": "https://gov-murman.ru/",
    "region": "Мурманская область",
-   "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "verified": true,
    "rank": 1
   },
   {
@@ -832,8 +842,9 @@
    "news_url": "https://duma-murman.ru/",
    "region": "Мурманская область",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "bport",
@@ -930,8 +941,9 @@
    "news_url": "https://gov.karelia.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "kar_tg",
@@ -961,8 +973,9 @@
    "news_url": "https://www.karelia-zs.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 1
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 1,
+   "enabled": false
   },
   {
    "id": "stolicaonego",
@@ -982,8 +995,9 @@
    "news_url": "https://karelinform.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 3
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 3,
+   "enabled": false
   },
   {
    "id": "rk_karelia",
@@ -993,8 +1007,9 @@
    "news_url": "https://rk.karelia.ru/",
    "region": "Республика Карелия",
    "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
-   "rank": 3
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "rank": 3,
+   "enabled": false
   },
   {
    "id": "mvd_10",
@@ -1106,8 +1121,7 @@
    "url": "https://informpskov.ru/",
    "news_url": "https://informpskov.ru/",
    "region": "Псковская область",
-   "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "verified": true,
    "rank": 3
   },
   {
@@ -1317,8 +1331,7 @@
    "url": "https://www.novreg.ru/",
    "news_url": "https://www.novreg.ru/",
    "region": "Новгородская область",
-   "verified": false,
-   "note": "проверка 17.11: ошибка; второй заход с главной страницы",
+   "verified": true,
    "rank": 1
   },
   {
@@ -1461,8 +1474,7 @@
    "url": "fontankaspb",
    "region": "Санкт-Петербург",
    "verified": true,
-   "rank": 3,
-   "note": "подтверждён каталогом TGStat/Telemetr"
+   "rank": 3
   },
   {
    "id": "bport_tg",
@@ -1471,8 +1483,7 @@
    "url": "bportcom",
    "region": "Мурманская область",
    "verified": true,
-   "rank": 3,
-   "note": "подтверждён каталогом TGStat/Telemetr"
+   "rank": 3
   },
   {
    "id": "rusever_tg",
@@ -1481,8 +1492,7 @@
    "url": "rusevernews",
    "region": "Вологодская область",
    "verified": true,
-   "rank": 3,
-   "note": "подтверждён каталогом TGStat/Telemetr"
+   "rank": 3
   },
   {
    "id": "first_arctic_tg",
@@ -1491,8 +1501,7 @@
    "url": "first_arctic",
    "region": null,
    "verified": true,
-   "rank": 3,
-   "note": "подтверждён каталогом TGStat/Telemetr"
+   "rank": 3
   },
   {
    "id": "dp_tg",
@@ -1500,9 +1509,8 @@
    "type": "telegram",
    "url": "dprunews",
    "region": "Санкт-Петербург",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "tv78_tg",
@@ -1512,7 +1520,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "spbdnevnik_tg",
@@ -1522,7 +1531,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "47news_tg",
@@ -1532,7 +1542,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "online47_tg",
@@ -1540,9 +1551,8 @@
    "type": "telegram",
    "url": "online47news",
    "region": "Ленинградская область",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "lentv24_tg",
@@ -1550,9 +1560,8 @@
    "type": "telegram",
    "url": "lentv24",
    "region": "Ленинградская область",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "region29_tg",
@@ -1562,7 +1571,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "news29_tg",
@@ -1572,7 +1582,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "pravdasevera_tg",
@@ -1582,7 +1593,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "newsvo_tg",
@@ -1592,7 +1604,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "krassever_tg",
@@ -1602,7 +1615,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "cherinfo_tg",
@@ -1612,7 +1626,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: под этим именем чужой канал",
+   "enabled": false
   },
   {
    "id": "klops_tg",
@@ -1622,7 +1637,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "kgd_tg",
@@ -1632,7 +1648,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "rugrad_tg",
@@ -1642,7 +1659,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "severpost_tg",
@@ -1652,7 +1670,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "nordnews_tg",
@@ -1662,7 +1681,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "stolicaonego_tg",
@@ -1670,9 +1690,8 @@
    "type": "telegram",
    "url": "stolicaonego",
    "region": "Республика Карелия",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "karelinform_tg",
@@ -1682,7 +1701,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "rk_karelia_tg",
@@ -1692,7 +1712,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "ptzgovorit_tg",
@@ -1702,7 +1723,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "pln_tg",
@@ -1712,7 +1734,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "informpskov_tg",
@@ -1720,9 +1743,8 @@
    "type": "telegram",
    "url": "informpskov",
    "region": "Псковская область",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "komiinform_tg",
@@ -1730,9 +1752,8 @@
    "type": "telegram",
    "url": "komiinform",
    "region": "Республика Коми",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "53news_tg",
@@ -1742,7 +1763,8 @@
    "region": "Новгородская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "novgorodru_tg",
@@ -1750,9 +1772,8 @@
    "type": "telegram",
    "url": "novgorodru",
    "region": "Новгородская область",
-   "verified": false,
-   "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 3
   },
   {
    "id": "novved_tg",
@@ -1762,7 +1783,8 @@
    "region": "Новгородская область",
    "verified": false,
    "rank": 3,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "spb_zaks_tg",
@@ -1772,7 +1794,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "lo_gov_tg",
@@ -1782,7 +1805,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "arh_gov_tg",
@@ -1792,7 +1816,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "arh_gov2_tg",
@@ -1802,7 +1827,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "vol_gov_tg",
@@ -1812,7 +1838,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "vol_gov2_tg",
@@ -1820,9 +1847,8 @@
    "type": "telegram",
    "url": "vologdaoblast",
    "region": "Вологодская область",
-   "verified": false,
-   "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "klg_gov2_tg",
@@ -1832,7 +1858,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "klg_gub2_tg",
@@ -1842,7 +1869,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mur_gov_tg",
@@ -1852,7 +1880,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "mur_gov2_tg",
@@ -1862,7 +1891,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "kar_gub2_tg",
@@ -1872,7 +1902,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "psk_gov_tg",
@@ -1882,7 +1913,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "psk_gov2_tg",
@@ -1892,7 +1924,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "komi_gov2_tg",
@@ -1902,7 +1935,8 @@
    "region": "Республика Коми",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "komi_gub2_tg",
@@ -1912,7 +1946,8 @@
    "region": "Республика Коми",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "nov_gub2_tg",
@@ -1922,7 +1957,8 @@
    "region": "Новгородская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "lo_drozdenko2_tg",
@@ -1932,7 +1968,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_78_tg",
@@ -1942,7 +1979,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_47_tg",
@@ -1952,7 +1990,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_29_tg",
@@ -1962,7 +2001,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_35_tg",
@@ -1972,7 +2012,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_39_tg",
@@ -1982,7 +2023,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "mchs_51_tg",
@@ -1992,7 +2034,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_60_tg",
@@ -2002,7 +2045,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_11_tg",
@@ -2012,7 +2056,8 @@
    "region": "Республика Коми",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_53_tg",
@@ -2022,7 +2067,8 @@
    "region": "Новгородская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mchs_10_tg",
@@ -2031,8 +2077,7 @@
    "url": "mchs_10",
    "region": "Республика Карелия",
    "verified": true,
-   "rank": 1,
-   "note": "подтверждён каталогом TGStat/Telemetr"
+   "rank": 1
   },
   {
    "id": "mvd_78_tg",
@@ -2042,7 +2087,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "proc_78_tg",
@@ -2052,7 +2098,8 @@
    "region": "Санкт-Петербург",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_47_tg",
@@ -2062,7 +2109,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_47_tg",
@@ -2072,7 +2120,8 @@
    "region": "Ленинградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_29_tg",
@@ -2082,7 +2131,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_29_tg",
@@ -2092,7 +2142,8 @@
    "region": "Архангельская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_35_tg",
@@ -2102,7 +2153,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_35_tg",
@@ -2112,7 +2164,8 @@
    "region": "Вологодская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_39_tg",
@@ -2122,7 +2175,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_39_tg",
@@ -2132,7 +2186,8 @@
    "region": "Калининградская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_51_tg",
@@ -2140,9 +2195,8 @@
    "type": "telegram",
    "url": "mvd_51",
    "region": "Мурманская область",
-   "verified": false,
-   "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "proc_51_tg",
@@ -2152,7 +2206,8 @@
    "region": "Мурманская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_10_tg",
@@ -2162,7 +2217,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: канал пустой («Channel created») — имя занято, это не ведомство",
+   "enabled": false
   },
   {
    "id": "proc_10_tg",
@@ -2172,7 +2228,8 @@
    "region": "Республика Карелия",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_60_tg",
@@ -2182,7 +2239,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_60_tg",
@@ -2192,7 +2250,8 @@
    "region": "Псковская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_11_tg",
@@ -2202,7 +2261,8 @@
    "region": "Республика Коми",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "proc_11_tg",
@@ -2212,7 +2272,8 @@
    "region": "Республика Коми",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "mvd_53_tg",
@@ -2220,9 +2281,8 @@
    "type": "telegram",
    "url": "mvd_53",
    "region": "Новгородская область",
-   "verified": false,
-   "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "verified": true,
+   "rank": 1
   },
   {
    "id": "proc_53_tg",
@@ -2232,7 +2292,8 @@
    "region": "Новгородская область",
    "verified": false,
    "rank": 1,
-   "note": "кандидат: имя канала по памяти, проверяет workflow"
+   "note": "проверка 18.11: недоступен из GitHub Actions",
+   "enabled": false
   },
   {
    "id": "gnews_spb",
@@ -2240,9 +2301,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Санкт-Петербург",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_lo",
@@ -2250,9 +2312,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9B%D0%B5%D0%BD%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Ленинградская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_arh",
@@ -2260,9 +2323,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%90%D1%80%D1%85%D0%B0%D0%BD%D0%B3%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Архангельская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_vol",
@@ -2270,9 +2334,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%92%D0%BE%D0%BB%D0%BE%D0%B3%D0%BE%D0%B4%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Вологодская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_klg",
@@ -2280,9 +2345,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9A%D0%B0%D0%BB%D0%B8%D0%BD%D0%B8%D0%BD%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Калининградская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_mur",
@@ -2290,9 +2356,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9C%D1%83%D1%80%D0%BC%D0%B0%D0%BD%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Мурманская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_kar",
@@ -2300,9 +2367,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9A%D0%B0%D1%80%D0%B5%D0%BB%D0%B8%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Республика Карелия",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_psk",
@@ -2310,9 +2378,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9F%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Псковская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_komi",
@@ -2320,9 +2389,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9A%D0%BE%D0%BC%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Республика Коми",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   },
   {
    "id": "gnews_nov",
@@ -2330,9 +2400,10 @@
    "type": "rss",
    "url": "https://news.google.com/rss/search?q=%28%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B0%20OR%20%D0%BD%D0%B0%D0%B7%D0%BD%D0%B0%D1%87%D0%B8%D0%BB%D0%B8%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%20OR%20%D0%B2%D0%BE%D0%B7%D0%B3%D0%BB%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0%20OR%20%22%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%BE%20%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%22%20OR%20%22%D0%BF%D0%BE%D1%87%D1%91%D1%82%D0%BD%D1%8B%D0%B9%20%D0%B3%D1%80%D0%B0%D0%B6%D0%B4%D0%B0%D0%BD%D0%B8%D0%BD%22%20OR%20%D0%BE%D1%82%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83%29%20%22%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%BE%D0%B9%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8%22%20when%3A7d&hl=ru&gl=RU&ceid=RU:ru",
    "region": "Новгородская область",
-   "verified": false,
+   "verified": true,
    "rank": 4,
-   "note": "агрегатор: заголовки всех СМИ за 7 дней по запросу о назначениях и званиях"
+   "region_from_text": true,
+   "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
   }
  ],
  "organizations": {
@@ -2353,7 +2424,6 @@
    "Большой порт",
    "Пулково",
    "Октябрьская железная дорога",
-   "Ленэнерго",
    "ТГК-1",
    "Балтика",
    "метрополитен",
@@ -2368,7 +2438,6 @@
    "БДТ",
    "Михайловский театр",
    "СПбГУ",
-   "Политех",
    "ИТМО",
    "Горный университет",
    "Горного университета",
@@ -2392,12 +2461,10 @@
    "ПМЭФ",
    "Пулковская обсерватория",
    "РГПУ",
-   "Герцена",
    "ЛЭТИ",
    "ГУАП",
    "СПбГЭУ",
    "Первый мед",
-   "Павлова",
    "Педиатрический университет",
    "Военно-медицинская академия",
    "ВМА",
@@ -2406,14 +2473,12 @@
    "Александровская больница",
    "Покровская больница",
    "Елизаветинская больница",
-   "Городская больница №",
    "Капелла",
    "Александринский театр",
    "Театр Ленсовета",
    "Малый драматический",
    "МДТ",
    "Театр Европы",
-   "Филармония",
    "Кунсткамера",
    "Музей истории Санкт-Петербурга",
    "Петропавловская крепость",
@@ -2454,12 +2519,17 @@
    "Корабелка",
    "СПбГМТУ",
    "Академия Штиглица",
-   "Консерватория",
    "Вагановой",
    "Академия Русского балета",
    "Высшая школа экономики в Петербурге",
    "Европейский университет",
-   "Пресс-служба губернатора"
+   "Политех Петра Великого",
+   "СПбПУ",
+   "Политехнический университет",
+   "РГПУ им. Герцена",
+   "Первый медицинский",
+   "ПСПбГМУ",
+   "Россети Ленэнерго"
   ],
   "Ленинградская область": [
    "ЛАЭС",
@@ -2468,8 +2538,6 @@
    "Киришинефтеоргсинтез",
    "КИНЕФ",
    "Усть-Луга",
-   "Усть-Луг",
-   "Приморск",
    "Балтийский СПГ",
    "Тихвинский вагоностроительный",
    "ТВСЗ",
@@ -2480,16 +2548,13 @@
    "Филип Моррис",
    "ЛОЭСК",
    "Газпром трансгаз Санкт-Петербург",
-   "областная клиническая больница",
    "ЛОКБ",
    "ЛГУ им",
-   "Пушкина",
    "Леноблводоканал",
    "ЛенТВ24",
    "Ижорские заводы",
    "Тихвинский ферросплавный",
    "Выборгский порт",
-   "Высоцк",
    "порт Высоцк",
    "РПК-Высоцк",
    "Лукойл-Высоцк",
@@ -2510,26 +2575,22 @@
    "Тиккурила",
    "Сясьский ЦБК",
    "Светогорский ЦБК",
-   "Светогорск",
    "Выборгская целлюлоза",
    "Невский судостроительно-судоремонтный",
    "Ленинградский государственный университет",
    "Ленинградская областная больница",
-   "Детская областная больница",
    "Ленинградский областной центр",
    "ЛОГБУ",
-   "Дирекция комплексного развития территорий",
-   "Фонд поддержки предпринимательства",
-   "Ленобл",
    "Ленавтодор",
-   "Управляющая компания по обращению с отходами",
    "Выборгский замок",
    "Старая Ладога",
    "Гатчинский дворец",
    "Ивангородская крепость",
-   "Копорье",
    "Тихвинский монастырь",
-   "Крепость Корела"
+   "Крепость Корела",
+   "ЛГУ имени Пушкина",
+   "ЛГУ им. Пушкина",
+   "Университет Пушкина"
   ],
   "Архангельская область": [
    "Севмаш",
@@ -2551,7 +2612,6 @@
    "Северный флот",
    "Беломорская военно-морская база",
    "Беломорская ВМБ",
-   "Плесецк",
    "космодром Плесецк",
    "Архангельский морской торговый порт",
    "Архморпорт",
@@ -2582,9 +2642,7 @@
    "Северный морской музей",
    "Архангельский колледж",
    "Архангельская областная клиническая",
-   "Первая городская больница Волосевич",
-   "Волосевич",
-   "Областная детская больница"
+   "Волосевич"
   ],
   "Вологодская область": [
    "Северсталь",
@@ -2619,7 +2677,6 @@
    "ЧФМК",
    "Вологодские лесопромышленники",
    "Вологодская ГПЗ",
-   "Учебно-опытный молочный завод",
    "Вологодское мороженое",
    "Вологодский мясокомбинат",
    "Устюгские промыслы",
@@ -2632,8 +2689,6 @@
    "Кирилло-Белозерский",
    "Череповецкое музейное объединение",
    "Вологодский драмтеатр",
-   "Театр юного зрителя",
-   "Камерный театр",
    "Вологодская филармония",
    "Вологодская ГМХА",
    "Молочнохозяйственная академия",
@@ -2647,7 +2702,6 @@
    "Лукойл-КМН",
    "ЛУКОЙЛ-Калининградморнефть",
    "янтарный комбинат",
-   "Факел",
    "Янтарьэнерго",
    "Россети Янтарь",
    "Содружество",
@@ -2685,9 +2739,6 @@
    "Калининградский деловой",
    "Калининградский торговый порт",
    "Калининградская областная клиническая",
-   "Областная клиническая больница",
-   "Областной онкологический диспансер",
-   "Детская областная больница",
    "Калининградский государственный технический",
    "КГТУ",
    "Балтийская академия рыбопромыслового флота",
@@ -2777,8 +2828,6 @@
    "ПетрГУ",
    "Петрозаводский государственный",
    "Баранова",
-   "Музыкальный театр",
-   "Кижи",
    "Костомукшский ГОК",
    "Сегежский ЦБК",
    "Кондопожский ЦБК",
@@ -2797,14 +2846,10 @@
    "Валаамский монастырь",
    "Карельский научный центр",
    "КарНЦ РАН",
-   "Республиканская больница",
-   "Детская республиканская больница",
-   "Онкологический диспансер",
-   "Национальный театр Карелии",
-   "Театр кукол Карелии",
    "Карельская филармония",
-   "Национальный музей Карелии",
-   "Музей изобразительных искусств"
+   "Музыкальный театр Карелии",
+   "Национальный театр Карелии",
+   "Национальный музей Карелии"
   ],
   "Псковская область": [
    "Псковская ГРЭС",
@@ -2821,7 +2866,6 @@
    "Псковский электромашиностроительный",
    "ПЭМЗ",
    "Псковэлектросвар",
-   "Моглино",
    "ОЭЗ Моглино",
    "Псковская ТЭЦ",
    "Псковский завод радиодеталей",
@@ -2841,14 +2885,14 @@
    "Псковская детская областная",
    "Великолукская межрайонная",
    "Псковский драмтеатр",
-   "Драмтеатр Пушкина",
    "Псковская филармония",
    "Псковский музей-заповедник",
    "Великолукский драмтеатр",
    "76-я дивизия",
    "76 дивизия",
    "2-я бригада спецназа",
-   "десантно-штурмовая дивизия"
+   "десантно-штурмовая дивизия",
+   "Псковский драмтеатр Пушкина"
   ],
   "Республика Коми": [
    "Лукойл-Коми",
@@ -2865,7 +2909,6 @@
    "Питирима Сорокина",
    "УГТУ",
    "Ухтинский государственный",
-   "республиканская больница",
    "Лукойл-Ухтанефтепереработка",
    "Ухтинский НПЗ",
    "Mondi",
@@ -2886,7 +2929,6 @@
    "Сыктывкарский молочный",
    "Коми республиканская",
    "Коми республиканская больница",
-   "Республиканская клиническая больница",
    "Коми республиканский онкологический",
    "Ухтинская городская больница",
    "Воркутинская больница",
@@ -2895,12 +2937,8 @@
    "Коми НЦ УрО РАН",
    "Театр оперы и балета Коми",
    "Драмтеатр Савина",
-   "Савина",
-   "Национальный музей Коми",
-   "Национальная галерея Коми",
-   "Финно-угорский культурный центр",
-   "Финно-угорский этнопарк",
-   "Центр Печора"
+   "Центр Печора",
+   "Театр драмы Савина"
   ],
   "Новгородская область": [
    "Акрон",
@@ -2938,10 +2976,7 @@
    "Иверский монастырь",
    "Дом-музей Достоевского",
    "Новгородская областная клиническая",
-   "Центральная городская клиническая",
    "Новгородский онкологический диспансер",
-   "Областная детская клиническая",
-   "Театр драмы Достоевского",
    "Театр Достоевского",
    "Новгородская филармония",
    "Новгородский театр для детей"

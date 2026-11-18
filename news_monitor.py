@@ -376,7 +376,8 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
     # 3. Круглый юбилей организации (25, 30, 40, 50 … лет)
     am = ANNIVERSARY.search(lead)
-    if am and ANNIVERSARY_CTX.search(head) and known and not PERSON_ANNIV.search(lead):
+    if am and ANNIVERSARY_CTX.search(head) and known and not PERSON_ANNIV.search(lead) \
+            and not (has_pos and re.search(r"\b(?:отметил[аи]?|отпраздновал[аи]?|празднует|исполнилось|исполняется)\b", lead, re.I)):
         n = int(am.group(1))
         if n >= 25 and n % 5 == 0 and not re.search(r"\bлет(?:ие|ия|ию)?\s+(?:со\s+дня\s+рождения|\S+\s+\S+(?:ич|вн)[ауе]?\b)", head, re.I) \
                 and not re.search(r"\bлет\s+назад", head, re.I):
@@ -398,7 +399,8 @@ def detect_extra(title, summary, organizations, region_hint=None):
         return {"type": "award", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 6. Федеральный статус, рейтинг, победа во всероссийском конкурсе
-    if STATUS.search(lead) and not MEDIA_SELF.search(head) and (orgs or (org_class in ("podved", "business", "gov")
+    if STATUS.search(lead) and not MEDIA_SELF.search(head) \
+            and not re.search(r"^(?:сотрудник|команд|работник|специалист|студент|школьник|учени|воспитанник|врач[иа]\b|спортсмен)", lead, re.I) and (orgs or (org_class in ("podved", "business", "gov")
                                          and re.search(r"\b(?:всероссийск|федеральн|национальн|России|стран[ыеу]|международн)", head, re.I))):
         return {"type": "status", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
@@ -526,7 +528,49 @@ def discover_feed(page_html, base_url):
 
 
 TIME_STAMP = re.compile(r"(?:^\s*\d{1,2}:\d{2}[,\s]+\d{2}\.\d{2}\.\d{4}\s*|\s*\d{1,2}:\d{2}(?:[,\s]+\d{2}\.\d{2}\.\d{4})?\s*$|^\s*\d{2}\.\d{2}\.\d{4}\s*)")
+DATE_WORDS = re.compile(r"\s+\d{1,2}\s+(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)(?:\s+\d{4})?(?:\s*,?\s*\d{1,2}:\d{2})?\s*$", re.I)
 ANCHOR_RE = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
+
+
+_PREPOSITIONS = {"в", "во", "на", "из", "с", "со", "к", "ко", "о", "об", "обо", "по", "у", "за", "для", "от", "до", "при",
+                 "под", "над", "про", "через", "без", "между", "и", "а", "но", "или", "что", "как", "чем", "не", "ни"}
+HEADING_RE = re.compile(r"<h\d\b[^>]*>(.*?)</h\d>", re.I | re.S)
+
+
+def _clean(fragment):
+    return re.sub(r"\s+", " ", re.sub(r"<!--|-->", " ", strip_tags(fragment))).strip()
+
+
+def split_anchor(inner):
+    """Ссылка-карточка часто оборачивает заголовок, лид и дату целиком.
+    Заголовок — текст <h2>/<h3> внутри ссылки, иначе первый блок (<div>/<p>),
+    иначе первое предложение длинного текста; остальное — аннотация."""
+    hm = HEADING_RE.search(inner)
+    if hm and len(_clean(hm.group(1))) >= 20:
+        title = _clean(hm.group(1))
+        rest = _clean(inner.replace(hm.group(0), " "))
+        return title, rest[:800]
+    blocks = [b for b in (_clean(x) for x in BLOCK_TAG_RE.split(inner)) if len(b) >= 20]
+    if len(blocks) > 1:
+        return blocks[0], " ".join(blocks[1:])[:800]
+    text = _clean(inner)
+    if len(text) > 140:
+        cuts = []
+        m = re.search(r"[.!?»]\s+(?=[А-ЯЁ])", text[40:])
+        if m:
+            cuts.append((40 + m.start() + 1, 40 + m.end()))
+        # без знака препинания: строчное слово (не предлог) → Заглавное слово → строчное слово
+        for m in re.finditer(r"(?<=[а-яё])\s+(?=[А-ЯЁ][а-яё]+\s+[а-яё])", text):
+            if m.start() < 50:
+                continue
+            prev = text[:m.start()].split()[-1].lower()
+            if prev not in _PREPOSITIONS:
+                cuts.append((m.start(), m.end()))
+                break
+        if cuts:
+            end, start = min(cuts)
+            return text[:end].rstrip(), text[start:][:800]
+    return text, ""
 
 
 def parse_html_news(page_html, page_url):
@@ -535,8 +579,9 @@ def parse_html_news(page_html, page_url):
     seen, items, counts = set(), [], {}
     page_html = COMMENT_RE.sub(" ", page_html)
     for href, inner in ANCHOR_RE.findall(page_html):
-        title = re.sub(r"\s+", " ", re.sub(r"<!--|-->", " ", strip_tags(inner))).strip()
+        title, summary = split_anchor(inner)
         title = TIME_STAMP.sub("", title).strip()          # «09:09, 17.11.2026» в конце, «13:27 18.11.2026» в начале
+        title = DATE_WORDS.sub("", title).strip()          # «… 28 октября 2026» в конце карточки
         if len(title) < 28 or len(title) > 300 or not re.search(r"[а-яё]", title, re.I):
             continue
         if not re.search(r"\s", title):        # одно слово — это меню
@@ -546,7 +591,7 @@ def parse_html_news(page_html, page_url):
             continue
         seen.add(url)
         counts[title] = counts.get(title, 0) + 1
-        items.append({"title": title, "link": url, "date": "", "summary": ""})
+        items.append({"title": title, "link": url, "date": "", "summary": summary})
     # один и тот же текст на разных ссылках — это меню или название сайта, не новость
     return [it for it in items if counts[it["title"]] == 1]
 
@@ -787,6 +832,9 @@ def position_key(ev):
     return f"{ev['type']}:{ev['region']}:{' '.join(stems)}" if stems else ""
 
 
+NAME_PAIR = re.compile(r"\b([А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+(?:ов|ова|ев|ева|ин|ина|ын|ына|ский|ская|цкий|цкая|ич|ко|ук|юк|ец|енко|ых|их|ой|ая|ый))\b")
+
+
 def title_stems(title):
     words = re.findall(r"[а-яёa-z][а-яёa-z-]{3,}", expand_abbrev(normalize(title)).lower().replace("ё", "е"))
     return {w[:5] for w in words if w not in POS_STOP}
@@ -794,12 +842,18 @@ def title_stems(title):
 
 def similar(a, b):
     """Два заголовка об одном событии: регион и тип совпадают, даты рядом, общих основ слов не меньше половины."""
-    if a["type"] != b["type"] or a["region"] != b["region"]:
+    family = {"appointment", "leave"}
+    if a["region"] != b["region"] or (a["type"] != b["type"] and not {a["type"], b["type"]} <= family):
         return False
     try:
         if abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) > 3:
             return False
     except ValueError:
+        return False
+    na, nb = set(NAME_PAIR.findall(a["title"])), set(NAME_PAIR.findall(b["title"]))
+    if na & nb:                                   # одно и то же «Имя Фамилия» в обоих заголовках
+        return True
+    if a["type"] != b["type"]:
         return False
     sa, sb = title_stems(a["title"]), title_stems(b["title"])
     if len(sa) < 2 or len(sb) < 2:
@@ -848,6 +902,12 @@ def reconcile(events, cfg):
     srcs = {src["id"]: src for src in cfg.get("sources", [])}
     kept, seen = [], {}
     for ev in events:
+        ev["title"] = DATE_WORDS.sub("", ev["title"]).strip()
+        if len(ev["title"]) > 140:                       # заголовок, слипшийся с аннотацией (старые прогоны)
+            ev["title"], tail = split_anchor(html_module.escape(ev["title"]))
+            ev["title"] = html_module.unescape(ev["title"])
+            if tail and not ev.get("summary"):
+                ev["summary"] = html_module.unescape(tail)
         ev["rank"] = ranks.get(ev.get("source_id"), ev.get("rank", 3))
         ev["person"] = ev.get("person") or extract_person(ev["title"])
     for ev in sorted(events, key=priority):

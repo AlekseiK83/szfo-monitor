@@ -168,11 +168,32 @@ a { color: var(--accent); }
 .ev-title a:hover { color: var(--accent); }
 .ev-sum { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
 .ev-src { font-size: 12px; color: var(--faint); margin-top: 4px; }
-.day-head { font-family: var(--serif); font-size: 19px; color: var(--accent-deep); margin: 28px 0 4px;
-            padding-bottom: 6px; border-bottom: 1px solid var(--line); }
-.day-head:first-child { margin-top: 0; }
+.day-block { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.day-block > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 12px;
+                       padding: 13px 18px; user-select: none; transition: background .15s; }
+.day-block > summary::-webkit-details-marker { display: none; }
+.day-block > summary:hover { background: var(--soft); }
+.day-block[open] > summary { border-bottom: 1px solid var(--line); }
+.day-chevron { width: 8px; height: 8px; flex-shrink: 0; align-self: center; border-top: 1.5px solid var(--gold);
+               border-right: 1.5px solid var(--gold); transform: rotate(45deg); transition: transform .2s; }
+.day-block[open] .day-chevron { transform: rotate(135deg); }
+.day-head { font-family: var(--serif); font-size: 19px; color: var(--accent-deep); flex: 1; }
+.day-weekday { font-size: 13px; color: var(--muted); }
+.day-count { font-size: 12px; color: var(--accent); background: var(--gold-soft); padding: 1px 9px;
+             border-radius: 999px; font-variant-numeric: tabular-nums; }
+.day-body { padding: 4px 18px 6px; }
 .ev.hidden { display: none; }
 .day-block.hidden { display: none; }
+.days-toolbar { display: flex; justify-content: flex-end; margin: -6px 0 8px; }
+.days-toggle { border: none; background: none; color: var(--muted); font: inherit; font-size: 13px;
+               cursor: pointer; padding: 4px 2px; }
+.days-toggle:hover { color: var(--accent); }
+@media (max-width: 640px) {
+  .day-block > summary { padding: 12px 14px; gap: 8px; }
+  .day-head { font-size: 17px; }
+  .day-weekday { display: none; }
+  .day-body { padding: 2px 14px 4px; }
+}
 .empty-note { text-align: center; color: var(--muted); padding: 30px 0; font-family: var(--serif);
               font-size: 17px; }
 
@@ -189,42 +210,39 @@ a { color: var(--accent); }
         региональные и генеральские звания</div>
       <div class="rule"></div>
     </div>
-    <div class="filter-bar"><span class="filter-label">Регион:</span><button class="filter-btn active" data-region="">Все <span class="badge">12</span></button><button class="filter-btn" data-region="Ленинградская область">Ленинградская область <span class="badge">1</span></button><button class="filter-btn" data-region="Вологодская область">Вологодская область <span class="badge">2</span></button><button class="filter-btn" data-region="Республика Карелия">Республика Карелия <span class="badge">2</span></button><button class="filter-btn" data-region="Псковская область">Псковская область <span class="badge">4</span></button><button class="filter-btn" data-region="Республика Коми">Республика Коми <span class="badge">1</span></button><button class="filter-btn" data-region="Новгородская область">Новгородская область <span class="badge">2</span></button></div>
+    <div class="filter-bar"><span class="filter-label">Регион:</span><button class="filter-btn active" data-region="">Все <span class="badge">5</span></button><button class="filter-btn" data-region="Ленинградская область">Ленинградская область <span class="badge">1</span></button><button class="filter-btn" data-region="Вологодская область">Вологодская область <span class="badge">2</span></button><button class="filter-btn" data-region="Республика Карелия">Республика Карелия <span class="badge">1</span></button><button class="filter-btn" data-region="Псковская область">Псковская область <span class="badge">1</span></button></div>
     <div class="filter-bar"><span class="filter-label">Тип:</span>
-      <button class="filter-btn active" data-type="">Все</button><button class="filter-btn" data-type="appointment">Назначение <span class="badge">12</span></button><button class="filter-btn" data-type="leave">Отставка <span class="badge">0</span></button><button class="filter-btn" data-type="title">Звание <span class="badge">0</span></button></div>
-    
-    <div class="day-block" data-day="2026-11-17">
-      <div class="day-head">17 ноября 2026</div>
-      <div class="ev" data-region="Республика Коми" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Коми</span> · <span>заместитель</span> · <span>власть</span> · <span>Комиавиатранс</span></div>
-        <div class="ev-title"><a href="https://komiinform.ru/news/303038" target="_blank" rel="noopener">В Росавиации обсудили вопросы функционирования &quot;Комиавиатранс&quot;</a></div>
-        <div class="ev-sum">Заместитель председателя Правительства Коми Эдуард Слабиков в рамках транспортной недели в Москве провел встречу с врио руководителя Росавиации Натальей Андриановой. На встрече обсудили вопросы функционирования АО &quot;Комиавиатранс&quot; и обеспечения полетной программы, сообщает пресс-с…</div>
-        <div class="ev-src">Комиинформ</div>
-      </div>
+      <button class="filter-btn active" data-type="">Все</button><button class="filter-btn" data-type="appointment">Назначение <span class="badge">5</span></button><button class="filter-btn" data-type="leave">Отставка <span class="badge">0</span></button><button class="filter-btn" data-type="title">Звание <span class="badge">0</span></button></div>
+    <div class="days-toolbar"><button class="days-toggle" type="button" data-state="part">Раскрыть все дни</button></div>
+    <details class="day-block" data-day="2026-11-18" open>
+      <summary>
+        <span class="day-chevron"></span>
+        <span class="day-head">18 ноября 2026</span>
+        <span class="day-weekday">среда</span>
+        <span class="day-count">2 события</span>
+      </summary>
+      <div class="day-body">
       <div class="ev" data-region="Республика Карелия" data-type="appointment">
         <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Карелия</span> · <span>заместитель</span> · <span>власть</span></div>
         <div class="ev-title"><a href="https://gov.karelia.ru/news/17-11-2026-vitse-premerom-pravitelstva-po-sotsialnym-voprosam-naznachena-ekaterina-reutova/" target="_blank" rel="noopener">Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова</a></div>
         
         <div class="ev-src">Правительство Республики Карелия</div>
       </div>
-      <div class="ev" data-region="Республика Карелия" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Республика Карелия</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="https://stolicaonego.ru/news/v-karelii-naznachili-novogo-vitse-premera-po-sotsialnym-voprosam/" target="_blank" rel="noopener">В Карелии назначили нового вице‑премьера по социальным вопросам Об этом сообщили в Управлении пресс-службы Главы Республики Карелия.</a></div>
+      <div class="ev" data-region="Ленинградская область" data-type="appointment">
+        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Ленинградская область</span> · <span>заместитель</span> · <span>власть</span></div>
+        <div class="ev-title"><a href="https://www.lenoblzaks.ru/news/senator-dmitrij-vasilenko-utverzhden-v-dolzhnosti-pervogo-zampreda-komiteta-sovfeda" target="_blank" rel="noopener">Сенатор Дмитрий Василенко утвержден в должности первого зампреда Комитета СовФеда 28 октября 2026</a></div>
         
-        <div class="ev-src">Столица на Onego</div>
-      </div>
-      <div class="ev" data-region="Псковская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>заместитель</span> · <span>силовые ведомства</span></div>
-        <div class="ev-title"><a href="http://pln-pskov.ru/society/606190.html" target="_blank" rel="noopener">Экс-заместителя прокурора Псковской области назначили заместителем генпрокурора РФ</a></div>
-        <div class="ev-sum">Указом президента Российской Федерации Владимира Путина Олега Логунова назначили заместителем генерального прокурора РФ. [...]</div>
-        <div class="ev-src">Псковская лента новостей</div>
-      </div>
-      <div class="ev" data-region="Псковская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="http://pln-pskov.ru/politics/606206.html" target="_blank" rel="noopener">Станислав Стармолотов избран секретарем Псковского городского отделения «Единой России»</a></div>
-        <div class="ev-sum">Глава города Пскова Станислав Стармолотов избран секретарем Псковского городского отделения партии [...]</div>
-        <div class="ev-src">Псковская лента новостей</div>
-      </div>
+        <div class="ev-src">ЗакС Ленинградской области</div>
+      </div></div>
+    </details>
+    <details class="day-block" data-day="2026-11-17" open>
+      <summary>
+        <span class="day-chevron"></span>
+        <span class="day-head">17 ноября 2026</span>
+        <span class="day-weekday">вторник</span>
+        <span class="day-count">1 событие</span>
+      </summary>
+      <div class="day-body">
       <div class="ev" data-region="Псковская область" data-type="appointment">
         <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>власть</span></div>
         <div class="ev-title"><a href="https://informpskov.ru/news/523265.html" target="_blank" rel="noopener">Очередная сессия Заксобрания Псковской области пройдёт 25 ноября</a></div>
@@ -234,58 +252,42 @@ a { color: var(--accent); }
 
  Борис Елкин отметил, что накануне, 24 ноября, пройдут заседа…</div>
         <div class="ev-src">ПАИ</div>
-      </div>
-      <div class="ev" data-region="Псковская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Псковская область</span> · <span>заместитель</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="http://pln-pskov.ru/politics/606186.html" target="_blank" rel="noopener">Игорь Дитрих: Комитет по социальной политике начнет полноценную работу после утверждения положения на ближайшей сессии</a></div>
-        <div class="ev-sum">Депутаты активно включились в процесс работы комитета по социальной политике: они изучают документацию и уточняют рабочие моменты, поделился первый заместитель председателя Законодательного Собрания Псковской области Игорь Дитрих в эфире радио « [...]</div>
-        <div class="ev-src">Псковская лента новостей</div>
-      </div>
-      <div class="ev" data-region="Новгородская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Новгородская область</span> · <span>власть</span> · <span>НовГУ</span></div>
-        <div class="ev-title"><a href="https://news.novgorod.ru/news/211004.html" target="_blank" rel="noopener">Вопрос о целевом назначении «Шарматово» на нулевых чтениях бюджета поднял новгородский депутат Шалякин</a></div>
-        <div class="ev-sum">О том, в какую сумму новгородским налогоплательщикам ежегодно обходится правительственная резиденция «Шарматово», и каково ее целевое назначение, у руководителя администрации губернатора Константина Сомова на «нулевых» чтениях бюджета интересовался депутат облдумы от «Яблока» Вик…</div>
-        <div class="ev-src">Новгород.ру</div>
-      </div>
-      <div class="ev" data-region="Ленинградская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Ленинградская область</span> · <span>заместитель</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="https://www.lenoblzaks.ru/news/senator-dmitrij-vasilenko-utverzhden-v-dolzhnosti-pervogo-zampreda-komiteta-sovfeda" target="_blank" rel="noopener">Сенатор Дмитрий Василенко утвержден в должности первого зампреда Комитета СовФеда 28 октября 2026</a></div>
-        
-        <div class="ev-src">ЗакС Ленинградской области</div>
-      </div>
+      </div></div>
+    </details>
+    <details class="day-block" data-day="2026-11-16" open>
+      <summary>
+        <span class="day-chevron"></span>
+        <span class="day-head">16 ноября 2026</span>
+        <span class="day-weekday">понедельник</span>
+        <span class="day-count">1 событие</span>
+      </summary>
+      <div class="day-body">
       <div class="ev" data-region="Вологодская область" data-type="appointment">
         <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Вологодская область</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="https://krassever.ru/news/kseniya-falameyeva-naznachena-ministrom-informatsionnoy-politiki-vologodskoy-oblasti" target="_blank" rel="noopener">Ксения Фаламеева назначена министром информационной политики Вологодской области</a></div>
-        
-        <div class="ev-src">Красный Север</div>
-      </div>
-    </div>
-    <div class="day-block" data-day="2026-11-16">
-      <div class="day-head">16 ноября 2026</div>
+        <div class="ev-title"><a href="https://cherinfo.ru/news/149087-ksenia-falameeva-stala-ministrom-informpolitiki-vologodskoj-oblasti" target="_blank" rel="noopener">Ксения Фаламеева стала министром информполитики Вологодской области</a></div>
+        <div class="ev-sum">Об этом сегодня в своих соцсетях сообщил губернатор Георгий Филимонов.</div>
+        <div class="ev-src">cherinfo.ru</div>
+      </div></div>
+    </details>
+    <details class="day-block" data-day="2026-11-14">
+      <summary>
+        <span class="day-chevron"></span>
+        <span class="day-head">14 ноября 2026</span>
+        <span class="day-weekday">суббота</span>
+        <span class="day-count">1 событие</span>
+      </summary>
+      <div class="day-body">
       <div class="ev" data-region="Вологодская область" data-type="appointment">
         <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Вологодская область</span> · <span>власть</span></div>
-        <div class="ev-title"><a href="https://newsvo.ru/obshchestvo/7562560-georgiy-filimonov-naznachil-novogo-ministra-informacionnoy-politiki" target="_blank" rel="noopener">Георгий Филимонов назначил нового министра информационной политики</a></div>
-        <div class="ev-sum">Экс-министр Елена Пономарева перешла на работу в мэрию Череповца</div>
+        <div class="ev-title"><a href="https://newsvo.ru/obshchestvo/7562441-georgiy-filimonov-obyavil-o-kadrovyh-perestanovkah" target="_blank" rel="noopener">Георгий Филимонов объявил о кадровых перестановках</a></div>
+        <div class="ev-sum">В частности, Елена Пономарева оставила пост министра информационной политики</div>
         <div class="ev-src">newsvo.ru</div>
-      </div>
-    </div>
-    <div class="day-block" data-day="2026-11-13">
-      <div class="day-head">13 ноября 2026</div>
-      <div class="ev" data-region="Новгородская область" data-type="appointment">
-        <div class="ev-top"><span class="ev-type appointment">Назначение</span> · <span>Новгородская область</span> · <span>власть</span> · <span>НовГУ</span></div>
-        <div class="ev-title"><a href="https://t.me/novgorodinfo/11400" target="_blank" rel="noopener">Владимир Карпунин назначен исполняющим обязанности министра цифрового развития Новгородской области</a></div>
-        <div class="ev-sum">Владимир Карпунин назначен исполняющим обязанности министра цифрового развития Новгородской области
- 
-С 17 ноября 2026 года Владимир Карпунин приступит к исполнению обязанностей министра цифрового развития и информационно-коммуникационных технологий Новгородской области.
- 
-Владим…</div>
-        <div class="ev-src">Официально 53. Новгородская область (Telegram)</div>
-      </div>
-    </div>
+      </div></div>
+    </details>
     <div class="report-footer">
       Источники: официальные сайты и Telegram-каналы правительств, ведомств и ведущих СМИ регионов (news_sources.json).
       Отбор автоматический по ключевым словам; заголовок ведёт на исходную публикацию.<br>
-      Обновлено 18 ноября 2026, 06:09 МСК
+      Обновлено 18 ноября 2026, 08:24 МСК
     </div>
   </div>
 </div>
@@ -298,9 +300,26 @@ a { color: var(--accent); }
       el.classList.toggle('hidden', !show);
     });
     document.querySelectorAll('.day-block').forEach(function(b) {
-      b.classList.toggle('hidden', !b.querySelector('.ev:not(.hidden)'));
+      var visible = b.querySelectorAll('.ev:not(.hidden)').length;
+      b.classList.toggle('hidden', !visible);
+      var c = b.querySelector('.day-count');
+      if (c) c.textContent = visible + ' ' + plural(visible, 'событие', 'события', 'событий');
     });
   }
+  function plural(n, a, b, c) {
+    var m = n % 100, k = n % 10;
+    if (m >= 11 && m <= 19) return c;
+    if (k === 1) return a;
+    if (k >= 2 && k <= 4) return b;
+    return c;
+  }
+  var toggle = document.querySelector('.days-toggle');
+  if (toggle) toggle.addEventListener('click', function() {
+    var open = toggle.dataset.state !== 'all';
+    document.querySelectorAll('.day-block').forEach(function(b) { b.open = open; });
+    toggle.dataset.state = open ? 'all' : 'part';
+    toggle.textContent = open ? 'Свернуть дни' : 'Раскрыть все дни';
+  });
   document.querySelectorAll('.filter-btn[data-region]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       region = btn.dataset.region;

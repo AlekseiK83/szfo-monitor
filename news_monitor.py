@@ -331,7 +331,8 @@ def detect(title, summary, organizations):
     # ── Назначение / уход ──
     if CRIMINAL.search(head) and COURT_ROUTINE.search(head):      # «бывшего главврача освободили из-под стражи»
         return None
-    if re.search(r"назнач\w+\s+(?:ему|ей|им)?\s*(?:реальн|условн|срок|наказан|штраф|дат[уы]|проверк|экспертиз|выплат|пособ|пенси)", lead, re.I):
+    if re.search(r"назнач\w+\s+(?:ему|ей|им)?\s*(?:\d+\s*(?:лет|год|месяц)|реальн|условн|срок|наказан|штраф|дат[уы]|проверк|экспертиз|выплат|пособ|пенси)", lead, re.I) \
+            or re.search(r"\bсуд\w*\s+(?:назначил|приговорил|вынес|признал|оштрафовал)", lead, re.I):
         return None
     has_pos = POSITION.search(head)
     appoint = APPOINT_VERB.search(lead) or (BECOME.search(lead) and INSTRUMENTAL.search(lead))

@@ -1,18 +1,7 @@
 {
- "date": "2026-11-18",
+ "date": "2026-11-19",
  "new": [],
  "sources_total": 84,
- "sources_failed": 2,
- "failed": [
-  {
-   "id": "abnews",
-   "name": "АБН24",
-   "status": "error: ReadTimeout"
-  },
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectionError"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

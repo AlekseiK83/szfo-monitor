@@ -625,3 +625,21 @@ class TestVerbForms(unittest.TestCase):
         self.assertIsNotNone(nm.detect_all("Главврач Первой городской больницы в Архангельске покинет должность", "", ORGS))
         self.assertIsNotNone(nm.detect_all("Ректором СПбГУ переизбран Николай Кропачев", "", ORGS))
         self.assertIsNotNone(nm.detect_all("Губернатор продлил полномочия главы Фонда капремонта Ленобласти", "", ORGS))
+
+
+class TestFifthRunFeedback(unittest.TestCase):
+    def test_milestone_sentence_and_exhibition(self):
+        orgs = ORGS
+        self.assertIsNone(nm.detect_all("Линия «Славянка» перевезла более 1 млн человек на участке Купчино — Шушары",
+                                        "Скоростная трамвайная линия «Славянка», запущенная в декабре, — один из крупнейших в России проектов ГЧП стоимостью 51 млрд рублей.", orgs))
+        self.assertIsNone(nm.detect_all("Глава турфирмы в Петербурге получила за хищение 3,7 млн рублей пять лет условно",
+                                        "Суд вынес приговор директору туристической компании.", orgs))
+        self.assertIsNone(nm.detect_all("В Калининграде открылась выставка о служении патриарха Кирилла",
+                                        "Выставку открыл губернатор Алексей Беспрозванных.", orgs))
+        self.assertIsNone(nm.detect_all("В Калининграде открылась выставка о служении патриарха Кирилла",
+                                        "Патриарх Кирилл посетил Кафедральный собор.", orgs))
+        # а настоящие визиты, запуски и задержания остаются
+        self.assertEqual(nm.detect_all("Путин посетил Севмаш и провёл совещание по судостроению", "", orgs)["type"], "visit")
+        self.assertEqual(nm.detect_all("Балтийский завод спустил на воду атомный ледокол «Ленинград»", "", orgs)["type"], "launch")
+        self.assertEqual(nm.detect_all("На Кольской АЭС открыли новый энергоблок", "Это крупнейший проект Росатома в регионе.", orgs)["type"], "launch")
+        self.assertIsNotNone(nm.detect_all("Задержан гендиректор Акрона", "", orgs))

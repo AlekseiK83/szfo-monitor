@@ -1,7 +1,74 @@
 {
  "date": "2026-11-19",
- "new": [],
+ "new": [
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Санкт-Петербург",
+   "title": "Линия \"Славянка\" перевезла более 1 млн человек на участке Купчино — Шушары",
+   "summary": "Первая очередь скоростной трамвайной линии \"Славянка\" Купчино — Шушары с момента запуска перевезла 1 млн человек, сообщил во время прямой линии губернатор Александр Беглов. По его словам, до конца 2026 года завершат второй этап работ на линии. \"Первую очередь мы запустили, Купчино — Шушары, она работает, перевезла уже более 1 млн человек. То есть мы разгрузили. Нам нужно ещё работать, но это уже х",
+   "link": "https://www.dp.ru/a/2026/11/19/linija-slavjanka-perevezla",
+   "date": "2026-11-19",
+   "source": "Деловой Петербург",
+   "source_id": "dp",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Санкт-Петербург",
+   "title": "Глава турфирмы в Петербурге получила за хищение 3,7 млн рублей пять лет условно",
+   "summary": "Суд назначил 5 лет условно главе турфирмы, похитившей более 3,7 млн рублей на продаже путёвок, сообщили в объединённой пресс-службе судов Петербурга. От действий подсудимой пострадали пять человек. \"Ярцева ввела в заблуждение А., предоставив ему договор на приобретение туристической путёвки на сумму 902 тыс. рублей, при этом достоверно зная о своих финансовых трудностях и не имея намерения исполня",
+   "link": "https://www.dp.ru/a/2026/11/19/glava-turfirmi-v-peterburge",
+   "date": "2026-11-19",
+   "source": "Деловой Петербург",
+   "source_id": "dp",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "visit",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Калининградская область",
+   "title": "В Калининграде открылась выставка о служении патриарха Кирилла",
+   "summary": "В музее представили 150 фотографий и документы о возрождении православия в регионе.",
+   "link": "https://www.newkaliningrad.ru/afisha/launch/news/24170408-v-kaliningrade-otkrylas-vystavka-o-sluzhenii-patriarkha-kirilla.html",
+   "date": "2026-11-19",
+   "source": "Новый Калининград",
+   "source_id": "newkaliningrad",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Новгородская область",
+   "title": "В Новгородской области назначен исполняющий обязанности министра цифрового развития",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQc2FpanhCWU9GcVl2bkZLLUttTGxLTEcyeWFET1RzYXNEeVdISWxPcjQ3dnc2Y3ZEb1dDa1FmT0swYXN1SUNPUGF1UHNFN0dtNkZwVnI5RDdwU3hUakZYVHk0UnBnWGJYczdxWEgxaHZ6U2tpdDJyeUk1c201SUtJamU5Z0R5Y3JoZjI4TV9iRll4X3U2WkxROG1Vb2ZpeUlXVkhjVGZKR1JhdXNVRlpIcmRLUER3Mms?oc=5",
+   "date": "2026-11-19",
+   "source": "Google Новости · Новгородская область",
+   "source_id": "gnews_nov",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  }
+ ],
  "sources_total": 84,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 1,
+ "failed": [
+  {
+   "id": "genproc_29",
+   "name": "Прокуратура Архангельской области",
+   "status": "error: HTTP 502"
+  }
+ ]
 }

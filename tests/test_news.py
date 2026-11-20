@@ -677,3 +677,24 @@ class TestSixthRunFeedback(unittest.TestCase):
         self.assertFalse(nm.similar(b, c))
         self.assertEqual(nm.extract_person(b["summary"]), "")
         self.assertEqual(nm.extract_person(a["summary"]), "Самир Аль-Араби")
+
+
+class TestPostTitle(unittest.TestCase):
+    def test_telegram_title_is_first_sentence(self):
+        t = ("Президент России Владимир Владимирович Путин назначил Светлану Егоровну Устинович председателем "
+             "Архангельского областного суда. Сегодня первый заместитель Председателя Верховного Суда представил её коллективу.")
+        self.assertEqual(nm.post_title(t), "Президент России Владимир Владимирович Путин назначил Светлану Егоровну Устинович председателем Архангельского областного суда.")
+        self.assertEqual(nm.post_title("Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова"),
+                         "Вице-премьером Правительства по социальным вопросам назначена Екатерина Реутова")
+        self.assertEqual(nm.post_title("Министр А.В. Иванов провёл совещание. Обсудили бюджет."), "Министр А.В. Иванов провёл совещание.")
+        long = "Губернатор " + "очень " * 40 + "длинный пост без точек"
+        tt = nm.post_title(long)
+        self.assertTrue(tt.endswith("…") and len(tt) <= 162 and not tt.endswith("оч…"))
+
+    def test_common_noun_company_and_municipal_head(self):
+        orgs = ORGS
+        self.assertIsNone(nm.detect_all("Артема Жогу наградили медалью «За укрепление боевого содружества»", "", orgs))
+        self.assertEqual(nm.find_org_names("ГК «Содружество» запустила новый завод", {"Калининградская область": ["Содружество"]}), [("Калининградская область", "Содружество")])
+        self.assertEqual(nm.find_org_names("укрепление боевого содружества", {"Калининградская область": ["Содружество"]}), [])
+        self.assertIsNone(nm.detect_all("Главой Старорусского округа стала Ирина Примакина", "Депутаты думы округа избрали главу.", orgs))
+        self.assertIsNotNone(nm.detect_all("Главой администрации Калининграда назначена Елена Дятлова", "", orgs))

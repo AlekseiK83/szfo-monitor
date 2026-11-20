@@ -369,7 +369,9 @@ def detect_extra(title, summary, organizations, region_hint=None):
     has_pos = POSITION.search(head)
 
     # 1. Смерть руководителя или известного лица, связанного с учреждением
-    if OBITUARY.search(lead) and ((has_pos and (known or org_class)) or TITLE_NOUN.search(head)):
+    if OBITUARY.search(lead) and ((has_pos and (known or org_class)) or TITLE_NOUN.search(head)) \
+            and not (re.search(r"\b(?:бывш\w+|экс-|ветеран\w*|пенсионер\w*|в\s+прошлом|почётн\w+\s+работник|заслуженн\w+\s+(?:работник|строител|врач|учител|юрист|экономист|энергетик|машиностроител|деятел)\w*\s+(?:РФ|России))", head, re.I)
+                     and not CORE_TITLE.search(head) and not orgs):      # бывший глава Севмаша — да, бывший управляющий трестом — нет
         return {"type": "obituary", "level": "head", "org_class": org_class or "person", "orgs": orgs}
 
     # 2. Визит первого лица в регион / на предприятие
@@ -390,6 +392,9 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
     # 4. Запуск крупного объекта, спуск судна, ввод в эксплуатацию, крупный контракт
     lm = LAUNCH.search(title) or (LAUNCH.search(lead) and LAUNCH_TITLE_NOUN.search(title))
+    if lm and (re.search(r"\d+\s*%|процент|больше,?\s+чем|меньше,?\s+чем|снизил|сократил|вырос|упал|закрыл", title, re.I)
+               or not (LAUNCH_OBJECT.search(title) or LAUNCH_SCALE.search(title) or LAUNCH_TITLE_NOUN.search(title))):
+        lm = None                                      # «закрылось на 39 % больше, чем открылось» — статистика, не запуск
     # для компаний из базы достаточно предмета запуска (производство, судно, линия, контракт на строительство)
     strong_launch = bool(lm and orgs and LAUNCH_OBJECT.search(head)
                          and not re.search(r"\b(?:программ|акци[юия]|сотрудничеств|партн[её]рств|сервис|приложени|конкурс|набор|вакансi|выставк)", head, re.I))
@@ -498,6 +503,9 @@ def extract_person(text):
             continue
         if name_stem(words[-1]) in APPOINTERS or name_stem(words[0]) in APPOINTERS:   # «Беглов: Смирнова назначена» → Смирнова
             continue
+        after = normalize(text)[normalize(text).find(" ".join(words)) + len(" ".join(words)):].lstrip()
+        if re.match(r"(?:представил|вручил|поздравил|сообщил|рассказал|подписал|объявил|заявил)", after, re.I):
+            continue                                                             # «Жаворонкова представила коллективу…» — не герой
         return " ".join(words)
     return ""
 
@@ -866,7 +874,7 @@ def expand_abbrev(text):
 def position_key(ev):
     """«министром информационной политики Вологодской области» и
     «нового министра информационной политики» → один ключ 'минис инфор полит'."""
-    head = expand_abbrev(normalize(ev["title"] + " " + ev.get("summary", "")[:200]))
+    head = expand_abbrev(normalize(ev["title"] + ". " + ev.get("summary", "")[:200]))
     m = POSITION.search(head)
     if not m:
         return ""
@@ -887,7 +895,8 @@ def position_key(ev):
 GENERIC_STEMS = {"петер", "санкт", "ленин", "леноб", "облас", "респу", "карел", "архан", "волог", "калин", "мурма", "псков",
                  "новго", "смени", "сменя", "назна", "глава", "главы", "главо", "главу", "нового", "новым", "новый", "новая", "новой",
                  "регио", "прави", "губер", "должн", "возгл", "утвер", "стал", "стала", "руков", "предс", "замес", "перву", "первы",
-                 "нович", "назвa", "побыв", "котор", "после", "вслед", "ушел", "ушла", "покин", "отста", "област"}
+                 "нович", "назва", "побыв", "котор", "после", "вслед", "ушел", "ушла", "покин", "отста", "област",
+                 "главн", "больн", "минис", "депар", "комит", "управ", "дирек", "начал", "испол", "обяза", "врио", "клини", "учреж", "центр"}
 
 
 def title_stems(title):
@@ -907,6 +916,9 @@ def similar(a, b):
         return False
     if name_pairs(a["title"]) & name_pairs(b["title"]):      # одно «Имя Фамилия» (в любом падеже) в обоих заголовках
         return True
+    pa, pb = position_key(a).split(":")[-1].split(), position_key(b).split(":")[-1].split()
+    if len(pa) >= 2 and len(pb) >= 2 and (pa[:len(pb)] == pb or pb[:len(pa)] == pa):
+        return True                                   # одна должность: «и. о. главного врача» и «главный врач инфекционной больницы»
     # заголовок без фамилии («сменился глава комитета по информатизации») целиком раскрыт в тексте другой новости
     for x, y in ((a, b), (b, a)):
         spec = title_stems(x["title"]) - GENERIC_STEMS
@@ -914,11 +926,11 @@ def similar(a, b):
             return True
     if a["type"] != b["type"]:
         return False
-    sa, sb = title_stems(a["title"]), title_stems(b["title"])
+    sa, sb = title_stems(a["title"]) - GENERIC_STEMS, title_stems(b["title"]) - GENERIC_STEMS
     if len(sa) < 2 or len(sb) < 2:
         return False
     common = len(sa & sb)
-    return common / min(len(sa), len(sb)) >= 0.5
+    return common >= 2 and common / min(len(sa), len(sb)) >= 0.6
 
 
 def event_keys(ev):
@@ -974,6 +986,7 @@ def reconcile(events, cfg):
         if not det:
             continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
+        ev["person"] = extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", "")))
         src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
         region = attribute_region(src, ev["title"] + " " + ev.get("summary", "")[:300], det["orgs"])
         if not region:

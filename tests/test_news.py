@@ -135,9 +135,19 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(nm.extract_person("Главу ВТБ Костина избрали главой ОСК"), "")
 
     def test_key_dedup_same_person(self):
-        a = {"type": "appointment", "person": "Евгений Григорьев", "title": "x"}
-        b = {"type": "appointment", "person": "Евгений Григорьев", "title": "y"}
+        a = {"type": "appointment", "region": "Республика Коми", "person": "Евгений Григорьев", "title": "x"}
+        b = {"type": "appointment", "region": "Республика Коми", "person": "Евгения Григорьева", "title": "y"}
+        c = {"type": "appointment", "region": "Псковская область", "person": "Евгений Григорьев", "title": "y"}
         self.assertEqual(nm.event_key(a), nm.event_key(b))
+        self.assertNotEqual(nm.event_key(a), nm.event_key(c))      # однофамильцы в разных регионах — разные события
+
+    def test_position_key_expires(self):
+        import datetime as dt
+        keys = ["pos:appointment:Республика Коми:минис образ"]
+        seen = {keys[0]: "2026-10-01"}
+        self.assertTrue(nm.blocked_by_seen(keys, seen, dt.date(2026, 10, 8)))    # через неделю — тот же пост, дубль
+        self.assertFalse(nm.blocked_by_seen(keys, seen, dt.date(2026, 11, 1)))   # через месяц — новый министр
+        self.assertTrue(nm.blocked_by_seen(["appointment:Республика Коми:иванов"], {"appointment:Республика Коми:иванов": "2026-10-01"}, dt.date(2026, 11, 1)))
 
 
 class TestParsers(unittest.TestCase):

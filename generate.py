@@ -1635,7 +1635,8 @@ def render_subscribe_button():
 
 
 def render_news_banner():
-    """Баннер-переход ко второму потоку (news.html) с живыми цифрами из data/news/events.json."""
+    """Баннер-переход ко второму потоку (news.html): три последних события перелистываются,
+    справа — живые счётчики за 30 дней из data/news/events.json."""
     esc = html_module.escape
     path = Path("data/news/events.json")
     events = []
@@ -1649,28 +1650,41 @@ def render_news_banner():
     recent = [e for e in events if e.get("date", "") >= month_ago]
     appointments = sum(1 for e in recent if e.get("type") in ("appointment", "leave"))
     titles = sum(1 for e in recent if e.get("type") == "title")
-    latest = max((e.get("date", "") for e in events), default="")
-    if recent:
-        parts = []
-        if appointments:
-            parts.append(f"{appointments} {_plural(appointments, 'назначение', 'назначения', 'назначений')}")
-        if titles:
-            parts.append(f"{titles} {_plural(titles, 'звание', 'звания', 'званий')}")
-        meta = "за 30 дней: " + ", ".join(parts)
-        if latest:
-            meta += f" · последнее {esc(format_display_date(latest))}"
+    other = len(recent) - appointments - titles
+    latest = sorted(events, key=lambda e: (e.get("date", ""), e.get("rank", 9) * -1), reverse=True)[:3]
+
+    if latest:
+        slides = []
+        for e in latest:
+            src = esc(e.get("source", ""))
+            when = esc(format_display_date(e["date"])) if e.get("date") else ""
+            slides.append(f'<div class="nb-slide">{esc(e.get("title", ""))}'
+                          f'<small>{esc(e.get("region", ""))}{" · " + src if src else ""}{" · " + when if when else ""}</small></div>')
+        n = len(slides)
+        stage = f'<div class="nb-stage nb-n{n}">{"".join(slides)}</div>'
+        dots = f'<div class="nb-dots nb-n{n}" aria-hidden="true">{"<i></i>" * n}</div>' if n > 1 else ""
     else:
-        meta = "по новостям правительств, ведомств и ведущих СМИ регионов"
+        stage = ('<div class="nb-stage nb-static"><div class="nb-slide">Новые руководители и заместители в органах власти, '
+                 'ведомствах, учреждениях и крупнейших компаниях СЗФО, региональные и генеральские звания</div></div>')
+        dots = ""
+
+    def stat(n, one, few, many):
+        return (f'<div class="nb-stat"><div class="nb-num" data-count="{n}">{n}</div>'
+                f'<div class="nb-cap">{_plural(n, one, few, many)} за 30 дней</div></div>')
+    stats = stat(appointments, "назначение", "назначения", "назначений")
+    stats += stat(titles, "звание", "звания", "званий")
+    if other:
+        stats += stat(other, "другое событие", "других события", "других событий")
+
     return f'''
-  <a class="news-banner" href="news.html">
+  <a class="news-banner" href="news.html" aria-label="Перейти к новостям: назначения и звания">
     <div class="news-banner-body">
       <div class="eyebrow">Второй поток · новости регионов</div>
       <div class="news-banner-title">Назначения и звания</div>
-      <div class="news-banner-text">Новые руководители и заместители в органах власти, ведомствах, учреждениях
-        и крупнейших компаниях СЗФО, региональные и генеральские звания</div>
-      <div class="news-banner-meta">{meta}</div>
+      {stage}
+      {dots}
     </div>
-    <div class="news-banner-arrow" aria-hidden="true"></div>
+    <div class="nb-stats">{stats}</div>
   </a>'''
 
 
@@ -1804,22 +1818,50 @@ def render_index_html(index_data, region_counts):
 .updated {{ text-align: center; font-size: 12px; color: var(--faint); margin-top: 26px; }}
 
 /* Баннер второго потока */
-.news-banner {{ display: flex; align-items: center; gap: 20px; margin: 0 0 30px;
+.news-banner {{ display: grid; grid-template-columns: 1fr auto; gap: 24px; margin: 0 0 30px;
                 padding: 22px 26px; background: var(--card); border: 1px solid var(--line);
-                border-left: 3px solid var(--gold); border-radius: 14px; color: inherit;
-                text-decoration: none; transition: border-color .15s, transform .15s, box-shadow .15s; }}
-.news-banner:hover {{ border-color: var(--gold); transform: translateY(-1px);
-                      box-shadow: 0 6px 18px rgba(0,0,0,.05); }}
+                border-radius: 14px; color: inherit; text-decoration: none; position: relative; overflow: hidden;
+                transition: border-color .2s, box-shadow .2s; }}
+.news-banner::before {{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold);
+                        transform: scaleY(.35); transform-origin: top; transition: transform .35s ease; }}
+.news-banner:hover {{ border-color: var(--gold); box-shadow: 0 8px 24px -16px rgba(0,0,0,.35); }}
+.news-banner:hover::before {{ transform: scaleY(1); }}
 .news-banner .eyebrow {{ margin-bottom: 6px; }}
-.news-banner-body {{ flex: 1; min-width: 0; }}
-.news-banner-title {{ font-family: var(--serif); font-size: 23px; line-height: 1.2; color: var(--accent-deep); }}
-.news-banner-text {{ font-size: 13.5px; color: var(--muted); margin-top: 6px; max-width: 560px; }}
-.news-banner-meta {{ font-size: 12.5px; color: var(--accent); margin-top: 10px;
-                     font-variant-numeric: tabular-nums; }}
-.news-banner-arrow {{ width: 14px; height: 14px; flex-shrink: 0; margin-right: 6px;
-                      border-top: 2px solid var(--gold); border-right: 2px solid var(--gold);
-                      transform: rotate(45deg); transition: transform .15s; }}
-.news-banner:hover .news-banner-arrow {{ transform: translateX(4px) rotate(45deg); }}
+.news-banner-body {{ min-width: 0; }}
+.news-banner-title {{ font-family: var(--serif); font-size: 23px; line-height: 1.2; color: var(--accent-deep); margin-bottom: 14px; }}
+.nb-stage {{ position: relative; height: 50px; }}
+.nb-slide {{ position: absolute; inset: 0; font-size: 14px; line-height: 1.45; color: var(--ink); opacity: 0;
+             overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }}
+.nb-slide small {{ display: block; color: var(--faint); font-size: 12px; margin-top: 3px; }}
+.nb-static .nb-slide {{ opacity: 1; color: var(--muted); font-size: 13.5px; }}
+.nb-n1 .nb-slide {{ opacity: 1; }}
+.nb-n2 .nb-slide {{ animation: nb-flip 10s infinite; }}
+.nb-n3 .nb-slide {{ animation: nb-flip 15s infinite; }}
+.nb-n2 .nb-slide:nth-child(2), .nb-n3 .nb-slide:nth-child(2) {{ animation-delay: 5s; }}
+.nb-n3 .nb-slide:nth-child(3) {{ animation-delay: 10s; }}
+.nb-n2 .nb-slide {{ animation-name: nb-flip2; }}
+@keyframes nb-flip {{ 0% {{ opacity: 0; transform: translateY(8px); }} 4%, 30% {{ opacity: 1; transform: none; }}
+                      34%, 100% {{ opacity: 0; transform: translateY(-8px); }} }}
+@keyframes nb-flip2 {{ 0% {{ opacity: 0; transform: translateY(8px); }} 6%, 45% {{ opacity: 1; transform: none; }}
+                       51%, 100% {{ opacity: 0; transform: translateY(-8px); }} }}
+.nb-dots {{ display: flex; gap: 6px; margin-top: 12px; }}
+.nb-dots i {{ width: 18px; height: 2px; background: var(--line); border-radius: 1px; position: relative; overflow: hidden; }}
+.nb-dots i::after {{ content: ""; position: absolute; inset: 0; background: var(--gold); transform: translateX(-100%); }}
+.nb-n3.nb-dots i::after {{ animation: nb-bar3 15s infinite; }}
+.nb-n2.nb-dots i::after {{ animation: nb-bar2 10s infinite; }}
+.nb-dots i:nth-child(2)::after {{ animation-delay: 5s; }}
+.nb-dots i:nth-child(3)::after {{ animation-delay: 10s; }}
+@keyframes nb-bar3 {{ 0% {{ transform: translateX(-100%); }} 33.3% {{ transform: translateX(0); }} 33.4%, 100% {{ transform: translateX(100%); }} }}
+@keyframes nb-bar2 {{ 0% {{ transform: translateX(-100%); }} 50% {{ transform: translateX(0); }} 50.1%, 100% {{ transform: translateX(100%); }} }}
+.nb-stats {{ display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-left: 24px;
+             border-left: 1px solid var(--line); min-width: 128px; }}
+.nb-num {{ font-family: var(--serif); font-size: 30px; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }}
+.nb-cap {{ font-size: 11.5px; color: var(--muted); margin-top: 4px; }}
+@media (prefers-reduced-motion: reduce) {{
+  .nb-slide, .nb-dots i::after {{ animation: none !important; }}
+  .nb-slide:first-child {{ opacity: 1; }}
+  .news-banner::before {{ transition: none; }}
+}}
 
 /* Сегментированный фильтр списка дней */
 .index-filter {{ display: flex; gap: 4px; margin-bottom: 12px; padding: 4px;
@@ -1839,9 +1881,12 @@ def render_index_html(index_data, region_counts):
                        background: var(--card); border: 1px dashed var(--line); border-radius: 14px; }}
 @media (max-width: 640px) {{
   .hero {{ padding: 16px 0 30px; }}
-  .news-banner {{ padding: 18px 18px; gap: 12px; margin-bottom: 22px; }}
+  .news-banner {{ grid-template-columns: 1fr; padding: 18px 18px; gap: 14px; margin-bottom: 22px; }}
   .news-banner-title {{ font-size: 20px; }}
-  .news-banner-text {{ font-size: 13px; }}
+  .nb-stage {{ height: 60px; }}
+  .nb-slide {{ -webkit-line-clamp: 3; }}
+  .nb-stats {{ flex-direction: row; gap: 22px; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 14px; }}
+  .nb-num {{ font-size: 26px; }}
   .hero h1 {{ font-size: 27px; }}
   .hero .wide {{ display: none; }}
   .month-strip {{ gap: 2px; }}
@@ -1884,6 +1929,27 @@ def render_index_html(index_data, region_counts):
   <div class="updated">Обновлено {esc(format_msk(last_update))} · автоматически каждый день</div>
 </div>
 <script>
+(function(){{
+  // живые счётчики баннера новостей: число «отсчитывается» при появлении на экране
+  const nums = document.querySelectorAll('.nb-num[data-count]');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (nums.length && 'IntersectionObserver' in window && !reduce) {{
+    const io = new IntersectionObserver(function(entries){{
+      entries.forEach(function(en){{
+        if (!en.isIntersecting) return;
+        const el = en.target, target = parseInt(el.dataset.count, 10) || 0, t0 = performance.now();
+        el.textContent = '0';
+        (function step(t){{
+          const p = Math.min(1, (t - t0) / 900), k = 1 - Math.pow(1 - p, 3);
+          el.textContent = String(Math.round(target * k));
+          if (p < 1) requestAnimationFrame(step);
+        }})(t0);
+        io.unobserve(el);
+      }});
+    }}, {{ threshold: .6 }});
+    nums.forEach(function(el){{ io.observe(el); }});
+  }}
+}})();
 (function(){{
   const buttons = document.querySelectorAll('.index-filter-btn');
   const entries = document.querySelectorAll('.entries .entry');

@@ -1930,8 +1930,50 @@ def render_index_html(index_data, region_counts):
 </div>
 <script>
 (function(){{
+  // Баннер новостей: главная пересобирается только по указам, а events.json обновляется новостным прогоном
+  // каждые 3 часа — поэтому при открытии страницы подтягиваем свежие события прямо из файла.
+  const banner = document.querySelector('.news-banner');
+  if (!banner || !window.fetch) return;
+  const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const esc = function(t){{ return String(t == null ? '' : t).replace(/[&<>"]/g, function(c){{ return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}}[c]; }}); }};
+  const fmt = function(iso){{ const p = (iso || '').split('-'); return p.length === 3 ? parseInt(p[2],10) + ' ' + MONTHS[parseInt(p[1],10)-1] + ' ' + p[0] : iso; }};
+  const plural = function(n, one, few, many){{ const a = n % 10, b = n % 100; return (a === 1 && b !== 11) ? one : (a >= 2 && a <= 4 && (b < 10 || b >= 20)) ? few : many; }};
+  const today = new Date(Date.now() + 3 * 3600 * 1000), ago = new Date(today.getTime() - 30 * 86400 * 1000).toISOString().slice(0, 10);
+  fetch('data/news/events.json?v=' + Math.floor(Date.now() / 600000), {{ cache: 'no-cache' }}).then(function(r){{ return r.ok ? r.json() : null; }}).then(function(ev){{
+    if (!Array.isArray(ev)) return;
+    const recent = ev.filter(function(e){{ return (e.date || '') >= ago; }});
+    const app = recent.filter(function(e){{ return e.type === 'appointment' || e.type === 'leave'; }}).length;
+    const ttl = recent.filter(function(e){{ return e.type === 'title'; }}).length;
+    const other = recent.length - app - ttl;
+    const latest = ev.slice().sort(function(a, b){{ return (b.date || '').localeCompare(a.date || '') || (a.rank || 9) - (b.rank || 9); }}).slice(0, 3);
+    const body = banner.querySelector('.news-banner-body');
+    const oldStage = body.querySelector('.nb-stage'), oldDots = body.querySelector('.nb-dots');
+    if (latest.length) {{
+      const n = latest.length;
+      const stage = document.createElement('div'); stage.className = 'nb-stage nb-n' + n;
+      stage.innerHTML = latest.map(function(e){{
+        const meta = [e.region, e.source, e.date ? fmt(e.date) : ''].filter(Boolean).map(esc).join(' · ');
+        return '<div class="nb-slide">' + esc(e.title) + '<small>' + meta + '</small></div>';
+      }}).join('');
+      oldStage.replaceWith(stage);
+      if (oldDots) oldDots.remove();
+      if (n > 1) {{ const d = document.createElement('div'); d.className = 'nb-dots nb-n' + n; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'.repeat(n); stage.after(d); }}
+    }}
+    const stats = banner.querySelector('.nb-stats');
+    const stat = function(n, one, few, many){{ return '<div class="nb-stat"><div class="nb-num" data-count="' + n + '">' + n + '</div><div class="nb-cap">' + plural(n, one, few, many) + ' за 30 дней</div></div>'; }};
+    let h = stat(app, 'назначение', 'назначения', 'назначений') + stat(ttl, 'звание', 'звания', 'званий');
+    if (other) h += stat(other, 'другое событие', 'других события', 'других событий');
+    stats.innerHTML = h;
+    banner.dispatchEvent(new Event('nb-refreshed'));
+  }}).catch(function(){{}});
+}})();
+(function(){{
   // живые счётчики баннера новостей: число «отсчитывается» при появлении на экране
-  const nums = document.querySelectorAll('.nb-num[data-count]');
+  const banner = document.querySelector('.news-banner');
+  if (banner) banner.addEventListener('nb-refreshed', setup);
+  setup();
+  function setup(){{
+  const nums = document.querySelectorAll('.nb-num[data-count]:not([data-done])');
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (nums.length && 'IntersectionObserver' in window && !reduce) {{
     const io = new IntersectionObserver(function(entries){{
@@ -1947,7 +1989,8 @@ def render_index_html(index_data, region_counts):
         io.unobserve(el);
       }});
     }}, {{ threshold: .6 }});
-    nums.forEach(function(el){{ io.observe(el); }});
+    nums.forEach(function(el){{ el.dataset.done = '1'; io.observe(el); }});
+  }}
   }}
 }})();
 (function(){{

@@ -220,6 +220,7 @@ UNCERTAIN = re.compile(
     r"не\s+более\s+\w+\s+звани|закон\w*\s+о\s+звани|положени\w*\s+о\s+звани|порядок\s+присвоения|лиш[её]н|лишил|"
     r"посмертно)", re.I)
 NOT_OUR_SCOPE = re.compile(
+    r"\b(?:глав\w*\s+(?:администрации\s+)?\w+ского\s+(?:муниципального\s+)?(?:округа|района)(?!\s+(?:Петербурга|Санкт-Петербурга))|глав\w*\s+муниципальн\w+\s+(?:округа|района|образовани)|муниципальн\w+\s+район|сельск\w+\s+поселени)|"
     r"\b(?:возглавил[аи]?\s+(?:совет\w*\s+(?!директоров)|рабоч\w+\s+групп|комисси|штаб|делегаци|оргкомитет|жюри)|общественн\w+\s+совет|экспертн\w+\s+совет|координационн\w+\s+совет|попечительск|наблюдательн\w+\s+совет|тренер|сборн\w+\s+(?:России|страны|команд)|футбольн|хоккейн|волейбольн|баскетбольн|клуб[аеу]?\b|"
     r"\bФК\b|\bХК\b|капитан\w*\s+команд|школ[аыуе]\b|школы\s+№|детск\w+\s+сад|лице[йя]|гимнази|"
     r"сельск\w+\s+поселен|городск\w+\s+поселен|муниципальн\w+\s+(?:образовани|район|округ)|"
@@ -270,6 +271,13 @@ def classify_org(text):
 _ORG_CACHE = {}
 
 
+# однословные названия компаний, которые в тексте встречаются и как обычные слова — учитываем только с заглавной буквы
+COMMON_NOUNS = {"содружество", "звезда", "балтика", "северсталь", "акрон", "апатит", "янтарь", "заря", "спутник", "прогресс",
+                "авангард", "пролетарий", "восход", "арктика", "полярный", "северный", "русский", "метрополитен", "водоканал",
+                "ленэнерго", "ленсвет", "горэлектротранс", "пассажиравтотранс", "теплосеть", "газпром", "лукойл", "роснефть",
+                "ростех", "росатом", "сбербанк", "втб", "почта", "пилигрим", "автотор", "содружество-соя"}
+
+
 def org_pattern(name):
     r"""«Северсталь» → \bсеверстал\w* : ловим падежи («Северстали», «Севмаша»)."""
     pat = _ORG_CACHE.get(name)
@@ -288,7 +296,12 @@ def org_pattern(name):
             if low[-1] in "ьаяыиоеую":
                 return re.escape(w[:-1]) + r"\w*"            # Северсталь → Северстал… (Северстали)
             return re.escape(w) + r"\w*"                     # завод → завод… (завода)
-        pat = re.compile(r"(?<![а-яёa-z])" + r"\s+".join(stem(w) for w in name.split()), re.I)
+        words = name.split()
+        parts = [stem(w) for w in words]
+        if len(words) == 1 and words[0][0].isupper() and words[0].lower() in COMMON_NOUNS:
+            # однословное имя, совпадающее с нарицательным («Содружество», «Звезда», «Балтика»): только с заглавной
+            parts[0] = "(?-i:" + re.escape(words[0][0]) + ")" + parts[0][len(re.escape(words[0][0])):]
+        pat = re.compile(r"(?<![а-яёa-z])" + r"\s+".join(parts), re.I)
         _ORG_CACHE[name] = pat
     return pat
 
@@ -663,6 +676,20 @@ TG_TEXT_RE = re.compile(r'<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)<
 TG_TIME_RE = re.compile(r'<time[^>]+datetime="([^"]+)"')
 
 
+def post_title(text, limit=160):
+    """Заголовок для поста без заголовка (Telegram): первое предложение; если оно длиннее лимита —
+    обрезка по границе слова с многоточием, а не посреди слова."""
+    text = re.sub(r"\s+", " ", text).strip()
+    # граница предложения: не инициал («А.В. Иванов»), не сокращение («им.», «ул.», «г.», «т.е.»)
+    m = re.search(r"(?<![А-ЯЁ])(?<!\bим)(?<!\bул)(?<!\bг)(?<!\bт)(?<!\bе)(?<!\bпр)(?<!\bд)(?<!\bстр)[.!?…](?:[»\"])?\s+(?=[А-ЯЁA-Z0-9«\"])", text)
+    if m and m.end() <= limit + 20:
+        return text[:m.start() + 1].rstrip(" ")
+    if len(text) <= limit:
+        return text
+    cut = text.rfind(" ", 40, limit)
+    return text[:cut if cut > 0 else limit].rstrip(" ,;:—-") + "…"
+
+
 def parse_telegram(page_html):
     items = []
     for block in TG_MSG_RE.findall(page_html):
@@ -679,7 +706,7 @@ def parse_telegram(page_html):
         if len(first) < 20 and "\n" in text:
             first = " ".join(text.split("\n")[:2]).strip()
         time_m = TG_TIME_RE.search(block)
-        items.append({"title": first[:220], "link": f"https://t.me/{post.group(1)}",
+        items.append({"title": post_title(first), "link": f"https://t.me/{post.group(1)}",
                       "date": time_m.group(1) if time_m else "", "summary": text[:800]})
     return items
 
@@ -993,6 +1020,8 @@ def reconcile(events, cfg):
     kept, seen = [], {}
     for ev in events:
         ev["title"] = DATE_WORDS.sub("", ev["title"]).strip()
+        if srcs.get(ev.get("source_id"), {}).get("type") == "telegram" and ev.get("summary", "").startswith(ev["title"][:40]):
+            ev["title"] = post_title(ev["summary"])             # посты без заголовка: первое предложение, а не 220 знаков
         if len(ev["title"]) > 140:                       # заголовок, слипшийся с аннотацией (старые прогоны)
             ev["title"], tail = split_anchor(html_module.escape(ev["title"]))
             ev["title"] = html_module.unescape(ev["title"])

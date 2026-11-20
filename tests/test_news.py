@@ -698,3 +698,10 @@ class TestPostTitle(unittest.TestCase):
         self.assertEqual(nm.find_org_names("укрепление боевого содружества", {"Калининградская область": ["Содружество"]}), [])
         self.assertIsNone(nm.detect_all("Главой Старорусского округа стала Ирина Примакина", "Депутаты думы округа избрали главу.", orgs))
         self.assertIsNotNone(nm.detect_all("Главой администрации Калининграда назначена Елена Дятлова", "", orgs))
+
+    def test_consumer_rating_is_not_status(self):
+        orgs = ORGS
+        self.assertIsNone(nm.detect_all("Горнолыжный курорт «Большой Вудъявр» в Хибинах (Мурманская область) признан лучшим в России местом для семейного отдыха на склонах.", "", orgs))
+        self.assertIsNone(nm.detect_all("Калининград вошёл в топ-5 городов России для путешествий на Новый год", "", orgs))
+        self.assertEqual(nm.detect_all("СПбГУ вошёл в топ-100 мирового рейтинга университетов", "", orgs)["type"], "status")
+        self.assertEqual(nm.detect_all("Архангельский ЦБК признан системообразующим предприятием", "", orgs)["type"], "status")

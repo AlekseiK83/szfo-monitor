@@ -645,3 +645,25 @@ class TestFifthRunFeedback(unittest.TestCase):
         self.assertEqual(nm.detect_all("Балтийский завод спустил на воду атомный ледокол «Ленинград»", "", orgs)["type"], "launch")
         self.assertEqual(nm.detect_all("На Кольской АЭС открыли новый энергоблок", "Это крупнейший проект Росатома в регионе.", orgs)["type"], "launch")
         self.assertIsNotNone(nm.detect_all("Задержан гендиректор Акрона", "", orgs))
+
+
+class TestSixthRunFeedback(unittest.TestCase):
+    def test_statistics_obituary_and_hospital_duplicate(self):
+        orgs = ORGS
+        self.assertIsNone(nm.detect_all("В ТЦ Петербурга закрылось на 39% больше торговых площадей, чем открылось",
+                                        "Посещаемость торговых комплексов снизилась на 4,1%, сообщил генеральный директор управляющей компании «Ай Би Ритейл» (входит в ГК «Ай Би Групп») Святослав Борисов.", orgs))
+        self.assertIsNone(nm.detect_all("Умер Заслуженный строитель РФ, бывший управляющий трестом №52 Анатолий Смирнов в 77 лет", "", orgs))
+        self.assertEqual(nm.detect_all("Скончался почётный гражданин Пскова, бывший мэр Михаил Хоронен", "", orgs)["type"], "obituary")
+        self.assertEqual(nm.detect_all("Умер генеральный директор Севмаша Михаил Будниченко", "", orgs)["type"], "obituary")
+        a = {"type": "appointment", "region": "Псковская область", "date": "2026-11-19",
+             "title": "Самир Аль-Араби возглавил Псковскую областную инфекционную больницу",
+             "summary": "Исполняющим обязанности главного врача Псковской областной инфекционной клинической больницы назначен Самир Аль-Араби, сообщили ПАИ."}
+        b = {"type": "appointment", "region": "Псковская область", "date": "2026-11-19",
+             "title": "В Псковской инфекционной клинической больнице назначили исполняющего обязанности главного врача",
+             "summary": "Заместитель министра здравоохранения Псковской области Ирина Жаворонкова представила коллективу нового руководителя."}
+        c = {"type": "appointment", "region": "Псковская область", "date": "2026-11-19",
+             "title": "В Псковской областной больнице назначили нового главного инженера", "summary": ""}
+        self.assertTrue(nm.similar(a, b))
+        self.assertFalse(nm.similar(b, c))
+        self.assertEqual(nm.extract_person(b["summary"]), "")
+        self.assertEqual(nm.extract_person(a["summary"]), "Самир Аль-Араби")

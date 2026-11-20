@@ -2,158 +2,95 @@
  "date": "2026-11-20",
  "new": [
   {
-   "type": "launch",
+   "type": "appointment",
+   "level": "deputy",
+   "org_class": "force",
+   "region": "Архангельская область",
+   "title": "Президент России Владимир Владимирович Путин назначил Светлану Егоровну Устинович председателем Архангельского областного суда. Сегодня первый заместитель Председателя Верховного суда РФ Владимир Александрович Давыдов пр",
+   "summary": "Президент России Владимир Владимирович Путин назначил Светлану Егоровну Устинович председателем Архангельского областного суда. Сегодня первый заместитель Председателя Верховного суда РФ Владимир Александрович Давыдов представил её юридическому сообществу и представителям органов власти региона.\n\nСветлана Егоровна работает в судебной системе страны больше 35 лет. Это опытный руководитель, заслужив",
+   "link": "https://t.me/Tsybulskiy_A/22626",
+   "date": "2026-11-20",
+   "source": "Александр Цыбульский (Telegram)",
+   "source_id": "arh_gub_tg",
+   "rank": 1,
+   "person": "Светлану Егоровну Устинович",
+   "orgs": []
+  },
+  {
+   "type": "award",
    "level": "head",
    "org_class": "gov",
-   "region": "Санкт-Петербург",
-   "title": "Александр Беглов: В 2027 году в Петербурге участники СВО смогут получить до 2 миллионов рублей на запуск своего дела",
-   "summary": "Александр Беглов: В 2027 году в Петербурге участники СВО смогут получить до 2 миллионов рублей на запуск своего дела\n\nОб этом губернатор Александр Беглов заявил сегодня, 19 ноября, отвечая на вопросы петербуржцев в ходе Прямой линии, которая проходит в социальной сети «ВКонтакте» и в эфире телеканала «Санкт-Петербург».\n\nВетеран СВО, решивший заняться предпринимательством, поинтересовался, на какую",
-   "link": "https://t.me/smolnypress/5553",
-   "date": "2026-11-19",
-   "source": "Смольный (Telegram)",
-   "source_id": "spb_smolny_tg",
-   "rank": 1,
-   "person": "",
+   "region": "Калининградская область",
+   "title": "Артема Жогу наградили медалью \"За укрепление боевого содружества\"",
+   "summary": "Полномочный представитель президента в Уральском федеральном округе получил награду от замглавы Минобороны Юнус-Бек Евкурова",
+   "link": "https://tass.ru/obschestvo/28339919",
+   "date": "2026-11-20",
+   "source": "ТАСС",
+   "source_id": "tass",
+   "rank": 2,
+   "person": "Артема Жогу",
+   "orgs": [
+    "Содружество"
+   ]
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "business",
+   "region": "Псковская область",
+   "title": "Игорь Максимов покинул пост директора Псковских тепловых сетей",
+   "summary": "Игорь Максимов покинул пост директора Псковских тепловых сетей, об этом он сообщил в своем обращении к коллективу, опубликованном в Мах-канале предприятия. [...]",
+   "link": "http://pln-pskov.ru/dzhkh/606417.html",
+   "date": "2026-11-20",
+   "source": "Псковская лента новостей",
+   "source_id": "pln",
+   "rank": 3,
+   "person": "Игорь Максимов",
    "orgs": []
   },
   {
    "type": "appointment",
    "level": "head",
-   "org_class": "gov",
-   "region": "Вологодская область",
-   "title": "Ксения Фаламеева возглавила министерство информационной политики Вологодской области",
+   "org_class": "business",
+   "region": "Новгородская область",
+   "title": "Главой Старорусского округа стала Ирина Примакина",
+   "summary": "19 ноября депутаты думы Старорусского округа Новгородской области избрали главу муниципалитета. Ею стала Ирина Примакина, решение приняли единогласно. Ирина Примакина более 30 лет работала в банковской системе: от рядового специалиста до руководителя районного подразделения,",
+   "link": "https://news.novgorod.ru/news/211049.html",
+   "date": "2026-11-20",
+   "source": "Новгород.ру",
+   "source_id": "novgorod_ru",
+   "rank": 3,
+   "person": "Ирина Примакина",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "force",
+   "region": "Калининградская область",
+   "title": "В Калининградском арбитражном суде сменился руководитель",
    "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQTTJRTFVncDg2aWVTZ21lV0tNV2dXQk9rRjJlakhVTEJCaFFiaDBwYXdKNFJhNHZOS3h0ek5YQnZSMUppYTdZaEYtTFBxUncyVmxXV1NLTjNLQzhVZXVIckNXQmNnZXFId0dkRW1HWFRuZ3NqaU9TeTV6OGI2cU9aT2JYWk1LVVRzTkdYdnl3UVB5SkRhdzVfNl9oYnpuQ2w4Mk1jVmVkRmg5bndYT2doV1JybjZxVENCeTVkeFlqY09RYmM?oc=5",
-   "date": "2026-11-16",
-   "source": "Google Новости · Вологодская область",
-   "source_id": "gnews_vol",
+   "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9nVTRabkNvWjJmZmZ6REROWjQ1TzhfZ3VEYnlUc3FGcDJRa1RleTJSaWRvVXNqTVdlSU9tazdZRUpSV0Nsa294TFJmdXZsU056RzlycTJZa1pJdw?oc=5",
+   "date": "2026-11-20",
+   "source": "Google Новости · Калининградская область",
+   "source_id": "gnews_klg",
    "rank": 4,
-   "person": "Ксения Фаламеева",
+   "person": "",
    "orgs": []
   }
  ],
  "sources_total": 84,
- "sources_failed": 24,
+ "sources_failed": 2,
  "failed": [
-  {
-   "id": "abnews",
-   "name": "АБН24",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "spbdnevnik",
-   "name": "Петербургский дневник",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_78",
-   "name": "Прокуратура Санкт-Петербурга",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "online47",
-   "name": "Online47",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_47",
-   "name": "Прокуратура Ленинградской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "news29",
-   "name": "news29.ru",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_29",
-   "name": "Прокуратура Архангельской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "newsvo",
-   "name": "newsvo.ru",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_35",
-   "name": "Прокуратура Вологодской области",
-   "status": "error: ConnectTimeout"
-  },
   {
    "id": "klops",
    "name": "Клопс",
-   "status": "error: ConnectTimeout"
+   "status": "error: на странице нет заголовков"
   },
   {
-   "id": "genproc_39",
-   "name": "Прокуратура Калининградской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "mur_gov",
-   "name": "Правительство Мурманской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "bport",
-   "name": "Б-порт",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "severpost",
-   "name": "СеверПост",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_51",
-   "name": "Прокуратура Мурманской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_10",
-   "name": "Прокуратура Республики Карелия",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "pln",
-   "name": "Псковская лента новостей",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_60",
-   "name": "Прокуратура Псковской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "bnkomi",
-   "name": "БНК",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "komiinform",
-   "name": "Комиинформ",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_11",
-   "name": "Прокуратура Республики Коми",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "53news",
-   "name": "53 новости",
-   "status": "error: ConnectTimeout"
-  },
-  {
-   "id": "genproc_53",
-   "name": "Прокуратура Новгородской области",
-   "status": "error: ConnectTimeout"
+   "id": "gnews_psk",
+   "name": "Google Новости · Псковская область",
+   "status": "error: HTTP 429"
   }
  ]
 }

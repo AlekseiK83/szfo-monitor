@@ -1,6 +1,39 @@
 {
  "date": "2026-11-21",
- "new": [],
+ "new": [
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "business",
+   "region": "Санкт-Петербург",
+   "title": "Татьяна Ким покинула пост генерального директора Wildberries",
+   "summary": "Татьяна Ким покинула пост генерального директора Wildberries. Как следует из данных ЕГРЮЛ, компанию возглавил Алексей Куликов. Перестановка произошла 19 ноября 2026 года. По официальным данным, Татьяна Ким больше не числится учредителем ООО \"Вайлдберриз\" и не может действовать от имени компании без доверенности. Алексей Куликов ранее занимал руководящие должности в структурах Wildberries. Помимо у",
+   "link": "https://www.dp.ru/a/2026/11/21/tatjana-kim-pokinula-post",
+   "date": "2026-11-21",
+   "source": "Деловой Петербург",
+   "source_id": "dp",
+   "rank": 3,
+   "person": "Татьяна Ким",
+   "orgs": []
+  },
+  {
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "company",
+   "region": "Калининградская область",
+   "title": "Режиссёр Калининградского драмтеатра Михаил Салес отмечает 80-летие",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9FVE0xU2lWRXNybzRjZnFEYjAzVV9DTWdVNVNGVE9DTGRvZ044LU1pQ2pJY3V0bUlkM3lHZlVLWno2ajh1TF9UZEhiSmwwN05fMU1aakVxZW4wTHNUbE04UzI5ZHRIT1BTbHhSVnBKMzlHUQ?oc=5",
+   "date": "2026-11-18",
+   "source": "Google Новости · Калининградская область",
+   "source_id": "gnews_klg",
+   "rank": 4,
+   "person": "Режиссёр Калининградского",
+   "orgs": [
+    "Калининградский драмтеатр"
+   ]
+  }
+ ],
  "sources_total": 84,
  "sources_failed": 0,
  "failed": []

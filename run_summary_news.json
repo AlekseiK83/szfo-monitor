@@ -2,39 +2,73 @@
  "date": "2026-11-21",
  "new": [
   {
-   "type": "leave",
+   "type": "obituary",
    "level": "head",
    "org_class": "business",
-   "region": "Санкт-Петербург",
-   "title": "Татьяна Ким покинула пост генерального директора Wildberries",
-   "summary": "Татьяна Ким покинула пост генерального директора Wildberries. Как следует из данных ЕГРЮЛ, компанию возглавил Алексей Куликов. Перестановка произошла 19 ноября 2026 года. По официальным данным, Татьяна Ким больше не числится учредителем ООО \"Вайлдберриз\" и не может действовать от имени компании без доверенности. Алексей Куликов ранее занимал руководящие должности в структурах Wildberries. Помимо у",
-   "link": "https://www.dp.ru/a/2026/11/21/tatjana-kim-pokinula-post",
+   "region": "Архангельская область",
+   "title": "Умер глава ювелирного дома Bulgari: его украшения обожали Элизабет Тейлор и Софи Лорен",
+   "summary": "Он посвятил компании более 60 лет",
+   "link": "https://29.ru/text/culture/2026/11/21/76781921/",
    "date": "2026-11-21",
-   "source": "Деловой Петербург",
-   "source_id": "dp",
+   "source": "29.ru",
+   "source_id": "29ru",
+   "rank": 3,
+   "person": "Элизабет Тейлор",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Архангельская область",
+   "title": "Купил аэропорт, выиграл гостендеры и менял рекламу на остановках? Что известно о новом главе Wildberries",
+   "summary": "Основательница маркетплейса Татьяна Ким покинула свой пост",
+   "link": "https://29.ru/text/business/2026/11/21/76781840/",
+   "date": "2026-11-21",
+   "source": "29.ru",
+   "source_id": "29ru",
    "rank": 3,
    "person": "Татьяна Ким",
    "orgs": []
   },
   {
-   "type": "anniversary",
+   "type": "appointment",
    "level": "head",
-   "org_class": "company",
-   "region": "Калининградская область",
-   "title": "Режиссёр Калининградского драмтеатра Михаил Салес отмечает 80-летие",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9FVE0xU2lWRXNybzRjZnFEYjAzVV9DTWdVNVNGVE9DTGRvZ044LU1pQ2pJY3V0bUlkM3lHZlVLWno2ajh1TF9UZEhiSmwwN05fMU1aakVxZW4wTHNUbE04UzI5ZHRIT1BTbHhSVnBKMzlHUQ?oc=5",
-   "date": "2026-11-18",
-   "source": "Google Новости · Калининградская область",
-   "source_id": "gnews_klg",
-   "rank": 4,
-   "person": "Режиссёр Калининградского",
-   "orgs": [
-    "Калининградский драмтеатр"
-   ]
+   "org_class": "business",
+   "region": "Архангельская область",
+   "title": "Чем будет заниматься Татьяна Ким, после того как покинула пост гендиректора Wildberries",
+   "summary": "В компании дали первый комментарий после кадровых изменений",
+   "link": "https://29.ru/text/world/2026/11/21/76781625/",
+   "date": "2026-11-21",
+   "source": "29.ru",
+   "source_id": "29ru",
+   "rank": 3,
+   "person": "Татьяна Ким",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "business",
+   "region": "Республика Карелия",
+   "title": "Татьяна Ким перестала быть гендиректором Wildberries",
+   "summary": "Татьяна Ким покинула пост генерального директора ООО «Вайлдберриз».",
+   "link": "https://stolicaonego.ru/news/tatjana-kim-perestala-byt-gendirektorom-wildberries/",
+   "date": "2026-11-21",
+   "source": "Столица на Onego",
+   "source_id": "stolicaonego",
+   "rank": 3,
+   "person": "Татьяна Ким",
+   "orgs": []
   }
  ],
  "sources_total": 84,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 1,
+ "failed": [
+  {
+   "id": "klops",
+   "name": "Клопс",
+   "status": "error: на странице нет заголовков"
+  }
+ ]
 }

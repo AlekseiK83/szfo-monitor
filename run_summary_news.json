@@ -2,18 +2,23 @@
  "date": "2026-11-22",
  "new": [],
  "diagnostics": {
-  "items_received": 3145,
-  "items_fresh": 2926,
-  "detected": 39,
-  "relevance_accepted": 28,
-  "relevance_rejected": 11,
+  "items_received": 3185,
+  "items_fresh": 2961,
+  "detected": 46,
+  "relevance_accepted": 30,
+  "relevance_rejected": 16,
   "region_rejected": 2,
-  "candidates": 26,
+  "candidates": 28,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 10,
+   "missing_regional_event_anchor": 15,
    "minor_public_space_not_scope": 1
   },
   "rejected_examples": [
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Умер заслуженный деятель науки России Николай Черноруков",
+    "source": "ТАСС"
+   },
    {
     "reason": "missing_regional_event_anchor",
     "title": "Татьяна Ким покинула пост генерального директора Wildberries",
@@ -46,7 +51,27 @@
    },
    {
     "reason": "missing_regional_event_anchor",
+    "title": "Комитет парламента Монголии поддержал отставку президента Хурэлсуха",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
     "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В комитете по информатизации сменился председатель",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию » Лента новостей Казахстана",
     "source": "Google Новости · Санкт-Петербург"
    },
    {
@@ -63,11 +88,6 @@
     "reason": "missing_regional_event_anchor",
     "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
     "source": "Google Новости · Псковская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Генерал СБУ Дука пришел на ВСК, в Верховной Раде инициировали отставку министра ветеранов Кима главное за 18 ноября",
-    "source": "Google Новости · Новгородская область"
    }
   ],
   "new_events": 0

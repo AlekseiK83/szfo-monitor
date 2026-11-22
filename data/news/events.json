@@ -1,5 +1,20 @@
 [
  {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "business",
+  "region": "Калининградская область",
+  "title": "Татьяна Ким покинула пост гендиректора Wildberries: кто возглавил компанию",
+  "summary": "",
+  "link": "https://klops.ru/other/2026-11-21/395388-tatyana-kim-pokinula-post-gendirektora-wildberries-kto-vozglavil-kompaniyu",
+  "date": "2026-11-22",
+  "source": "Клопс",
+  "source_id": "klops",
+  "rank": 3,
+  "person": "Татьяна Ким",
+  "orgs": []
+ },
+ {
   "type": "leave",
   "level": "head",
   "org_class": "business",
@@ -73,6 +88,23 @@
   "rank": 3,
   "person": "Татьяна Ким",
   "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Архангельская область",
+  "title": "Константин Паромов назначен и.о. главного врача Первой городской клинической больницы им. Волосевич",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQYXhGSVJVU2NONE1RY2VpWVFvQnhlQWhMTjUxUVN5NFZxa2wwSnljTkptU2ZxVHkxcHlqODNLWVZTQmx4NUdBTEtvMmFvQ2JqUnJsTHhHXy1EZHM4MFdRelZfWWlVNTZwbDFoOGFjbHdqc1g1YXhXVjN2N3ZjeVMtbVAwSzZIXzB0QUd2ZmNFUzg3emxnaHBnWXgxQ1ljNXE4eElURnBkNjBxbmprREl0ZW1mRlBpMEpsUEU5OC1nZWZBLUt6T3B2MHJmN3ZmQmpId044?oc=5",
+  "date": "2026-11-21",
+  "source": "Google Новости · Архангельская область",
+  "source_id": "gnews_arh",
+  "rank": 4,
+  "person": "Константин Паромов",
+  "orgs": [
+   "Больница им. Волосевич"
+  ]
  },
  {
   "type": "leave",

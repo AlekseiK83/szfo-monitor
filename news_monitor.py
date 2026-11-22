@@ -38,6 +38,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 
 import generate as g
+from news_relevance import check_relevance
 
 SOURCES_FILE = Path("news_sources.json")
 DATA_DIR = Path("data/news")
@@ -1044,6 +1045,12 @@ def reconcile(events, cfg):
         det = detect_all(ev["title"], ev.get("summary", ""), organizations)
         if not det:
             continue
+        relevance_source = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
+        relevant, _reason = check_relevance(
+            ev["title"], ev.get("summary", ""), det, relevance_source,
+            organizations, find_org_names, news_region)
+        if not relevant:
+            continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
         ev["person"] = extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", "")))
         src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
@@ -1085,6 +1092,13 @@ def run(today=None, verbose=True):
                 continue
             det = detect_all(it["title"], it.get("summary", ""), organizations)
             if not det:
+                continue
+            relevant, reason = check_relevance(
+                it["title"], it.get("summary", ""), det, src,
+                organizations, find_org_names, news_region)
+            if not relevant:
+                if verbose:
+                    print(f"    [REJECT:{reason}] {it['title'][:110]}")
                 continue
             text = f"{it['title']} {it.get('summary', '')}"
             region = attribute_region(src, text, det["orgs"])

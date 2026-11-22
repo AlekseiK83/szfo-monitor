@@ -1,40 +1,13 @@
 {
  "date": "2026-11-22",
- "new": [
-  {
-   "type": "anniversary",
-   "level": "head",
-   "org_class": "company",
-   "region": "Ленинградская область",
-   "title": "Пикалевский бассейн отметил 50-летие соревнованиями пловцов",
-   "summary": "В Пикалево завершились двухдневные торжества в честь 50-летия плавательного бассейна. Праздник объединил спортсменов разных поколений и собрал участников из нескольких регионов.",
-   "link": "https://abnews.ru/szfo/news/lenobl/2026/11/22/pikalevskij-bassejn-otmetil-50-letie-sorevnovaniyami-plovczov",
-   "date": "2026-11-22",
-   "source": "АБН24",
-   "source_id": "abnews",
-   "rank": 3,
-   "person": "",
-   "orgs": [
-    "Пикалевск"
-   ]
-  },
-  {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "force",
-   "region": "Псковская область",
-   "title": "Псков. Губернатору Псковской области представили нового начальника регионального управления ФСБ",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiP0FVX3lxTFB2MUxFNndxRFhDZmJYbENMN2JxRXZiRmtVcWV2VEhiVVZsRGNFekJJRmQ2bHlLMWxPWl9uUl84Zw?oc=5",
-   "date": "2026-11-21",
-   "source": "Google Новости · Псковская область",
-   "source_id": "gnews_psk",
-   "rank": 4,
-   "person": "",
-   "orgs": []
-  }
- ],
+ "new": [],
  "sources_total": 84,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 1,
+ "failed": [
+  {
+   "id": "gnews_arh",
+   "name": "Google Новости · Архангельская область",
+   "status": "error: HTTP 429"
+  }
+ ]
 }

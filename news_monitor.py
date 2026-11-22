@@ -1078,6 +1078,7 @@ def run(today=None, verbose=True):
     fresh_from = today - timedelta(days=FRESH_DAYS)
 
     candidates, statuses = [], []
+    diagnostics = {"items_received": 0, "items_fresh": 0, "detected": 0, "relevance_accepted": 0, "relevance_rejected": 0, "region_rejected": 0, "candidates": 0, "rejection_reasons": {}, "rejected_examples": []}
     for src in cfg["sources"]:
         if not src.get("enabled", True):
             continue
@@ -1087,22 +1088,31 @@ def run(today=None, verbose=True):
         if verbose:
             print(f"  {src['id']:<16} {status:<40} {time.time() - t0:4.1f}s", flush=True)
         for it in items:
+            diagnostics["items_received"] += 1
             d = parse_date(it.get("date"))
             if d and d < fresh_from:
                 continue
+            diagnostics["items_fresh"] += 1
             det = detect_all(it["title"], it.get("summary", ""), organizations)
             if not det:
                 continue
+            diagnostics["detected"] += 1
             relevant, reason = check_relevance(
                 it["title"], it.get("summary", ""), det, src,
                 organizations, find_org_names, news_region)
             if not relevant:
+                diagnostics["relevance_rejected"] += 1
+                diagnostics["rejection_reasons"][reason] = diagnostics["rejection_reasons"].get(reason, 0) + 1
+                if len(diagnostics["rejected_examples"]) < 15:
+                    diagnostics["rejected_examples"].append({"reason": reason, "title": it["title"][:180], "source": src.get("name", "")})
                 if verbose:
                     print(f"    [REJECT:{reason}] {it['title'][:110]}")
                 continue
+            diagnostics["relevance_accepted"] += 1
             text = f"{it['title']} {it.get('summary', '')}"
             region = attribute_region(src, text, det["orgs"])
             if not region:
+                diagnostics["region_rejected"] += 1
                 continue
             ev = {"type": det["type"], "level": det["level"], "org_class": det["org_class"],
                   "region": region, "title": normalize(it["title"]).strip(), "summary": normalize(it.get("summary", ""))[:400],
@@ -1111,6 +1121,7 @@ def run(today=None, verbose=True):
                   "person": extract_person(it["title"]) or extract_person(it.get("summary", "")[:300]),
                   "orgs": sorted({o[1] for o in det["orgs"]})}
             candidates.append(ev)
+            diagnostics["candidates"] += 1
 
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
     candidates.sort(key=priority)
@@ -1149,12 +1160,17 @@ def run(today=None, verbose=True):
     save_json(SEEN_FILE, seen)
     save_json(FEEDS_CACHE, feeds_cache)
     errors = [s for s in statuses if s[2].startswith("error")]
-    save_json(RUN_SUMMARY, {"date": today.isoformat(), "new": fresh_new,
+    diagnostics["new_events"] = len(fresh_new)
+    save_json(RUN_SUMMARY, {"date": today.isoformat(), "new": fresh_new, "diagnostics": diagnostics,
                             "sources_total": len(statuses), "sources_failed": len(errors),
                             "failed": [{"id": s[0], "name": s[1], "status": s[2]} for s in errors]})
     render_page(events, today)
     if verbose:
         print(f"\nИсточников: {len(statuses)}, с ошибкой: {len(errors)}; новых событий: {len(fresh_new)}")
+        print("Фильтр: получено {items_received}, свежих {items_fresh}, детектор {detected}, "
+              "принято {relevance_accepted}, отклонено {relevance_rejected}, "
+              "без региона {region_rejected}, кандидатов {candidates}".format(**diagnostics))
+        print("Причины отклонения:", diagnostics["rejection_reasons"])
         for ev in fresh_new:
             print(f"  [{ev['type']}/{ev['level']}] {ev['region']}: {ev['title'][:100]}")
     return fresh_new, statuses
@@ -1431,6 +1447,7 @@ def notify():
         nt.send(token, chat_ids, m.strip(), report)
     nt.print_report(report)
     return 0
+
 
 
 def main():

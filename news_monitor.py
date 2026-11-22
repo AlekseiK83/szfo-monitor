@@ -1449,7 +1449,6 @@ def notify():
     return 0
 
 
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="проверить доступность источников")

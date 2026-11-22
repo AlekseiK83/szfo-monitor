@@ -1,13 +1,113 @@
 {
  "date": "2026-11-22",
- "new": [],
- "sources_total": 84,
- "sources_failed": 1,
- "failed": [
+ "new": [
   {
-   "id": "gnews_arh",
-   "name": "Google Новости · Архангельская область",
-   "status": "error: HTTP 429"
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Вологодская область",
+   "title": "Губернатор Георгий Филимонов сообщил об открытии обновлённой территории у Колхозного рынка в Череповце",
+   "summary": "Губернатор Георгий Филимонов сообщил об открытии обновлённой территории у Колхозного рынка в Череповце\n\nВ рамках подготовки к 250-летию города здесь комплексно благоустроили общественное пространство и преобразили фасад здания. Открытие новой площадки отметили праздничной программой и ярмаркой.\n\n🇷🇺 Правительство Вологодской области",
+   "link": "https://t.me/vologdaoblast/26610",
+   "date": "2026-11-22",
+   "source": "Вологодская область (Telegram)",
+   "source_id": "vol_gov2_tg",
+   "rank": 1,
+   "person": "",
+   "orgs": []
   }
- ]
+ ],
+ "diagnostics": {
+  "items_received": 3177,
+  "items_fresh": 2951,
+  "detected": 44,
+  "relevance_accepted": 29,
+  "relevance_rejected": 15,
+  "region_rejected": 2,
+  "candidates": 27,
+  "rejection_reasons": {
+   "missing_regional_event_anchor": 15
+  },
+  "rejected_examples": [
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Умер почетный гражданин Самарской области Владимир Ощепков",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Татьяна Ким покинула пост генерального директора Wildberries",
+    "source": "Деловой Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Умер глава ювелирного дома Bulgari: его украшения обожали Элизабет Тейлор и Софи Лорен",
+    "source": "29.ru"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Купил аэропорт, выиграл гостендеры и менял рекламу на остановках? Что известно о новом главе Wildberries",
+    "source": "29.ru"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Чем будет заниматься Татьяна Ким, после того как покинула пост гендиректора Wildberries",
+    "source": "29.ru"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Татьяна Ким покинула пост генерального директора Wildberries.",
+    "source": "Деловой Петербург (Telegram)"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В комитете по информатизации сменился председатель",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию » Лента новостей Казахстана",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В Общественную палату не избрали директора правительственного учреждения, юристов и полковника в отставке",
+    "source": "Google Новости · Калининградская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Губернатор назначил нового руководителя госстройнадзора Воронежской области",
+    "source": "Google Новости · Мурманская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Глава администрации правительства Монголии подал в отставку вслед за президентом",
+    "source": "Google Новости · Республика Карелия"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
+    "source": "Google Новости · Псковская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Генерал СБУ Дука пришел на ВСК, в Верховной Раде инициировали отставку министра ветеранов Кима главное за 18 ноября",
+    "source": "Google Новости · Новгородская область"
+   }
+  ],
+  "new_events": 1
+ },
+ "sources_total": 84,
+ "sources_failed": 0,
+ "failed": []
 }

@@ -40,6 +40,7 @@ import requests
 import generate as g
 from news_relevance import check_relevance
 from news_staffing import detect_staffing, staffing_region_for_story, workforce_fingerprint
+from news_proceedings import detect_proceedings
 
 SOURCES_FILE = Path("news_sources.json")
 DATA_DIR = Path("data/news")
@@ -451,7 +452,8 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
 
 def detect_all(title, summary, organizations):
-    return (detect(title, summary, organizations)
+    return (detect_proceedings(title, summary)
+            or detect(title, summary, organizations)
             or detect_staffing(title, summary, organizations, find_org_names)
             or detect_extra(title, summary, organizations))
 
@@ -461,6 +463,12 @@ def event_relevance(title, summary, detection, source, organizations):
     if detection["type"] == "workforce":
         region = staffing_region_for_story(title, summary)
         return (True, "workforce_explicit_szfo_worksite") if region else (False, "workforce_no_szfo_worksite")
+    if detection["type"] == "proceeding":
+        # Высокорисковая категория: регион должен быть явно в самом сообщении,
+        # одной принадлежности СМИ к СЗФО недостаточно.
+        anchor = title + " " + first_sentence(summary, limit=320)
+        return ((True, "confirmed_regional_proceeding") if news_region(anchor)
+                else (False, "proceeding_without_explicit_region"))
     return check_relevance(title, summary, detection, source,
                            organizations, find_org_names, news_region)
 
@@ -971,6 +979,13 @@ def title_stems(title):
 
 def similar(a, b):
     """Два заголовка об одном событии: регион и тип совпадают, даты рядом, общих основ слов не меньше половины."""
+    if a["type"] == "proceeding" or b["type"] == "proceeding":
+        if a["type"] != b["type"] or a["region"] != b["region"]:
+            return False
+        if a.get("procedure_stage") != b.get("procedure_stage"):
+            return False
+        pa, pb = surname(a.get("person", "")), surname(b.get("person", ""))
+        return bool(pa and pb and pa == pb)
     family = {"appointment", "leave"}
     if a["region"] != b["region"] or (a["type"] != b["type"] and not {a["type"], b["type"]} <= family):
         return False
@@ -1018,7 +1033,9 @@ def blocked_by_seen(keys, seen, today):
 
 def event_keys(ev):
     keys = [event_key(ev)]
-    if ev["type"] == "workforce":
+    # Каждая стадия процессуального дела самостоятельна; ключ должности
+    # не должен блокировать арест после задержания или предъявление обвинения.
+    if ev["type"] in ("workforce", "proceeding"):
         return keys
     pk = position_key(ev)
     if pk:
@@ -1027,6 +1044,13 @@ def event_keys(ev):
 
 
 def event_key(ev):
+    if ev["type"] == "proceeding":
+        # Повтор одной стадии по нескольким источникам объединяем; новые
+        # процессуальные решения по тому же лицу не склеиваем.
+        who = surname(ev.get("person", "")) or "unknown"
+        if who == "unknown":
+            who = re.sub(r"[^а-яёa-z0-9]", "", ev["title"].lower())[:65]
+        return f"proceeding:{ev['region']}:{who}:{ev.get('procedure_stage', 'unknown')}"
     # Одно решение по квоте/численности может перепечатываться с разными заголовками.
     if ev["type"] == "workforce":
         return workforce_fingerprint(ev)
@@ -1081,8 +1105,13 @@ def reconcile(events, cfg):
         if not relevant:
             continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
+        if det["type"] == "proceeding":
+            ev["procedure_stage"] = det["stage"]
+        else:
+            ev.pop("procedure_stage", None)
         ev["person"] = ("" if det["type"] == "workforce" else
-                        (extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", "")))))
+                        (det.get("subject", "") if det["type"] == "proceeding" else
+                         (extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", ""))))))
         src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
         region = event_region(src, ev["title"], ev.get("summary", ""), det)
         if not region:
@@ -1158,8 +1187,11 @@ def run(today=None, verbose=True):
                   "link": it.get("link", ""), "date": (d or today).isoformat(),
                   "source": src["name"], "source_id": src["id"], "rank": src.get("rank", 3),
                   "person": ("" if det["type"] == "workforce" else
-                             (extract_person(it["title"]) or extract_person(it.get("summary", "")[:300]))),
+                             (det.get("subject", "") if det["type"] == "proceeding" else
+                              (extract_person(it["title"]) or extract_person(it.get("summary", "")[:300])))),
                   "orgs": sorted({o[1] for o in det["orgs"]})}
+            if det["type"] == "proceeding":
+                ev["procedure_stage"] = det["stage"]
             candidates.append(ev)
             diagnostics["candidates"] += 1
 
@@ -1247,7 +1279,8 @@ def check_sources():
 
 TYPE_LABEL = {"appointment": "Назначение", "leave": "Отставка", "title": "Звание", "obituary": "Утрата",
               "visit": "Визит", "anniversary": "Юбилей", "launch": "Запуск", "award": "Награда",
-              "status": "Статус", "ownership": "Собственность", "workforce": "Персонал"}
+              "status": "Статус", "ownership": "Собственность", "workforce": "Персонал",
+              "proceeding": "Процессуальное событие"}
 CLASS_LABEL = {"gov": "власть", "force": "силовые ведомства", "podved": "учреждение",
                "business": "компания", "company": "компания", "person": ""}
 
@@ -1262,7 +1295,7 @@ PAGE_CSS = """
 .ev-type.visit, .ev-type.launch, .ev-type.status { color: var(--accent-deep); }
 .ev-type.anniversary, .ev-type.award { color: var(--gold-ink); }
 .ev-type.ownership { color: var(--muted); }
-.ev-type.workforce { color: var(--accent-deep); }
+.ev-type.workforce, .ev-type.proceeding { color: var(--accent-deep); }
 .ev-title { font-size: 15.5px; font-weight: 600; }
 .ev-title a { color: var(--ink); text-decoration: none; }
 .ev-title a:hover { color: var(--accent); }
@@ -1465,7 +1498,7 @@ def notify():
     for ev in new:
         by_region.setdefault(ev["region"], []).append(ev)
     icon = {"appointment": "👤", "leave": "🚪", "title": "🎖", "obituary": "🕯", "visit": "🏛", "anniversary": "🎂",
-            "launch": "🚀", "award": "🏅", "status": "⭐", "ownership": "🏦", "workforce": "👥"}
+            "launch": "🚀", "award": "🏅", "status": "⭐", "ownership": "🏦", "workforce": "👥", "proceeding": "⚖️"}
     lines = [f"📰 <b>Назначения и звания в СЗФО</b> — {len(new)} "
              f"{nt.plural(len(new), 'новое событие', 'новых события', 'новых событий')}"]
     for region in sorted(by_region, key=lambda r: g.REGION_ORDER.index(r) if r in g.REGION_ORDER else 99):

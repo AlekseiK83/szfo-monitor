@@ -31,6 +31,26 @@ MINOR_SPORTS_ANNIVERSARY = re.compile(
     r"спортшкол\w*|спортивн\w+\s+(?:школ\w*|секци\w*|клуб\w*))\b", re.I
 )
 
+# Персональная премия журналисту не является наградой руководителя
+# организации. Отсечение ограничено наградами/статусом; кадровые решения
+# внутри редакций не затрагиваются.
+MEDIA_PERSONAL_AWARD = re.compile(
+    r"\b(?:фотокорреспондент\w*|корреспондент\w*|журналист\w*|"
+    r"репорт[её]р\w*|фотограф\w*)\b", re.I)
+MEDIA_PRIZE = re.compile(r"\b(?:лауреат\w*|наград\w*|преми\w*|конкурс\w*|удостоен\w*)\b", re.I)
+JOURNALISM_PRIZE = re.compile(r"преми\w*[^.!?]{0,85}?в\s+област\w*\s+журналистик\w*", re.I)
+
+# Не считаем новыми региональными проектами федеральные статистические
+# итоги («В России открыли 250 месторождений»), даже если их перепечатало
+# местное издание или в теле статьи упомянута Карелия.
+NATIONAL_SCOPE = re.compile(
+    r"^\s*(?:в\s+России|по\s+России|по\s+всей\s+России|"
+    r"в\s+РФ|в\s+стране|по\s+стране)\b", re.I)
+NATIONAL_TOTAL = re.compile(
+    r"\b\d{2,}[\s\d]*\s+(?:месторождени\w*|завод\w*|"
+    r"предприяти\w*|производств\w*|объект\w*|"
+    r"учреждени\w*|проект\w*|школ\w*|больниц\w*)\b", re.I)
+
 # Федеральные сюжеты без локального предмета: рейтинги персон, общие заявления.
 GENERIC_STORY = re.compile(
     r"\b(?:рассказал\w*|заявил\w*|прокомментировал\w*|объяснил\w*|"
@@ -62,6 +82,13 @@ def check_relevance(title, summary, detection, source, organizations,
         return False, "minor_sports_facility_anniversary"
     title = title or ""
     lead = first_lead(summary)
+    if detection.get("type") in ("award", "title", "status") and (
+            (MEDIA_PERSONAL_AWARD.search(title + " " + lead) and MEDIA_PRIZE.search(title + " " + lead))
+            or JOURNALISM_PRIZE.search(title)):
+        return False, "personal_media_award_not_scope"
+    if detection.get("type") in ("launch", "status", "award", "anniversary", "visit") \
+            and NATIONAL_SCOPE.search(title) and NATIONAL_TOTAL.search(title):
+        return False, "national_aggregate_not_local_event"
     anchor = f"{title} {lead}"
     explicit_region = news_region(anchor)
     local_orgs = find_org_names(anchor, organizations)

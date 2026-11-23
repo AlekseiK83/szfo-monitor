@@ -22,6 +22,15 @@ MINOR_PUBLIC_SPACE = re.compile(
     re.I,
 )
 
+# Юбилеи местных спортивно-досуговых объектов не являются значимым
+# кадровым, статусным или инфраструктурным событием. Ограничиваем это
+# правило только категорией "anniversary": назначения директоров таких
+# учреждений и ввод крупных объектов не должны блокироваться здесь.
+MINOR_SPORTS_ANNIVERSARY = re.compile(
+    r"\b(?:бассейн\w*|плавательн\w+\s+(?:бассейн\w*|комплекс\w*)|"
+    r"спортшкол\w*|спортивн\w+\s+(?:школ\w*|секци\w*|клуб\w*))\b", re.I
+)
+
 # Федеральные сюжеты без локального предмета: рейтинги персон, общие заявления.
 GENERIC_STORY = re.compile(
     r"\b(?:рассказал\w*|заявил\w*|прокомментировал\w*|объяснил\w*|"
@@ -46,6 +55,11 @@ def check_relevance(title, summary, detection, source, organizations,
     core_events = {"appointment", "leave", "title", "obituary", "ownership"}
     if detection.get("type") not in core_events and MINOR_PUBLIC_SPACE.search(title or ""):
         return False, "minor_public_space_not_scope"
+    # Юбилей бассейна или местной спортивной школы — вне предмета дайджеста,
+    # даже если указан регион или местная организация присутствует в словаре.
+    if detection.get("type") == "anniversary" and MINOR_SPORTS_ANNIVERSARY.search(
+            f"{title or ''} {first_lead(summary)}"):
+        return False, "minor_sports_facility_anniversary"
     title = title or ""
     lead = first_lead(summary)
     anchor = f"{title} {lead}"

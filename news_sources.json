@@ -2404,6 +2404,16 @@
    "rank": 4,
    "region_from_text": true,
    "note": "агрегатор: регион берётся только из текста новости, иначе событие отбрасывается"
+  },
+  {
+   "id": "rosbalt",
+   "name": "Росбалт",
+   "type": "site",
+   "url": "https://www.rosbalt.ru/",
+   "news_url": "https://www.rosbalt.ru/news",
+   "region": null,
+   "verified": false,
+   "rank": 2
   }
  ],
  "organizations": {

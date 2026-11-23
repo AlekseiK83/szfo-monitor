@@ -1,22 +1,5 @@
 [
  {
-  "type": "award",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Санкт-Петербург",
-  "title": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.",
-  "summary": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.\n\nЖюри признало лучшей фотоработой в СМИ цикл \"Место встречи — Петербург. ПМЭФ в объективе фотографов «ДП»\". Фотографы \"Делового Петербурга\" с 1997 года, когда состоялся первый Петербургский международный экономический форум, работали на этом ",
-  "link": "https://t.me/dprunews/66317",
-  "date": "2026-11-23",
-  "source": "Деловой Петербург (Telegram)",
-  "source_id": "dp_tg",
-  "rank": 3,
-  "person": "Сергей Ермохин",
-  "orgs": [
-   "ПМЭФ"
-  ]
- },
- {
   "type": "anniversary",
   "level": "head",
   "org_class": "force",
@@ -47,21 +30,6 @@
   "orgs": []
  },
  {
-  "type": "launch",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Республика Карелия",
-  "title": "В России с начала 2026 года открыли 250 месторождений полезных ископаемых",
-  "summary": "Об этом сообщили в пресс-службе Министерства природных ресурсов и экологии РФ.",
-  "link": "https://stolicaonego.ru/news/v-rossii-s-nachala-2026-goda-otkryli-250-mestorozhdenij-poleznyh-iskopaemyh/",
-  "date": "2026-11-23",
-  "source": "Столица на Onego",
-  "source_id": "stolicaonego",
-  "rank": 3,
-  "person": "",
-  "orgs": []
- },
- {
   "type": "appointment",
   "level": "head",
   "org_class": "gov",
@@ -77,6 +45,38 @@
   "orgs": []
  },
  {
+  "type": "proceeding",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Мурманская область",
+  "title": "Сотрудниками МВД России задержан губернатор Мурманской области Андрей Чибис",
+  "summary": "Сотрудниками МВД России задержан губернатор Мурманской области Андрей Чибис\n \nСледственный департамент МВД России продолжает предварительное расследование уголовного дела по обвинению группы лиц в совершении ряда преступлений, предусмотренных частью 4 статьи 159, частью 4 статьи 160, пунктами «а», «б» части 3 статьи 193.1 УК РФ. Им инкриминируется хищение бюджетных денежных средств Министерства ст",
+  "link": "https://t.me/mvd_51/4910",
+  "date": "2026-11-23",
+  "source": "МВД 51 (Telegram)",
+  "source_id": "mvd_51_tg",
+  "rank": 1,
+  "person": "Андрей Чибис",
+  "orgs": [],
+  "procedure_stage": "detention"
+ },
+ {
+  "type": "proceeding",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Мурманская область",
+  "title": "МВД России подтвердило задержание мурманского губернатора Чибиса",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE9iOERsVms4YVEwZU0wNUJ6WmZXbXlneEVfM0dEclRyOFJVVFZpSV9QRzY1SVZ5VE9lNkc0c1hjdEVhSVQzczBB?oc=5",
+  "date": "2026-11-23",
+  "source": "Google Новости · Мурманская область",
+  "source_id": "gnews_mur",
+  "rank": 4,
+  "person": "",
+  "orgs": [],
+  "procedure_stage": "detention"
+ },
+ {
   "type": "launch",
   "level": "head",
   "org_class": "gov",
@@ -90,6 +90,22 @@
   "rank": 2,
   "person": "Гора Южная",
   "orgs": []
+ },
+ {
+  "type": "proceeding",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Мурманская область",
+  "title": "В МВД подтвердили задержание губернатора Мурманской области",
+  "summary": "Андрея Чибиса задержали за хищение",
+  "link": "https://tass.ru/proisshestviya/28347115",
+  "date": "2026-11-23",
+  "source": "ТАСС",
+  "source_id": "tass",
+  "rank": 2,
+  "person": "",
+  "orgs": [],
+  "procedure_stage": "detention"
  },
  {
   "type": "workforce",

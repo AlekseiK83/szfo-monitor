@@ -977,15 +977,94 @@ def title_stems(title):
     return {w[:5] for w in words if w not in POS_STOP}
 
 
+
+# Для процессуальных новостей три формы заголовка часто описывают одну стадию:
+# «задержан губернатор Иванов», «подтвердили задержание губернатора»,
+# «задержание областного губернатора Иванова». Имя не обязательно присутствует
+# во всех лентах. Сопоставляем должность только там, где она уникальна в регионе.
+PROCEEDING_GOVERNOR = re.compile(r"\bгубернатор[а-яё]*\b", re.I)
+PROCEEDING_DEPUTY_BEFORE = re.compile(
+    r"(?:вице[-\s]?|зам(?:естител[а-яё]*)?\s+|перв[а-яё]*\s+заместител[а-яё]*\s+)$", re.I)
+PROCEEDING_REGION_AFTER_ROLE = re.compile(
+    r"^(?:(?:[А-ЯЁ][а-яё-]+\s+(?:области|края|округа))|"
+    r"(?:Республики\s+[А-ЯЁ][а-яё-]+)|"
+    r"(?:Санкт-Петербурга|Петербурга|Карелии|Коми))\s+"
+)
+PROCEEDING_NON_NAMES = {
+    "сообщил", "сообщила", "подтвердил", "подтвердила", "задержан",
+    "задержали", "арестован", "арестовали", "обвинен", "обвинён",
+    "под", "после", "как", "из", "области", "республики", "страны"
+}
+
+
+def proceeding_office(ev):
+    """Возвращает только гарантированно единственную должность в субъекте РФ.
+
+    Заместители губернатора и региональные министры здесь намеренно не
+    склеиваются по одному названию должности: одновременно их может быть много.
+    """
+    if ev.get("type") != "proceeding" or ev.get("level") == "deputy":
+        return ""
+    text = ev.get("title", "") + " " + ev.get("summary", "")[:240]
+    for match in PROCEEDING_GOVERNOR.finditer(text):
+        before = text[max(0, match.start() - 45):match.start()]
+        if PROCEEDING_DEPUTY_BEFORE.search(before):
+            continue
+        return "governor"
+    return ""
+
+
+def proceeding_subject(ev):
+    """Основа фамилии действующего лица, если упомянута рядом с должностью.
+
+    В лентах возможны «Андрей Чибис» и «губернатора Чибиса». Ищем фамилию
+    после роли, если основной детектор не заполнил ev['person'].
+    """
+    person = ev.get("person", "").strip()
+    if person:
+        return surname(person)
+    text = ev.get("title", "") + " " + ev.get("summary", "")[:180]
+    for match in PROCEEDING_GOVERNOR.finditer(text):
+        after = text[match.end():match.end() + 105].lstrip()
+        after = PROCEEDING_REGION_AFTER_ROLE.sub("", after)
+        pair = re.match(r"([А-ЯЁ][а-яё-]+)(?:\s+([А-ЯЁ][а-яё-]+))?", after)
+        if not pair:
+            continue
+        words = [part for part in pair.groups() if part]
+        if words and words[0].lower() not in PROCEEDING_NON_NAMES:
+            return name_stem(words[-1])
+    return ""
+
+
+def same_proceeding(a, b):
+    """Одна стадия одного процессуального события, независимо от СМИ/URL.
+
+    Наличие имени хотя бы в одном заголовке не мешает объединить заметку
+    без имени о *той же уникальной должности*. Разные названные лица не
+    объединяем. Не объединяем события разных процессуальных стадий.
+    """
+    if a.get("type") != "proceeding" or b.get("type") != "proceeding":
+        return False
+    if a.get("region") != b.get("region") or a.get("procedure_stage") != b.get("procedure_stage"):
+        return False
+    try:
+        if abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) > 7:
+            return False
+    except (KeyError, ValueError, TypeError):
+        return False
+    pa, pb = proceeding_subject(a), proceeding_subject(b)
+    if pa and pb:
+        return pa == pb
+    # Пока есть хотя бы одно сообщение без имени, роль должна быть уникальна:
+    # только губернатор конкретного субъекта РФ. Для вице-губернаторов,
+    # региональных министров и их заместителей необходимо имя или контекст.
+    return proceeding_office(a) == proceeding_office(b) == "governor"
+
+
 def similar(a, b):
-    """Два заголовка об одном событии: регион и тип совпадают, даты рядом, общих основ слов не меньше половины."""
+    """Дедупликация с учётом сущности и стадии, а не идентичности заголовков."""
     if a["type"] == "proceeding" or b["type"] == "proceeding":
-        if a["type"] != b["type"] or a["region"] != b["region"]:
-            return False
-        if a.get("procedure_stage") != b.get("procedure_stage"):
-            return False
-        pa, pb = surname(a.get("person", "")), surname(b.get("person", ""))
-        return bool(pa and pb and pa == pb)
+        return same_proceeding(a, b)
     family = {"appointment", "leave"}
     if a["region"] != b["region"] or (a["type"] != b["type"] and not {a["type"], b["type"]} <= family):
         return False
@@ -998,8 +1077,7 @@ def similar(a, b):
         return True
     pa, pb = position_key(a).split(":")[-1].split(), position_key(b).split(":")[-1].split()
     if len(pa) >= 2 and len(pb) >= 2 and (pa[:len(pb)] == pb or pb[:len(pa)] == pa):
-        return True                                   # одна должность: «и. о. главного врача» и «главный врач инфекционной больницы»
-    # заголовок без фамилии («сменился глава комитета по информатизации») целиком раскрыт в тексте другой новости
+        return True
     for x, y in ((a, b), (b, a)):
         spec = title_stems(x["title"]) - GENERIC_STEMS
         if len(spec) >= 2 and y.get("summary") and spec <= title_stems(y["title"] + " " + y["summary"][:500]):
@@ -1011,7 +1089,6 @@ def similar(a, b):
         return False
     common = len(sa & sb)
     return common >= 2 and common / min(len(sa), len(sb)) >= 0.6
-
 
 POSITION_KEY_DAYS = 10       # «тот же пост» блокирует повтор лишь 10 дней: позже на пост могут назначить другого
 
@@ -1047,9 +1124,11 @@ def event_key(ev):
     if ev["type"] == "proceeding":
         # Повтор одной стадии по нескольким источникам объединяем; новые
         # процессуальные решения по тому же лицу не склеиваем.
-        who = surname(ev.get("person", "")) or "unknown"
-        if who == "unknown":
-            who = re.sub(r"[^а-яёa-z0-9]", "", ev["title"].lower())[:65]
+        who = proceeding_subject(ev)
+        if not who:
+            # Только губернатор — должность уникальна в конкретном регионе.
+            # Не склеивать разных вице-губернаторов и министров без фамилий.
+            who = proceeding_office(ev) or re.sub(r"[^а-яёa-z0-9]", "", ev["title"].lower())[:65]
         return f"proceeding:{ev['region']}:{who}:{ev.get('procedure_stage', 'unknown')}"
     # Одно решение по квоте/численности может перепечатываться с разными заголовками.
     if ev["type"] == "workforce":

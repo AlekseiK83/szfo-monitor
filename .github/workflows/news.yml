@@ -37,8 +37,26 @@ jobs:
       - name: Тесты региональной релевантности
         run: python -m unittest discover -s tests -p 'test_news_relevance.py' -v
 
+      - name: Тесты ложных назначений и интервью чиновников
+        run: python -m unittest tests.test_news_appointment_scope -v
+
+      - name: Тесты значимого расширения персонала
+        run: python -m unittest tests.test_news_staffing -v
+
+      - name: Тесты публикации Росбалта и дедупликации
+        run: python -m unittest tests.test_featured_staffing -v
+
+      - name: Подключить Росбалт ко второму потоку
+        run: python scripts/add_rosbalt_source.py
+
       - name: Сбор новостей и поиск событий
         run: python news_monitor.py
+
+      - name: Убедиться, что интервью врио министра не опубликовано
+        run: python scripts/check_pln_interview.py
+
+      - name: Проверить публикацию Росбалта от 23 ноября
+        run: python scripts/check_featured_news.py
 
       - name: Коммит и push изменений
         run: |

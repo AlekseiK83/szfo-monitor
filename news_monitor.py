@@ -39,6 +39,7 @@ import requests
 
 import generate as g
 from news_relevance import check_relevance
+from news_staffing import detect_staffing, staffing_region_for_story, workforce_fingerprint
 
 SOURCES_FILE = Path("news_sources.json")
 DATA_DIR = Path("data/news")
@@ -447,7 +448,24 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
 
 def detect_all(title, summary, organizations):
-    return detect(title, summary, organizations) or detect_extra(title, summary, organizations)
+    return (detect(title, summary, organizations)
+            or detect_staffing(title, summary, organizations, find_org_names)
+            or detect_extra(title, summary, organizations))
+
+
+def event_relevance(title, summary, detection, source, organizations):
+    """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
+    if detection["type"] == "workforce":
+        region = staffing_region_for_story(title, summary)
+        return (True, "workforce_explicit_szfo_worksite") if region else (False, "workforce_no_szfo_worksite")
+    return check_relevance(title, summary, detection, source,
+                           organizations, find_org_names, news_region)
+
+
+def event_region(source, title, summary, detection):
+    if detection["type"] == "workforce":
+        return staffing_region_for_story(title, summary)
+    return attribute_region(source, title + " " + summary[:300], detection["orgs"])
 
 
 # ── Извлечение имени (эвристика, для дедупликации и подписи) ──
@@ -747,6 +765,10 @@ def fetch_source(src, feeds_cache):
     """→ (items, status). status: 'rss N' | 'html N' | 'telegram N' | 'error: …'."""
     kind = src["type"]
     try:
+        if kind == "curated":
+            # Один раз прогоняем через стандартный детектор, фильтр и дедупликацию.
+            items = src.get("items", [])
+            return items, f"curated {len(items)}"
         if kind == "rss":
             items = parse_feed(http_get(src["url"]))
             return items, f"rss {len(items)}"
@@ -993,6 +1015,8 @@ def blocked_by_seen(keys, seen, today):
 
 def event_keys(ev):
     keys = [event_key(ev)]
+    if ev["type"] == "workforce":
+        return keys
     pk = position_key(ev)
     if pk:
         keys.append(pk)
@@ -1000,6 +1024,9 @@ def event_keys(ev):
 
 
 def event_key(ev):
+    # Одно решение по квоте/численности может перепечатываться с разными заголовками.
+    if ev["type"] == "workforce":
+        return workforce_fingerprint(ev)
     person = ev.get("person", "")
     if ev["type"] in ("visit", "anniversary", "launch", "award", "status", "ownership") and ev.get("orgs"):
         return f"{ev['type']}:{ev['region']}:{ev['orgs'][0].lower()}:{ev['date'][:7]}"
@@ -1046,15 +1073,15 @@ def reconcile(events, cfg):
         if not det:
             continue
         relevance_source = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
-        relevant, _reason = check_relevance(
-            ev["title"], ev.get("summary", ""), det, relevance_source,
-            organizations, find_org_names, news_region)
+        relevant, _reason = event_relevance(
+            ev["title"], ev.get("summary", ""), det, relevance_source, organizations)
         if not relevant:
             continue
         ev["type"], ev["level"], ev["org_class"] = det["type"], det["level"], det["org_class"]
-        ev["person"] = extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", "")))
+        ev["person"] = ("" if det["type"] == "workforce" else
+                        (extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", "")))))
         src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
-        region = attribute_region(src, ev["title"] + " " + ev.get("summary", "")[:300], det["orgs"])
+        region = event_region(src, ev["title"], ev.get("summary", ""), det)
         if not region:
             continue
         ev["region"] = region
@@ -1072,6 +1099,16 @@ def run(today=None, verbose=True):
     organizations = cfg.get("organizations", {})
     feeds_cache = load_json(FEEDS_CACHE, {})
     today = today or g.msk_today()
+    # Одноразовая проверенная публикация за 23.11.2026. Работает только
+    # в эту дату, без запросов к сайту; дальше обычная лента Росбалта.
+    if today.isoformat() == "2026-11-23":
+        featured = load_json(Path("data/news/featured_staffing_2026-11-23.json"), [])
+        if featured:
+            cfg["sources"].append({
+                "id": "rosbalt_featured_20261123", "name": "Росбалт",
+                "type": "curated", "region": None, "rank": 2,
+                "items": featured,
+            })
     events, seen_from_events = reconcile(load_json(EVENTS_FILE, []), cfg)
     seen = load_json(SEEN_FILE, {})
     seen.update(seen_from_events)
@@ -1097,9 +1134,8 @@ def run(today=None, verbose=True):
             if not det:
                 continue
             diagnostics["detected"] += 1
-            relevant, reason = check_relevance(
-                it["title"], it.get("summary", ""), det, src,
-                organizations, find_org_names, news_region)
+            relevant, reason = event_relevance(
+                it["title"], it.get("summary", ""), det, src, organizations)
             if not relevant:
                 diagnostics["relevance_rejected"] += 1
                 diagnostics["rejection_reasons"][reason] = diagnostics["rejection_reasons"].get(reason, 0) + 1
@@ -1110,7 +1146,7 @@ def run(today=None, verbose=True):
                 continue
             diagnostics["relevance_accepted"] += 1
             text = f"{it['title']} {it.get('summary', '')}"
-            region = attribute_region(src, text, det["orgs"])
+            region = event_region(src, it["title"], it.get("summary", ""), det)
             if not region:
                 diagnostics["region_rejected"] += 1
                 continue
@@ -1118,7 +1154,8 @@ def run(today=None, verbose=True):
                   "region": region, "title": normalize(it["title"]).strip(), "summary": normalize(it.get("summary", ""))[:400],
                   "link": it.get("link", ""), "date": (d or today).isoformat(),
                   "source": src["name"], "source_id": src["id"], "rank": src.get("rank", 3),
-                  "person": extract_person(it["title"]) or extract_person(it.get("summary", "")[:300]),
+                  "person": ("" if det["type"] == "workforce" else
+                             (extract_person(it["title"]) or extract_person(it.get("summary", "")[:300]))),
                   "orgs": sorted({o[1] for o in det["orgs"]})}
             candidates.append(ev)
             diagnostics["candidates"] += 1
@@ -1207,7 +1244,7 @@ def check_sources():
 
 TYPE_LABEL = {"appointment": "Назначение", "leave": "Отставка", "title": "Звание", "obituary": "Утрата",
               "visit": "Визит", "anniversary": "Юбилей", "launch": "Запуск", "award": "Награда",
-              "status": "Статус", "ownership": "Собственность"}
+              "status": "Статус", "ownership": "Собственность", "workforce": "Персонал"}
 CLASS_LABEL = {"gov": "власть", "force": "силовые ведомства", "podved": "учреждение",
                "business": "компания", "company": "компания", "person": ""}
 
@@ -1222,6 +1259,7 @@ PAGE_CSS = """
 .ev-type.visit, .ev-type.launch, .ev-type.status { color: var(--accent-deep); }
 .ev-type.anniversary, .ev-type.award { color: var(--gold-ink); }
 .ev-type.ownership { color: var(--muted); }
+.ev-type.workforce { color: var(--accent-deep); }
 .ev-title { font-size: 15.5px; font-weight: 600; }
 .ev-title a { color: var(--ink); text-decoration: none; }
 .ev-title a:hover { color: var(--accent); }
@@ -1424,7 +1462,7 @@ def notify():
     for ev in new:
         by_region.setdefault(ev["region"], []).append(ev)
     icon = {"appointment": "👤", "leave": "🚪", "title": "🎖", "obituary": "🕯", "visit": "🏛", "anniversary": "🎂",
-            "launch": "🚀", "award": "🏅", "status": "⭐", "ownership": "🏦"}
+            "launch": "🚀", "award": "🏅", "status": "⭐", "ownership": "🏦", "workforce": "👥"}
     lines = [f"📰 <b>Назначения и звания в СЗФО</b> — {len(new)} "
              f"{nt.plural(len(new), 'новое событие', 'новых события', 'новых событий')}"]
     for region in sorted(by_region, key=lambda r: g.REGION_ORDER.index(r) if r in g.REGION_ORDER else 99):

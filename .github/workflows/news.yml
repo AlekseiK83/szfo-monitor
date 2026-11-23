@@ -46,6 +46,9 @@ jobs:
       - name: Тесты публикации Росбалта и дедупликации
         run: python -m unittest tests.test_featured_staffing -v
 
+      - name: Тесты процессуальных событий и шумовых новостей
+        run: python -m unittest tests.test_news_proceedings_and_noise -v
+
       - name: Подключить Росбалт ко второму потоку
         run: python scripts/add_rosbalt_source.py
 

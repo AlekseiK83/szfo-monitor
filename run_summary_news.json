@@ -1,48 +1,119 @@
 {
  "date": "2026-11-23",
- "new": [],
+ "new": [
+  {
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "force",
+   "region": "Санкт-Петербург",
+   "title": "В Санкт-Петербурге отметили 100-летие военного оркестра штаба Северо-Западного округа Росгвардии (видео)",
+   "summary": "В Санкт-Петербурге состоялись праздничные мероприятия, посвященные 100-летнему юбилею военного оркестра штаба Северо-Западного округа Росгвардии.",
+   "link": "https://rosguard.gov.ru/News/Article/v-sanktpeterburge-otmetili-100letie-voennogo-orkestra-shtaba-severozapadnogo-okruga-rosgvardii-video",
+   "date": "2026-11-23",
+   "source": "Росгвардия",
+   "source_id": "rosguard",
+   "rank": 1,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Санкт-Петербург",
+   "title": "В Петербурге после реконструкции открыли исторический \"Сестрорецкий курорт\"",
+   "summary": "На территории разместили медицинский центр с собственными источниками минеральной воды и грязи",
+   "link": "https://tass.ru/obschestvo/28346245",
+   "date": "2026-11-23",
+   "source": "ТАСС",
+   "source_id": "tass",
+   "rank": 2,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "business",
+   "region": "Мурманская область",
+   "title": "🗓 В Мурманской области открыли новое месторождение апатитовых руд и циркония в 2026 году",
+   "summary": "🗓 В Мурманской области открыли новое месторождение апатитовых руд и циркония в 2026 году\n\n🔎 В 2026 году в Мурманской области обнаружили новое месторождение. Это крупные запасы маложелезистых апатитовых руд «Горы Южной». Там содержатся 1,1 миллиона тонн апатитовых руд, 20,5 миллиона железных руд и почти 12 тысяч тонн циркония.\n\n⚛️ Как известно, апатитовые руды поставляют сырье для производства удоб",
+   "link": "https://t.me/bportcom/87189",
+   "date": "2026-11-23",
+   "source": "Б-порт (Telegram)",
+   "source_id": "bport_tg",
+   "rank": 3,
+   "person": "Горы Южной",
+   "orgs": []
+  },
+  {
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Архангельская область",
+   "title": "Архангельская областная больница отметила 80-летие",
+   "summary": "",
+   "link": "https://region29.ru/2026/11/23/6b04153906349677a0047f42.html",
+   "date": "2026-11-23",
+   "source": "Регион 29",
+   "source_id": "region29",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Новгородская область",
+   "title": "Назначена дата прямой линии губернатора Новгородской области",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxObkF4ZmtrOXQ0aDk2VU9UUUozdGNUTUtBSkdkNzMzM25aaTAyem54bGlpb2lYamg0Q0o2eXlsMklyWVNUeGszdjc4dmIyTWN3SHBFelh5c1F1WTBLcTF0VW1XUHZQQ3dWY2p0RVBvdnlSR3ZWcVBKWEJEaGNXZXY5Z1RmMjhSTEtqRUpwN29vRUVwNmh6WlFSOU1uOXE3Q2hKRUFz?oc=5",
+   "date": "2026-11-23",
+   "source": "Google Новости · Новгородская область",
+   "source_id": "gnews_nov",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 3088,
-  "items_fresh": 2778,
+  "items_received": 3169,
+  "items_fresh": 2904,
   "detected": 27,
-  "relevance_accepted": 17,
-  "relevance_rejected": 10,
+  "relevance_accepted": 18,
+  "relevance_rejected": 9,
   "region_rejected": 1,
-  "candidates": 16,
+  "candidates": 17,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 9,
+   "missing_regional_event_anchor": 8,
    "minor_public_space_not_scope": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "На Камчатке объявили о кадровых изменениях в правительстве края",
+    "title": "Axios: в США назначили и.о. главы управления Белого дома по кибербезопасности",
     "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Глава Arm Хаас продлил контракт до 2033 г. на фоне интереса со стороны Nvidia",
+    "source": "Интерфакс"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В России запустили портал дошкольного образования «Главный детский»",
+    "source": "Ведомости"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В США назначили временного главу управления Белого дома по кибербезопасности",
+    "source": "Ведомости"
    },
    {
     "reason": "missing_regional_event_anchor",
     "title": "Татьяна Ким покинула пост генерального директора Wildberries",
     "source": "Деловой Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Умер глава ювелирного дома Bulgari: его украшения обожали Элизабет Тейлор и Софи Лорен",
-    "source": "29.ru"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Купил аэропорт, выиграл гостендеры и менял рекламу на остановках? Что известно о новом главе Wildberries",
-    "source": "29.ru"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Чем будет заниматься Татьяна Ким, после того как покинула пост гендиректора Wildberries",
-    "source": "29.ru"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Татьяна Ким покинула пост генерального директора Wildberries.",
-    "source": "Деловой Петербург (Telegram)"
    },
    {
     "reason": "minor_public_space_not_scope",
@@ -56,18 +127,24 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Губернатор назначил нового руководителя госстройнадзора Воронежской области",
-    "source": "Google Новости · Мурманская область"
+    "title": "Александр Нохрин назначен зампредом правительства Камчатки",
+    "source": "Google Новости · Калининградская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Мэрилин Монро возглавила список величайших кинозвезд всех времен по версии Variety.",
-    "source": "Google Новости · Республика Коми"
+    "title": "Губернатор назначил нового руководителя госстройнадзора Воронежской области",
+    "source": "Google Новости · Мурманская область"
    }
   ],
-  "new_events": 0
+  "new_events": 5
  },
  "sources_total": 84,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 1,
+ "failed": [
+  {
+   "id": "kommersant_spb",
+   "name": "Коммерсантъ Санкт-Петербург",
+   "status": "error: ConnectionError"
+  }
+ ]
 }

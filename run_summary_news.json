@@ -1,22 +1,22 @@
 {
- "date": "2026-11-22",
+ "date": "2026-11-23",
  "new": [],
  "diagnostics": {
-  "items_received": 3185,
-  "items_fresh": 2961,
-  "detected": 46,
-  "relevance_accepted": 30,
-  "relevance_rejected": 16,
-  "region_rejected": 2,
-  "candidates": 28,
+  "items_received": 3088,
+  "items_fresh": 2778,
+  "detected": 27,
+  "relevance_accepted": 17,
+  "relevance_rejected": 10,
+  "region_rejected": 1,
+  "candidates": 16,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 15,
+   "missing_regional_event_anchor": 9,
    "minor_public_space_not_scope": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Умер заслуженный деятель науки России Николай Черноруков",
+    "title": "На Камчатке объявили о кадровых изменениях в правительстве края",
     "source": "ТАСС"
    },
    {
@@ -51,31 +51,6 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Комитет парламента Монголии поддержал отставку президента Хурэлсуха",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "В комитете по информатизации сменился председатель",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Алтаир Кожахметов возглавил Казахскую государственную филармонию » Лента новостей Казахстана",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
     "title": "В Общественную палату не избрали директора правительственного учреждения, юристов и полковника в отставке",
     "source": "Google Новости · Калининградская область"
    },
@@ -86,8 +61,8 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Полномочным представителем Президента РФ в СЗФО назначен Илья Клебанов",
-    "source": "Google Новости · Псковская область"
+    "title": "Мэрилин Монро возглавила список величайших кинозвезд всех времен по версии Variety.",
+    "source": "Google Новости · Республика Коми"
    }
   ],
   "new_events": 0

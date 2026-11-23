@@ -2,103 +2,70 @@
  "date": "2026-11-23",
  "new": [
   {
-   "type": "anniversary",
+   "type": "workforce",
    "level": "head",
-   "org_class": "force",
-   "region": "Санкт-Петербург",
-   "title": "В Санкт-Петербурге отметили 100-летие военного оркестра штаба Северо-Западного округа Росгвардии (видео)",
-   "summary": "В Санкт-Петербурге состоялись праздничные мероприятия, посвященные 100-летнему юбилею военного оркестра штаба Северо-Западного округа Росгвардии.",
-   "link": "https://rosguard.gov.ru/News/Article/v-sanktpeterburge-otmetili-100letie-voennogo-orkestra-shtaba-severozapadnogo-okruga-rosgvardii-video",
+   "org_class": "company",
+   "region": "Ленинградская область",
+   "title": "Забрали 82% всех квот: в 2027 году в Ленобласть приедут 18,6 тыс. рабочих из Китая",
+   "summary": "В Ленинградской области на 2027 год согласовали трудовые квоты: 18 620 рабочих мест закрепили за филиалом корпорации «Севен» для строительства газохимического комплекса в Усть-Луге. Общая квота региона составляет 22 812 мест. Это согласованные разрешения, а не подтверждённый фактический найм.",
+   "link": "https://www.rosbalt.ru/news/2026-11-23/zabrali-82-vseh-kvot-v-2027-godu-v-lenoblast-priedut-18-6-tys-rabochih-iz-kitaya-5739313",
    "date": "2026-11-23",
-   "source": "Росгвардия",
-   "source_id": "rosguard",
-   "rank": 1,
-   "person": "",
-   "orgs": []
-  },
-  {
-   "type": "launch",
-   "level": "head",
-   "org_class": "podved",
-   "region": "Санкт-Петербург",
-   "title": "В Петербурге после реконструкции открыли исторический \"Сестрорецкий курорт\"",
-   "summary": "На территории разместили медицинский центр с собственными источниками минеральной воды и грязи",
-   "link": "https://tass.ru/obschestvo/28346245",
-   "date": "2026-11-23",
-   "source": "ТАСС",
-   "source_id": "tass",
+   "source": "Росбалт",
+   "source_id": "rosbalt_featured_20261123",
    "rank": 2,
    "person": "",
-   "orgs": []
-  },
-  {
-   "type": "launch",
-   "level": "head",
-   "org_class": "business",
-   "region": "Мурманская область",
-   "title": "🗓 В Мурманской области открыли новое месторождение апатитовых руд и циркония в 2026 году",
-   "summary": "🗓 В Мурманской области открыли новое месторождение апатитовых руд и циркония в 2026 году\n\n🔎 В 2026 году в Мурманской области обнаружили новое месторождение. Это крупные запасы маложелезистых апатитовых руд «Горы Южной». Там содержатся 1,1 миллиона тонн апатитовых руд, 20,5 миллиона железных руд и почти 12 тысяч тонн циркония.\n\n⚛️ Как известно, апатитовые руды поставляют сырье для производства удоб",
-   "link": "https://t.me/bportcom/87189",
-   "date": "2026-11-23",
-   "source": "Б-порт (Telegram)",
-   "source_id": "bport_tg",
-   "rank": 3,
-   "person": "Горы Южной",
-   "orgs": []
-  },
-  {
-   "type": "anniversary",
-   "level": "head",
-   "org_class": "podved",
-   "region": "Архангельская область",
-   "title": "Архангельская областная больница отметила 80-летие",
-   "summary": "",
-   "link": "https://region29.ru/2026/11/23/6b04153906349677a0047f42.html",
-   "date": "2026-11-23",
-   "source": "Регион 29",
-   "source_id": "region29",
-   "rank": 3,
-   "person": "",
-   "orgs": []
+   "orgs": [
+    "Усть-Луга"
+   ]
   },
   {
    "type": "appointment",
    "level": "head",
    "org_class": "gov",
-   "region": "Новгородская область",
-   "title": "Назначена дата прямой линии губернатора Новгородской области",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxObkF4ZmtrOXQ0aDk2VU9UUUozdGNUTUtBSkdkNzMzM25aaTAyem54bGlpb2lYamg0Q0o2eXlsMklyWVNUeGszdjc4dmIyTWN3SHBFelh5c1F1WTBLcTF0VW1XUHZQQ3dWY2p0RVBvdnlSR3ZWcVBKWEJEaGNXZXY5Z1RmMjhSTEtqRUpwN29vRUVwNmh6WlFSOU1uOXE3Q2hKRUFz?oc=5",
+   "region": "Псковская область",
+   "title": "Врио министра транспорта Псковской области объяснила, почему реконструкция дорог — это долго и дорого",
+   "summary": "Реконструкция дорог подразумевает несколько этапов работ, которые не только дорогостоящие, но и требующие много времени. [...]",
+   "link": "http://pln-pskov.ru/automir/606632.html",
    "date": "2026-11-23",
-   "source": "Google Новости · Новгородская область",
-   "source_id": "gnews_nov",
-   "rank": 4,
+   "source": "Псковская лента новостей",
+   "source_id": "pln",
+   "rank": 3,
    "person": "",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3169,
-  "items_fresh": 2904,
-  "detected": 27,
+  "items_received": 3258,
+  "items_fresh": 2987,
+  "detected": 28,
   "relevance_accepted": 18,
-  "relevance_rejected": 9,
-  "region_rejected": 1,
-  "candidates": 17,
+  "relevance_rejected": 10,
+  "region_rejected": 0,
+  "candidates": 18,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 8,
+   "missing_regional_event_anchor": 9,
    "minor_public_space_not_scope": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Axios: в США назначили и.о. главы управления Белого дома по кибербезопасности",
+    "title": "Губернатора Липецкой области переизбрали секретарем реготделения ЕР",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Петиция за отставку министра по делам ветеранов Украины набрала 25 тыс. подписей",
     "source": "ТАСС"
    },
    {
     "reason": "missing_regional_event_anchor",
     "title": "Глава Arm Хаас продлил контракт до 2033 г. на фоне интереса со стороны Nvidia",
     "source": "Интерфакс"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "От формального к Большому // Режиссеру Андрею Могучему исполняется 65 лет",
+    "source": "Коммерсантъ Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -109,11 +76,6 @@
     "reason": "missing_regional_event_anchor",
     "title": "В США назначили временного главу управления Белого дома по кибербезопасности",
     "source": "Ведомости"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Татьяна Ким покинула пост генерального директора Wildberries",
-    "source": "Деловой Петербург"
    },
    {
     "reason": "minor_public_space_not_scope",
@@ -127,7 +89,7 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Александр Нохрин назначен зампредом правительства Камчатки",
+    "title": "Администрацию города Миллерово возглавил Павел Дынин",
     "source": "Google Новости · Калининградская область"
    },
    {
@@ -136,15 +98,9 @@
     "source": "Google Новости · Мурманская область"
    }
   ],
-  "new_events": 5
+  "new_events": 2
  },
- "sources_total": 84,
- "sources_failed": 1,
- "failed": [
-  {
-   "id": "kommersant_spb",
-   "name": "Коммерсантъ Санкт-Петербург",
-   "status": "error: ConnectionError"
-  }
- ]
+ "sources_total": 85,
+ "sources_failed": 0,
+ "failed": []
 }

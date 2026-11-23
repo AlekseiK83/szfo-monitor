@@ -1,33 +1,56 @@
 {
  "date": "2026-11-23",
- "new": [],
+ "new": [
+  {
+   "type": "award",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Санкт-Петербург",
+   "title": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.",
+   "summary": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.\n\nЖюри признало лучшей фотоработой в СМИ цикл \"Место встречи — Петербург. ПМЭФ в объективе фотографов «ДП»\". Фотографы \"Делового Петербурга\" с 1997 года, когда состоялся первый Петербургский международный экономический форум, работали на этом ",
+   "link": "https://t.me/dprunews/66317",
+   "date": "2026-11-23",
+   "source": "Деловой Петербург (Telegram)",
+   "source_id": "dp_tg",
+   "rank": 3,
+   "person": "Сергей Ермохин",
+   "orgs": [
+    "ПМЭФ"
+   ]
+  },
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Республика Карелия",
+   "title": "В России с начала 2026 года открыли 250 месторождений полезных ископаемых",
+   "summary": "Об этом сообщили в пресс-службе Министерства природных ресурсов и экологии РФ.",
+   "link": "https://stolicaonego.ru/news/v-rossii-s-nachala-2026-goda-otkryli-250-mestorozhdenij-poleznyh-iskopaemyh/",
+   "date": "2026-11-23",
+   "source": "Столица на Onego",
+   "source_id": "stolicaonego",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 3267,
-  "items_fresh": 2989,
+  "items_received": 3166,
+  "items_fresh": 2923,
   "detected": 28,
-  "relevance_accepted": 18,
-  "relevance_rejected": 10,
+  "relevance_accepted": 20,
+  "relevance_rejected": 8,
   "region_rejected": 0,
-  "candidates": 18,
+  "candidates": 20,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 9,
+   "missing_regional_event_anchor": 7,
    "minor_public_space_not_scope": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Губернатора Липецкой области переизбрали секретарем реготделения ЕР",
+    "title": "BNS: Литва присоединится к расследованию поджогов оборудования Starlink",
     "source": "ТАСС"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Петиция за отставку министра по делам ветеранов Украины набрала 25 тыс. подписей",
-    "source": "ТАСС"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Глава Arm Хаас продлил контракт до 2033 г. на фоне интереса со стороны Nvidia",
-    "source": "Интерфакс"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -56,24 +79,24 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Губернатор назначил нового руководителя госстройнадзора Воронежской области",
+    "title": "В США назначили временного главу управления Белого дома по кибербезопасности",
     "source": "Google Новости · Мурманская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Мэрилин Монро возглавила список величайших кинозвезд всех времен по версии Variety.",
-    "source": "Google Новости · Республика Коми"
+    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
+    "source": "Google Новости · Псковская область"
    }
   ],
-  "new_events": 0
+  "new_events": 2
  },
  "sources_total": 86,
  "sources_failed": 2,
  "failed": [
   {
-   "id": "kremlin",
-   "name": "Президент России",
-   "status": "error: HTTP 403"
+   "id": "lo_gov",
+   "name": "Правительство Ленинградской области",
+   "status": "error: ReadTimeout"
   },
   {
    "id": "rosbalt",

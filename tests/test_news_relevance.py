@@ -82,6 +82,52 @@ class RelevanceTests(unittest.TestCase):
         self.assertFalse(self.check("Татьяна Ким рассказала о Wildberries",
                                     "Обсудили бизнес. Позднее упомянули Санкт-Петербурге.")[0])
 
+    def test_pikalevsky_pool_anniversary_removed_even_if_regional(self):
+        title = "Пикалевский бассейн отметил 50-летие соревнованиями пловцов"
+        summary = ("В Пикалево завершились двухдневные торжества в честь 50-летия "
+                   "плавательного бассейна.")
+        result = self.check(title, summary, org_class="business",
+                            source={"region": "Ленинградская область"},
+                            event_type="anniversary")
+        self.assertEqual(result, (False, "minor_sports_facility_anniversary"))
+
+    def test_pool_anniversary_not_saved_if_place_in_org_dictionary(self):
+        local_orgs = {"Ленинградская область": ["Пикалевск"]}
+        title = "Пикалевский бассейн отметил 50-летие соревнованиями пловцов"
+        result = check_relevance(
+            title, "В Пикалево состоялся праздник.",
+            {"type": "anniversary", "org_class": "business"},
+            {"region": "Ленинградская область"}, local_orgs,
+            find_org_names, news_region)
+        self.assertEqual(result, (False, "minor_sports_facility_anniversary"))
+
+    def test_sports_school_anniversary_excluded(self):
+        self.assertFalse(self.check(
+            "Спортивная школа отметила 30-летний юбилей",
+            org_class="podved", source={"region": "Республика Карелия"},
+            event_type="anniversary")[0])
+
+    def test_pool_director_appointment_retained(self):
+        self.assertTrue(self.check(
+            "Назначен новый директор плавательного бассейна",
+            org_class="podved", source={"region": "Ленинградская область"},
+            event_type="appointment")[0])
+
+    def test_important_hospital_anniversary_retained(self):
+        # В рабочем словаре есть региональная клиническая больница.
+        local_orgs = {"Архангельская область": ["Архангельская областная клиническая"]}
+        self.assertTrue(check_relevance(
+            "Архангельская областная клиническая больница отмечает 80-летие",
+            "", {"type": "anniversary", "org_class": "podved"},
+            {"region": "Архангельская область"}, local_orgs,
+            find_org_names, news_region)[0])
+
+    def test_important_company_anniversary_retained(self):
+        self.assertTrue(self.check(
+            "Севмаш отметил 85-летие со дня основания",
+            org_class="business", source={"region": "Архангельская область"},
+            event_type="anniversary")[0])
+
     def test_region_from_text_source_not_trusted(self):
         self.assertFalse(self.check("Назначен новый министр", org_class="gov",
                                     source={"region": "Республика Коми", "region_from_text": True})[0])

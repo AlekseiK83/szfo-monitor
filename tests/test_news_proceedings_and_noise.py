@@ -250,5 +250,142 @@ class NoiseCases(unittest.TestCase):
         self.assertEqual(kept, [])
 
 
+# Конкретные заголовки воспроизводят три записи из дайджеста (но не
+# подтверждают и не проверяют достоверность содержащихся в них утверждений).
+THREE_SOURCE_TITLES = [
+    "Сотрудниками МВД России задержан губернатор Мурманской области Андрей Чибис",
+    "В МВД подтвердили задержание губернатора Мурманской области",
+    "МВД России подтвердило задержание мурманского губернатора Чибиса",
+]
+
+
+class ProceedingsMultiSourceDedup(unittest.TestCase):
+    def _record(self, headline, when="2026-11-23", stage="detention", region="Мурманская область"):
+        detected = nm.detect_all(headline, "", ORGS)
+        self.assertIsNotNone(detected)
+        self.assertEqual(detected["type"], "proceeding")
+        return {"type": "proceeding", "level": detected["level"], "org_class": "gov",
+                "title": headline, "summary": "", "person": detected.get("subject", ""),
+                "orgs": [], "region": region, "date": when, "procedure_stage": stage,
+                "source_id": "demo", "source": "Тестовый источник", "link": "https://example.test/story",
+                "rank": 3}
+
+    def test_three_headlines_same_detention_one_semantic_event(self):
+        records = [self._record(t) for t in THREE_SOURCE_TITLES]
+        for i in range(len(records)):
+            for j in range(i):
+                self.assertTrue(nm.similar(records[i], records[j]), (i, j))
+
+    def test_lastname_in_genitive_same_key(self):
+        records = [self._record(t) for t in THREE_SOURCE_TITLES]
+        self.assertEqual(nm.event_key(records[0]), nm.event_key(records[2]))
+
+    def test_distinct_named_governors_remain_distinct(self):
+        a = self._record("МВД задержало губернатора Мурманской области Андрея Чибиса")
+        b = self._record("МВД задержало губернатора Мурманской области Петра Синицына")
+        self.assertFalse(nm.similar(a, b))
+        self.assertNotEqual(nm.event_key(a), nm.event_key(b))
+
+    def test_different_procedural_stages_remain_distinct(self):
+        a = self._record(THREE_SOURCE_TITLES[0])
+        b = self._record(THREE_SOURCE_TITLES[1], stage="arrest")
+        self.assertFalse(nm.similar(a, b))
+        self.assertNotEqual(nm.event_key(a), nm.event_key(b))
+
+    def test_different_regions_and_later_new_events_not_glued(self):
+        a = self._record(THREE_SOURCE_TITLES[0])
+        b = self._record(THREE_SOURCE_TITLES[1], region="Архангельская область")
+        c = self._record(THREE_SOURCE_TITLES[1], when="2026-12-10")
+        self.assertFalse(nm.similar(a, b))
+        self.assertFalse(nm.similar(a, c))
+
+    def test_unnamed_deputies_not_falsely_merged(self):
+        a = {"type": "proceeding", "level": "deputy", "org_class": "gov",
+             "title": "МВД задержало вице-губернатора Мурманской области", "summary": "",
+             "person": "", "orgs": [], "region": "Мурманская область",
+             "date": "2026-11-23", "procedure_stage": "detention"}
+        b = dict(a, title="СК подтвердил задержание заместителя губернатора Мурманской области")
+        self.assertFalse(nm.similar(a, b))
+
+    def test_reconcile_removes_three_existing_copies(self):
+        records = [self._record(title) for title in THREE_SOURCE_TITLES]
+        with patch.object(nm, "event_relevance", return_value=(True, "test")), \
+             patch.object(nm, "event_region", return_value="Мурманская область"):
+            retained, _seen = nm.reconcile(records, {"sources": [{"id": "demo", "rank": 3,
+                                      "region": "Мурманская область"}], "organizations": ORGS})
+        self.assertEqual(len(retained), 1)
+        self.assertEqual(retained[0]["procedure_stage"], "detention")
+
+    def test_existing_three_duplicates_cleaned_without_new_alerts(self):
+        records = [self._record(title) for title in THREE_SOURCE_TITLES]
+        sources = []
+        for i, title in enumerate(THREE_SOURCE_TITLES):
+            records[i]["source_id"] = f"src{i}"
+            records[i]["source"] = f"Источник {i}"
+            records[i]["rank"] = i + 1
+            sources.append({"id": f"src{i}", "name": f"Источник {i}",
+                            "type": "curated", "rank": i + 1, "region": "Мурманская область",
+                            "items": [{"title": title, "summary": "", "date": "2026-11-23",
+                                       "link": f"https://example.test/{i}"}]})
+        with tempfile.TemporaryDirectory() as td:
+            old = Path.cwd()
+            try:
+                os.chdir(td)
+                Path("news_sources.json").write_text(
+                    json.dumps({"sources": sources, "organizations": ORGS}, ensure_ascii=False),
+                    encoding="utf-8")
+                Path("data/news").mkdir(parents=True)
+                Path("data/news/events.json").write_text(
+                    json.dumps(records, ensure_ascii=False), encoding="utf-8")
+                fake_g = types.SimpleNamespace(
+                    SZFO_COMPILED=STUB_REGIONS, _has_foreign_region=lambda text: False,
+                    REGION_ORDER=["Мурманская область", "Санкт-Петербург"],
+                    BASE_CSS="", format_display_date=lambda x: x,
+                    format_weekday=lambda x: "понедельник", format_msk=lambda x: x,
+                    _plural=lambda n, *forms: forms[0])
+                with patch.object(nm, "g", fake_g):
+                    new_events, _ = nm.run(today=date(2026, 11, 23), verbose=False)
+                self.assertEqual(new_events, [])
+                self.assertEqual(len(json.loads(Path("data/news/events.json").read_text("utf-8"))), 1)
+                self.assertEqual(json.loads(Path("run_summary_news.json").read_text("utf-8"))["new"], [])
+            finally:
+                os.chdir(old)
+
+    def test_offline_run_three_sources_only_one_notification(self):
+        sources = []
+        for i, title in enumerate(THREE_SOURCE_TITLES):
+            sources.append({"id": f"src{i}", "type": "curated", "region": "Мурманская область",
+                            "name": f"Тестовый источник {i}", "rank": i + 1,
+                            "items": [{"title": title, "summary": "", "link": f"https://example.test/{i}",
+                                       "date": "2026-11-23"}]})
+        with tempfile.TemporaryDirectory() as td:
+            original = Path.cwd()
+            try:
+                os.chdir(td)
+                Path("news_sources.json").write_text(
+                    json.dumps({"sources": sources, "organizations": ORGS}, ensure_ascii=False),
+                    encoding="utf-8")
+                fake_g = types.SimpleNamespace(
+                    SZFO_COMPILED=STUB_REGIONS, _has_foreign_region=lambda text: False,
+                    REGION_ORDER=["Мурманская область", "Санкт-Петербург"],
+                    BASE_CSS="", format_display_date=lambda x: x,
+                    format_weekday=lambda x: "понедельник", format_msk=lambda x: x,
+                    _plural=lambda n, *forms: forms[0],
+                )
+                with patch.object(nm, "g", fake_g):
+                    new, _statuses = nm.run(today=date(2026, 11, 23), verbose=False)
+                    self.assertEqual(len(new), 1)
+                    self.assertEqual(new[0]["type"], "proceeding")
+                    self.assertEqual(new[0]["procedure_stage"], "detention")
+                    self.assertEqual(len(json.loads(Path("data/news/events.json").read_text("utf-8"))), 1)
+                    self.assertEqual(len(json.loads(Path("run_summary_news.json").read_text("utf-8"))["new"]), 1)
+                    again, _ = nm.run(today=date(2026, 11, 23), verbose=False)
+                    self.assertEqual(again, [])
+                    self.assertEqual(len(json.loads(Path("data/news/events.json").read_text("utf-8"))), 1)
+                    self.assertEqual(json.loads(Path("run_summary_news.json").read_text("utf-8"))["new"], [])
+            finally:
+                os.chdir(original)
+
+
 if __name__ == "__main__":
     unittest.main()

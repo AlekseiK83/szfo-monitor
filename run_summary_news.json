@@ -1,63 +1,14 @@
 {
  "date": "2026-11-23",
- "new": [
-  {
-   "type": "proceeding",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "Сотрудниками МВД России задержан губернатор Мурманской области Андрей Чибис",
-   "summary": "Сотрудниками МВД России задержан губернатор Мурманской области Андрей Чибис\n \nСледственный департамент МВД России продолжает предварительное расследование уголовного дела по обвинению группы лиц в совершении ряда преступлений, предусмотренных частью 4 статьи 159, частью 4 статьи 160, пунктами «а», «б» части 3 статьи 193.1 УК РФ. Им инкриминируется хищение бюджетных денежных средств Министерства ст",
-   "link": "https://t.me/mvd_51/4910",
-   "date": "2026-11-23",
-   "source": "МВД 51 (Telegram)",
-   "source_id": "mvd_51_tg",
-   "rank": 1,
-   "person": "Андрей Чибис",
-   "orgs": [],
-   "procedure_stage": "detention"
-  },
-  {
-   "type": "proceeding",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "В МВД подтвердили задержание губернатора Мурманской области",
-   "summary": "Андрея Чибиса задержали за хищение",
-   "link": "https://tass.ru/proisshestviya/28347115",
-   "date": "2026-11-23",
-   "source": "ТАСС",
-   "source_id": "tass",
-   "rank": 2,
-   "person": "",
-   "orgs": [],
-   "procedure_stage": "detention"
-  },
-  {
-   "type": "proceeding",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "МВД России подтвердило задержание мурманского губернатора Чибиса",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE9iOERsVms4YVEwZU0wNUJ6WmZXbXlneEVfM0dEclRyOFJVVFZpSV9QRzY1SVZ5VE9lNkc0c1hjdEVhSVQzczBB?oc=5",
-   "date": "2026-11-23",
-   "source": "Google Новости · Мурманская область",
-   "source_id": "gnews_mur",
-   "rank": 4,
-   "person": "",
-   "orgs": [],
-   "procedure_stage": "detention"
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3224,
-  "items_fresh": 2999,
-  "detected": 31,
-  "relevance_accepted": 23,
+  "items_received": 3296,
+  "items_fresh": 3040,
+  "detected": 33,
+  "relevance_accepted": 25,
   "relevance_rejected": 8,
   "region_rejected": 0,
-  "candidates": 23,
+  "candidates": 25,
   "rejection_reasons": {
    "missing_regional_event_anchor": 5,
    "national_aggregate_not_local_event": 1,
@@ -106,16 +57,11 @@
     "source": "Google Новости · Псковская область"
    }
   ],
-  "new_events": 3
+  "new_events": 0
  },
  "sources_total": 86,
- "sources_failed": 2,
+ "sources_failed": 1,
  "failed": [
-  {
-   "id": "gnews_klg",
-   "name": "Google Новости · Калининградская область",
-   "status": "error: HTTP 429"
-  },
   {
    "id": "rosbalt",
    "name": "Росбалт",

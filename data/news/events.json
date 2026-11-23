@@ -61,22 +61,6 @@
   "procedure_stage": "detention"
  },
  {
-  "type": "proceeding",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Мурманская область",
-  "title": "МВД России подтвердило задержание мурманского губернатора Чибиса",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE9iOERsVms4YVEwZU0wNUJ6WmZXbXlneEVfM0dEclRyOFJVVFZpSV9QRzY1SVZ5VE9lNkc0c1hjdEVhSVQzczBB?oc=5",
-  "date": "2026-11-23",
-  "source": "Google Новости · Мурманская область",
-  "source_id": "gnews_mur",
-  "rank": 4,
-  "person": "",
-  "orgs": [],
-  "procedure_stage": "detention"
- },
- {
   "type": "launch",
   "level": "head",
   "org_class": "gov",
@@ -90,22 +74,6 @@
   "rank": 2,
   "person": "Гора Южная",
   "orgs": []
- },
- {
-  "type": "proceeding",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Мурманская область",
-  "title": "В МВД подтвердили задержание губернатора Мурманской области",
-  "summary": "Андрея Чибиса задержали за хищение",
-  "link": "https://tass.ru/proisshestviya/28347115",
-  "date": "2026-11-23",
-  "source": "ТАСС",
-  "source_id": "tass",
-  "rank": 2,
-  "person": "",
-  "orgs": [],
-  "procedure_stage": "detention"
  },
  {
   "type": "workforce",

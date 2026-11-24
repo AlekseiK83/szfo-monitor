@@ -104,15 +104,24 @@ class StreamBrandingTests(unittest.TestCase):
         self.assertNotIn('Новости — назначения и звания', text)
         self.assertNotIn('Новости: назначения и звания,', text)
 
-    def test_manual_audit_is_renamed_without_changing_readonly_behavior(self):
+    def test_optional_manual_audit_title_keeps_readonly_behavior(self):
         if not AUDIT_WORKFLOW.exists():
             self.skipTest('Необязательный workflow диагностики не установлен')
         text = AUDIT_WORKFLOW.read_text(encoding='utf-8')
-        self.assertIn('name: Значимые события СЗФО — проверка публикации', text)
+        # Ручная диагностика — необязательная часть переименования.
+        # Нельзя блокировать основной сбор из-за её прежнего заголовка.
+        self.assertIn(text.splitlines()[0], (
+            'name: Новости — проверить статью по ссылке',
+            'name: Значимые события СЗФО — проверка публикации',
+        ))
+        # При любом названии режим безопасности остаётся обязательным:
+        # только чтение, никакой публикации или Telegram.
         self.assertIn('contents: read', text)
         self.assertIn('workflow_dispatch:', text)
         self.assertIn('--audit-url "$ARTICLE_URL"', text)
         self.assertNotIn('--notify', text)
+        self.assertNotIn('contents: write', text)
+        self.assertNotIn('git push', text)
 
 
 if __name__ == '__main__':

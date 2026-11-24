@@ -2,49 +2,47 @@
  "date": "2026-11-24",
  "new": [
   {
-   "type": "appointment",
+   "type": "title",
    "level": "head",
-   "org_class": "gov",
-   "region": "Республика Коми",
-   "title": "Вера Железцова переназначена уполномоченным по правам человека в Коми",
-   "summary": "",
-   "link": "https://www.bnkomi.ru/data/news/206157/",
+   "org_class": "person",
+   "region": "Мурманская область",
+   "title": "Кательникова стала заслуженным работником местного самоуправления",
+   "summary": "Президент присвоил председателю Совдепа Апатитов Светлане Кательниковой звание «Заслуженный работник местного самоуправления».\n«За заслуги в области местного самоуправления и...",
+   "link": "https://severpost.ru/read/216487",
    "date": "2026-11-24",
-   "source": "БНК",
-   "source_id": "bnkomi",
+   "source": "СеверПост",
+   "source_id": "severpost",
    "rank": 3,
-   "person": "Вера Железцова",
+   "person": "Совдепа Апатитов",
    "orgs": []
   },
   {
    "type": "appointment",
    "level": "head",
-   "org_class": "business",
-   "region": "Санкт-Петербург",
-   "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
-   "summary": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был известен как многолетний директор компании «Пилон», успел поработать и в руководстве КРТИ). Именно при…",
-   "link": "https://t.me/fontankaspb/114446",
+   "org_class": "force",
+   "region": "Мурманская область",
+   "title": "✅ В «Мурмашинской тепловой компании» на стадии",
+   "summary": "✅ В «Мурмашинской тепловой компании» на стадии\nбанкротства назначили временного управляющего\n\nВ «Мурмашинской тепловой компании» назначили временного управляющего и введено наблюдение. Решение принято заседания Арбитражного суда Мурманской области, которое состоялось 24 ноября 2026 года.\n\nВ сентябре 2026 года в суд поступило заявление о признании компании банкротом. Сообщается, что должник сам ини",
+   "link": "https://t.me/bportcom/87218",
    "date": "2026-11-24",
-   "source": "Фонтанка (Telegram)",
-   "source_id": "fontanka_tg",
+   "source": "Б-порт (Telegram)",
+   "source_id": "bport_tg",
    "rank": 3,
-   "person": "Метрострой Северной",
-   "orgs": [
-    "Метрострой"
-   ]
+   "person": "",
+   "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3310,
-  "items_fresh": 3020,
-  "detected": 34,
-  "relevance_accepted": 22,
-  "relevance_rejected": 12,
+  "items_received": 3277,
+  "items_fresh": 2963,
+  "detected": 38,
+  "relevance_accepted": 23,
+  "relevance_rejected": 15,
   "region_rejected": 0,
-  "candidates": 22,
+  "candidates": 23,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 11,
-   "personal_media_award_not_scope": 1
+   "missing_regional_event_anchor": 14,
+   "historical_appointment_not_new_event": 1
   },
   "rejected_examples": [
    {
@@ -59,7 +57,7 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Генерал Нагуманов возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "title": "Генерал Нагуманов возглавил группу по прозрачности компаний ТЭКа с госучастием",
     "source": "Ведомости"
    },
    {
@@ -83,13 +81,23 @@
     "source": "Б-порт"
    },
    {
-    "reason": "personal_media_award_not_scope",
-    "title": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.",
-    "source": "Деловой Петербург (Telegram)"
+    "reason": "historical_appointment_not_new_event",
+    "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
+    "source": "Фонтанка (Telegram)"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Наиб Нагуманов возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "title": "Жюри фестиваля «Виват, Театр!» в Тамбове вновь возглавила Элеонора Макарова",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
     "source": "Google Новости · Архангельская область"
    },
    {
@@ -106,10 +114,15 @@
     "reason": "missing_regional_event_anchor",
     "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
     "source": "Google Новости · Псковская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
+    "source": "Google Новости · Новгородская область"
    }
   ],
-  "not_detected": 2986,
-  "duplicates": 20,
+  "not_detected": 2925,
+  "duplicates": 21,
   "new_events": 2,
   "sources": [
    {
@@ -134,8 +147,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 99",
+    "items": 99
    },
    {
     "id": "interfax",
@@ -144,8 +157,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 83",
-    "items": 83
+    "status": "rss 89",
+    "items": 89
    },
    {
     "id": "vedomosti",
@@ -194,8 +207,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 71",
-    "items": 71
+    "status": "html 62",
+    "items": 62
    },
    {
     "id": "genproc_78",
@@ -219,13 +232,13 @@
    },
    {
     "id": "47news",
-    "status": "html 115",
-    "items": 115
+    "status": "html 116",
+    "items": 116
    },
    {
     "id": "online47",
-    "status": "html 25",
-    "items": 25
+    "status": "html 26",
+    "items": 26
    },
    {
     "id": "genproc_47",
@@ -234,8 +247,8 @@
    },
    {
     "id": "arh_gub_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "29ru",
@@ -249,8 +262,8 @@
    },
    {
     "id": "news29",
-    "status": "html 24",
-    "items": 24
+    "status": "html 26",
+    "items": 26
    },
    {
     "id": "genproc_29",
@@ -289,8 +302,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 89",
-    "items": 89
+    "status": "rss 90",
+    "items": 90
    },
    {
     "id": "genproc_39",
@@ -299,8 +312,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "html 54",
-    "items": 54
+    "status": "error: ReadTimeout",
+    "items": 0
    },
    {
     "id": "mur_gub_tg",
@@ -309,8 +322,8 @@
    },
    {
     "id": "bport",
-    "status": "html 35",
-    "items": 35
+    "status": "html 36",
+    "items": 36
    },
    {
     "id": "severpost",
@@ -319,8 +332,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "genproc_51",
@@ -334,8 +347,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 33",
-    "items": 33
+    "status": "html 37",
+    "items": 37
    },
    {
     "id": "genproc_10",
@@ -344,8 +357,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "informpskov",
@@ -359,8 +372,8 @@
    },
    {
     "id": "genproc_60",
-    "status": "html 50",
-    "items": 50
+    "status": "error: HTTP 502",
+    "items": 0
    },
    {
     "id": "bnkomi",
@@ -379,13 +392,13 @@
    },
    {
     "id": "genproc_11",
-    "status": "html 49",
-    "items": 49
+    "status": "error: HTTP 502",
+    "items": 0
    },
    {
     "id": "nov_gov",
-    "status": "html 77",
-    "items": 77
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "nov_official_tg",
@@ -409,38 +422,38 @@
    },
    {
     "id": "fontanka_tg",
+    "status": "telegram 19",
+    "items": 19
+   },
+   {
+    "id": "bport_tg",
     "status": "telegram 17",
     "items": 17
    },
    {
-    "id": "bport_tg",
-    "status": "telegram 20",
-    "items": 20
-   },
-   {
     "id": "rusever_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "first_arctic_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 17",
+    "items": 17
    },
    {
     "id": "dp_tg",
-    "status": "telegram 20",
-    "items": 20
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "online47_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "stolicaonego_tg",
@@ -449,8 +462,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "komiinform_tg",
@@ -484,13 +497,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 22",
-    "items": 22
+    "status": "rss 59",
+    "items": 59
    },
    {
     "id": "gnews_lo",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 41",
+    "items": 41
    },
    {
     "id": "gnews_arh",
@@ -504,13 +517,13 @@
    },
    {
     "id": "gnews_klg",
-    "status": "rss 32",
-    "items": 32
+    "status": "rss 61",
+    "items": 61
    },
    {
     "id": "gnews_mur",
-    "status": "rss 46",
-    "items": 46
+    "status": "rss 42",
+    "items": 42
    },
    {
     "id": "gnews_kar",
@@ -519,8 +532,8 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 61",
-    "items": 61
+    "status": "rss 62",
+    "items": 62
    },
    {
     "id": "gnews_komi",
@@ -529,8 +542,8 @@
    },
    {
     "id": "gnews_nov",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "rosbalt",
@@ -541,6 +554,22 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 3,
+ "failed": [
+  {
+   "id": "mur_gov",
+   "name": "Правительство Мурманской области",
+   "status": "error: ReadTimeout"
+  },
+  {
+   "id": "genproc_60",
+   "name": "Прокуратура Псковской области",
+   "status": "error: HTTP 502"
+  },
+  {
+   "id": "genproc_11",
+   "name": "Прокуратура Республики Коми",
+   "status": "error: HTTP 502"
+  }
+ ]
 }

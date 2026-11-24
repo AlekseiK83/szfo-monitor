@@ -1,38 +1,36 @@
 {
  "date": "2026-11-24",
- "new": [
-  {
-   "type": "title",
-   "level": "head",
-   "org_class": "force",
-   "region": "Псковская область",
-   "title": "В Псковской области пять матерей-героинь получают ежемесячную выплату",
-   "summary": "В Псковской области пять матерей-героинь, удостоенных этого звания после 2022 года, получают выплаты от регионального отделения Социального фонда России. Об этом сообщила начальник управления установления пенсий отделения СФР по Псковской области Марина Широкова на брифинге в медиацентре ПАИ сегодня, 24 ноября. \n\n \n\n Речь идёт о мерах поддержки (ежемесячная денежная выплата (ЕДВ) и дополнительное ",
-   "link": "https://informpskov.ru/news/523804.html",
-   "date": "2026-11-24",
-   "source": "ПАИ",
-   "source_id": "informpskov",
-   "rank": 3,
-   "person": "Марина Широкова",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3474,
-  "items_fresh": 3186,
-  "detected": 44,
-  "relevance_accepted": 29,
-  "relevance_rejected": 15,
+  "items_received": 3519,
+  "items_fresh": 3215,
+  "detected": 45,
+  "relevance_accepted": 26,
+  "relevance_rejected": 19,
   "region_rejected": 1,
-  "candidates": 28,
+  "candidates": 25,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 8,
-   "foreign_event_geography_overrides_org_dictionary": 4,
+   "missing_regional_event_anchor": 11,
+   "foreign_event_geography_overrides_org_dictionary": 6,
    "minor_local_utility_without_regional_scale": 1,
-   "generic_federal_without_local_anchor": 1,
    "historical_appointment_not_new_event": 1
   },
   "rejected_examples": [
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Владимир Путин провёл заседание Комиссии по вопросам стратегии развития ТЭК",
+    "source": "Кремль. Новости (Telegram)"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Путин назвал неизбежным ответ России на удары ВСУ по объектам ТЭК",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Путин провел совещание по развитию энергетического комплекса",
+    "source": "РИА Новости"
+   },
    {
     "reason": "missing_regional_event_anchor",
     "title": "От формального к Большому // Режиссеру Андрею Могучему исполняется 65 лет",
@@ -64,11 +62,6 @@
     "source": "ПАИ"
    },
    {
-    "reason": "generic_federal_without_local_anchor",
-    "title": "О полагающихся матерям-героиням выплатах рассказали псковичам",
-    "source": "ПАИ"
-   },
-   {
     "reason": "historical_appointment_not_new_event",
     "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
     "source": "Фонтанка (Telegram)"
@@ -79,6 +72,16 @@
     "source": "Б-порт (Telegram)"
    },
    {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Жюри фестиваля «Виват, Театр!» в Тамбове вновь возглавила Элеонора Макарова",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
     "reason": "missing_regional_event_anchor",
     "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
     "source": "Google Новости · Архангельская область"
@@ -87,31 +90,11 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Уральского министра из команды Куйвашева отправили в отставку. Раньше он работал в Тюменской области",
     "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "В Миллерово назначили нового главу города",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
-    "source": "Google Новости · Псковская область"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Новгородская область"
    }
   ],
-  "not_detected": 3142,
-  "duplicates": 27,
-  "new_events": 1,
+  "not_detected": 3170,
+  "duplicates": 25,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -145,8 +128,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 99",
-    "items": 99
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "vedomosti",
@@ -195,8 +178,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 57",
-    "items": 57
+    "status": "html 56",
+    "items": 56
    },
    {
     "id": "genproc_78",
@@ -450,8 +433,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "komiinform_tg",
@@ -485,8 +468,8 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 21",
-    "items": 21
+    "status": "rss 57",
+    "items": 57
    },
    {
     "id": "gnews_lo",
@@ -500,38 +483,38 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 45",
-    "items": 45
-   },
-   {
-    "id": "gnews_klg",
-    "status": "rss 64",
-    "items": 64
-   },
-   {
-    "id": "gnews_mur",
-    "status": "rss 47",
-    "items": 47
-   },
-   {
-    "id": "gnews_kar",
     "status": "rss 43",
     "items": 43
    },
    {
+    "id": "gnews_klg",
+    "status": "rss 62",
+    "items": 62
+   },
+   {
+    "id": "gnews_mur",
+    "status": "rss 53",
+    "items": 53
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 44",
+    "items": 44
+   },
+   {
     "id": "gnews_psk",
-    "status": "rss 31",
-    "items": 31
+    "status": "rss 60",
+    "items": 60
    },
    {
     "id": "gnews_komi",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 15",
+    "items": 15
    },
    {
     "id": "gnews_nov",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "rosbalt",

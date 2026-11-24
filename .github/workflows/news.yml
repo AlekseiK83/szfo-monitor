@@ -49,6 +49,12 @@ jobs:
       - name: Тесты процессуальных событий и шумовых новостей
         run: python -m unittest tests.test_news_proceedings_and_noise -v
 
+      - name: Тесты диагностики и резервного получения Росбалта
+        run: python -m unittest tests.test_news_diagnostics_rosbalt -v
+
+      - name: Контроль качества от 24 ноября (шум, дубли, трассировка)
+        run: python -m unittest tests.test_news_quality_20261124 -v
+
       - name: Подключить Росбалт ко второму потоку
         run: python scripts/add_rosbalt_source.py
 

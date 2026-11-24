@@ -1,0 +1,32 @@
+{
+ "date": "2026-11-18",
+ "sources": [
+  {
+   "id": "gnews_spb",
+   "status": "ok",
+   "items": 0
+  },
+  {
+   "id": "spb_smolny_tg",
+   "status": "ok",
+   "items": 1
+  }
+ ],
+ "links": {
+  "87493c933f3c30795b59": {
+   "source": "spb_smolny_tg",
+   "status": "upgraded",
+   "reason": "better_source"
+  }
+ },
+ "legend": {
+  "old": "старше окна свежести",
+  "not_detected": "не распознано событие",
+  "relevance_rejected": "не прошёл фильтр релевантности",
+  "region_rejected": "нет подтверждённого региона",
+  "candidate": "прошёл фильтры, до дедупликации",
+  "duplicate": "уже существовало",
+  "new": "новое событие",
+  "upgraded": "замена источника без нового уведомления"
+ }
+}

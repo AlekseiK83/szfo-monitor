@@ -477,8 +477,91 @@ def detect_all(title, summary, organizations):
             or detect_extra(title, summary, organizations))
 
 
+
+
+# HISTORICAL_APPOINTMENT_GUARD_20261124
+# The event is a former job, not a new appointment: e.g., a detained person
+# "возглавил компанию ... в конце 2020 года" in a new crime story from 2026.
+HISTORICAL_JOB_ACTION = re.compile(
+    r"\b(?:возглавил[аи]?|назначен[аоы]?|назначил[аи]?|"
+    r"стал[аи]?\s+(?:(?:новым|новой)\s+)?(?:главой|директором|руководителем|председателем|гендиректором))\b",
+    re.I,
+)
+HISTORICAL_ROLE_YEAR = re.compile(
+    r"\b(?:в\s+(?:(?:самом\s+)?(?:конце|начале|середине)\s+)?|"
+    r"с\s+(?:(?:самого\s+)?(?:конца|начала|середины)\s+)?)"
+    r"(20\d{2})\b",
+    re.I,
+)
+HISTORICAL_CAREER_CONTEXT = re.compile(
+    r"\b(?:практически\s+с\s+самого|с\s+момента\s+(?:создан|основан|возникнов)|"
+    r"ранее\s+(?:он|она)\s+возглавлял|много\s+лет\s+назад)\b",
+    re.I,
+)
+CRIME_FOCUSED_HEADLINE = re.compile(
+    r"^\s*(?:задержанн\w*|арестованн\w*|осужд[её]нн\w*|"
+    r"обвиняем\w*|приговор[её]нн\w*|"
+    r"(?:в\s+\S+\s+)?(?:задержал\w*|задержали|арестовал\w*|осудил\w*|"
+    r"суд\s+(?:вынес|приговорил)))(?=\W)",
+    re.I,
+)
+RECENT_REAL_APPOINTMENT = re.compile(
+    r"\b(?:сегодня|вчера|накануне|на\s+днях|вновь|снова|повторно)\b"
+    r".{0,85}?\b(?:возглавил[аи]?|назначен[аоы]?|назначил[аи]?|стал[аи]?)\b",
+    re.I,
+)
+
+
+def historical_appointment_backstory(title, summary):
+    """Old career fact reused in a recent publication; do not invent appointment.
+
+    Only match an old year connected to an actual appointment verb, or an
+    explicitly retrospective crime-focused headline. A true recent appointment
+    of a replacement person in the same news is not suppressed.
+    """
+    title = normalize(title or '').strip()
+    summary = normalize(summary or '').strip()
+    crime_focus = bool(CRIME_FOCUSED_HEADLINE.search(title))
+    # For a general news title we don't infer an appointment from background
+    # summary paragraphs. The exact headline itself is the strongest evidence.
+    context = title + (' ' + first_sentence(summary, limit=260) if crime_focus else '')
+    # A word such as "сегодня" in "сегодня задержан" does NOT make the
+    # historical appointment recent. For crime-led headlines, require an
+    # explicit renewed appointment, not merely a recent detention.
+    if RECENT_REAL_APPOINTMENT.search(title) and (not crime_focus or re.search(
+        r"\b(?:вновь|снова|повторно)\b.{0,85}?\b(?:возглавил[аи]?|назначен[аоы]?)\b",
+        title, re.I)):
+        return False
+    for verb in HISTORICAL_JOB_ACTION.finditer(context):
+        # Retrospective date may also precede the verb: "В конце 2020 года
+        # Шмидт возглавил...". Do not suppress "а теперь возглавил".
+        earlier = context[max(0, verb.start() - 100):verb.start()]
+        for dated in HISTORICAL_ROLE_YEAR.finditer(earlier):
+            after_date = earlier[dated.end():]
+            if (int(dated.group(1)) <= g.msk_today().year - 2
+                    and not re.search(r"\b(?:а\s+теперь|теперь|ныне|сейчас|сегодня|накануне|вновь|снова)\b",
+                                      after_date, re.I)):
+                return True
+        tail = context[verb.end():verb.end() + 215]
+        for dated in HISTORICAL_ROLE_YEAR.finditer(tail):
+            # "appointed ...; previously worked since 2020" is NOT an old
+            # appointment. The date must belong to the same job clause.
+            before_date = tail[:dated.start()]
+            if re.search(r"(?:[.!?]\s|\b(?:до\s+этого|ранее|раньше|прежде|до\s+назначения|вместо)\b)",
+                         before_date, re.I):
+                continue
+            # An old year is a career date; a current-year date could be a
+            # newly published appointment and must not be discarded.
+            if int(dated.group(1)) <= g.msk_today().year - 2:
+                return True
+        if crime_focus and HISTORICAL_CAREER_CONTEXT.search(tail):
+            return True
+    return False
+
 def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
+    if detection["type"] in ("appointment", "ownership") and historical_appointment_backstory(title, summary):
+        return False, "historical_appointment_not_new_event"
     if detection["type"] == "workforce":
         region = staffing_region_for_story(title, summary)
         return (True, "workforce_explicit_szfo_worksite") if region else (False, "workforce_no_szfo_worksite")

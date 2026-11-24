@@ -2,32 +2,32 @@
  "date": "2026-11-24",
  "new": [
   {
-   "type": "leave",
+   "type": "title",
    "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "Миллиардные хищения и бегство в СВО: задержанный глава Мурманской области Андрей Чибис на допросах отрицает вину и просит об отставке",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxOYVhXMnBkbFlDT29CVGNpWVFSQXVRQW04U3dieGlVZWVJNkhVeFpPOTlTQWhBd2RNeFNPb1FZcEpnWXRFaHMwSE5PbXpqcl9ZVXQ5OGhFdUJUOTZqMElsamxNZkpNQzYyUjFtWE5sU2lzQVJvdW1Dd3dhVnp5WXIwMHVrcm1kSWlnNGl3Z0xkZ2Z0al9RNVZwVTVGU3BfTWtncFhQd0h6VWhxOFZSN3ZNZ1kwM0ZaWE9uQ09Fc29XUE1rSWRsZXNWZUxFczFxaHR0TE9NV1VyWDBZa1c4ZmV0dkF2cHhOcExoNzhSd2lLWDdGQlB3Y1JEUkxFcUc?oc=5",
+   "org_class": "force",
+   "region": "Псковская область",
+   "title": "В Псковской области пять матерей-героинь получают ежемесячную выплату",
+   "summary": "В Псковской области пять матерей-героинь, удостоенных этого звания после 2022 года, получают выплаты от регионального отделения Социального фонда России. Об этом сообщила начальник управления установления пенсий отделения СФР по Псковской области Марина Широкова на брифинге в медиацентре ПАИ сегодня, 24 ноября. \n\n \n\n Речь идёт о мерах поддержки (ежемесячная денежная выплата (ЕДВ) и дополнительное ",
+   "link": "https://informpskov.ru/news/523804.html",
    "date": "2026-11-24",
-   "source": "Google Новости · Мурманская область",
-   "source_id": "gnews_mur",
-   "rank": 4,
-   "person": "",
+   "source": "ПАИ",
+   "source_id": "informpskov",
+   "rank": 3,
+   "person": "Марина Широкова",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3402,
-  "items_fresh": 3113,
+  "items_received": 3474,
+  "items_fresh": 3186,
   "detected": 44,
-  "relevance_accepted": 27,
-  "relevance_rejected": 17,
+  "relevance_accepted": 29,
+  "relevance_rejected": 15,
   "region_rejected": 1,
-  "candidates": 26,
+  "candidates": 28,
   "rejection_reasons": {
    "missing_regional_event_anchor": 8,
-   "foreign_event_geography_overrides_org_dictionary": 6,
+   "foreign_event_geography_overrides_org_dictionary": 4,
    "minor_local_utility_without_regional_scale": 1,
    "generic_federal_without_local_anchor": 1,
    "historical_appointment_not_new_event": 1
@@ -79,16 +79,6 @@
     "source": "Б-порт (Telegram)"
    },
    {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Жюри фестиваля «Виват, Театр!» в Тамбове вновь возглавила Элеонора Макарова",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
     "reason": "missing_regional_event_anchor",
     "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
     "source": "Google Новости · Архангельская область"
@@ -107,10 +97,20 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
     "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
+    "source": "Google Новости · Псковская область"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
+    "source": "Google Новости · Новгородская область"
    }
   ],
-  "not_detected": 3069,
-  "duplicates": 25,
+  "not_detected": 3142,
+  "duplicates": 27,
   "new_events": 1,
   "sources": [
    {
@@ -135,8 +135,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 90",
-    "items": 90
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "interfax",
@@ -195,8 +195,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 58",
-    "items": 58
+    "status": "html 57",
+    "items": 57
    },
    {
     "id": "genproc_78",
@@ -220,13 +220,13 @@
    },
    {
     "id": "47news",
-    "status": "html 116",
-    "items": 116
+    "status": "html 115",
+    "items": 115
    },
    {
     "id": "online47",
-    "status": "html 25",
-    "items": 25
+    "status": "html 26",
+    "items": 26
    },
    {
     "id": "genproc_47",
@@ -260,8 +260,8 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "newsvo",
@@ -335,8 +335,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 50",
-    "items": 50
+    "status": "html 51",
+    "items": 51
    },
    {
     "id": "genproc_10",
@@ -345,8 +345,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 75",
-    "items": 75
+    "status": "rss 76",
+    "items": 76
    },
    {
     "id": "informpskov",
@@ -405,8 +405,8 @@
    },
    {
     "id": "genproc_53",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 46",
+    "items": 46
    },
    {
     "id": "fontanka_tg",
@@ -420,8 +420,8 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 14",
+    "items": 14
    },
    {
     "id": "first_arctic_tg",
@@ -485,8 +485,8 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 56",
-    "items": 56
+    "status": "rss 21",
+    "items": 21
    },
    {
     "id": "gnews_lo",
@@ -495,18 +495,18 @@
    },
    {
     "id": "gnews_arh",
-    "status": "rss 44",
-    "items": 44
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "gnews_vol",
-    "status": "rss 19",
-    "items": 19
+    "status": "rss 45",
+    "items": 45
    },
    {
     "id": "gnews_klg",
-    "status": "rss 32",
-    "items": 32
+    "status": "rss 64",
+    "items": 64
    },
    {
     "id": "gnews_mur",
@@ -515,8 +515,8 @@
    },
    {
     "id": "gnews_kar",
-    "status": "rss 44",
-    "items": 44
+    "status": "rss 43",
+    "items": 43
    },
    {
     "id": "gnews_psk",
@@ -542,12 +542,6 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 1,
- "failed": [
-  {
-   "id": "genproc_53",
-   "name": "Прокуратура Новгородской области",
-   "status": "error: ConnectionError"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

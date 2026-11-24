@@ -1,20 +1,5 @@
 [
  {
-  "type": "anniversary",
-  "level": "head",
-  "org_class": "force",
-  "region": "Санкт-Петербург",
-  "title": "В Санкт-Петербурге отметили 100-летие военного оркестра штаба Северо-Западного округа Росгвардии (видео)",
-  "summary": "В Санкт-Петербурге состоялись праздничные мероприятия, посвященные 100-летнему юбилею военного оркестра штаба Северо-Западного округа Росгвардии.",
-  "link": "https://rosguard.gov.ru/News/Article/v-sanktpeterburge-otmetili-100letie-voennogo-orkestra-shtaba-severozapadnogo-okruga-rosgvardii-video",
-  "date": "2026-11-23",
-  "source": "Росгвардия",
-  "source_id": "rosguard",
-  "rank": 1,
-  "person": "",
-  "orgs": []
- },
- {
   "type": "launch",
   "level": "head",
   "org_class": "podved",
@@ -26,21 +11,6 @@
   "source": "ТАСС",
   "source_id": "tass",
   "rank": 2,
-  "person": "",
-  "orgs": []
- },
- {
-  "type": "appointment",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Новгородская область",
-  "title": "Назначена дата прямой линии губернатора Новгородской области",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxObkF4ZmtrOXQ0aDk2VU9UUUozdGNUTUtBSkdkNzMzM25aaTAyem54bGlpb2lYamg0Q0o2eXlsMklyWVNUeGszdjc4dmIyTWN3SHBFelh5c1F1WTBLcTF0VW1XUHZQQ3dWY2p0RVBvdnlSR3ZWcVBKWEJEaGNXZXY5Z1RmMjhSTEtqRUpwN29vRUVwNmh6WlFSOU1uOXE3Q2hKRUFz?oc=5",
-  "date": "2026-11-23",
-  "source": "Google Новости · Новгородская область",
-  "source_id": "gnews_nov",
-  "rank": 4,
   "person": "",
   "orgs": []
  },
@@ -91,36 +61,6 @@
   "orgs": [
    "Усть-Луга"
   ]
- },
- {
-  "type": "anniversary",
-  "level": "head",
-  "org_class": "podved",
-  "region": "Архангельская область",
-  "title": "Архангельская областная больница отметила 80-летие",
-  "summary": "",
-  "link": "https://region29.ru/2026/11/23/6b04153906349677a0047f42.html",
-  "date": "2026-11-23",
-  "source": "Регион 29",
-  "source_id": "region29",
-  "rank": 3,
-  "person": "",
-  "orgs": []
- },
- {
-  "type": "appointment",
-  "level": "head",
-  "org_class": "force",
-  "region": "Псковская область",
-  "title": "Псков. Губернатору Псковской области представили нового начальника регионального управления ФСБ",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiP0FVX3lxTFB2MUxFNndxRFhDZmJYbENMN2JxRXZiRmtVcWV2VEhiVVZsRGNFekJJRmQ2bHlLMWxPWl9uUl84Zw?oc=5",
-  "date": "2026-11-21",
-  "source": "Google Новости · Псковская область",
-  "source_id": "gnews_psk",
-  "rank": 4,
-  "person": "",
-  "orgs": []
  },
  {
   "type": "appointment",
@@ -185,25 +125,8 @@
   "orgs": []
  },
  {
-  "type": "anniversary",
-  "level": "head",
-  "org_class": "podved",
-  "region": "Вологодская область",
-  "title": "В Череповце химики отметили 25 лет \"ФосАгро\" фестивалем юмора",
-  "summary": "Фестиваль \"Звезды \"ФосАгро\" прошел во Дворце химиков.",
-  "link": "https://cherinfo.ru/news/149172-v-cerepovce-himiki-otmetili-25-let-fosagro-festivalem-umora",
-  "date": "2026-11-20",
-  "source": "cherinfo.ru",
-  "source_id": "cherinfo",
-  "rank": 3,
-  "person": "",
-  "orgs": [
-   "ФосАгро"
-  ]
- },
- {
   "type": "appointment",
-  "level": "deputy",
+  "level": "head",
   "org_class": "force",
   "region": "Архангельская область",
   "title": "Президент России Владимир Владимирович Путин назначил Светлану Егоровну Устинович председателем Архангельского областного суда.",
@@ -234,23 +157,8 @@
   ]
  },
  {
-  "type": "launch",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Санкт-Петербург",
-  "title": "Александр Беглов: В 2027 году в Петербурге участники СВО смогут получить до 2 миллионов рублей на запуск своего дела",
-  "summary": "Александр Беглов: В 2027 году в Петербурге участники СВО смогут получить до 2 миллионов рублей на запуск своего дела\n\nОб этом губернатор Александр Беглов заявил сегодня, 19 ноября, отвечая на вопросы петербуржцев в ходе Прямой линии, которая проходит в социальной сети «ВКонтакте» и в эфире телеканала «Санкт-Петербург».\n\nВетеран СВО, решивший заняться предпринимательством, поинтересовался, на какую",
-  "link": "https://t.me/smolnypress/5553",
-  "date": "2026-11-19",
-  "source": "Смольный (Telegram)",
-  "source_id": "spb_smolny_tg",
-  "rank": 1,
-  "person": "",
-  "orgs": []
- },
- {
   "type": "appointment",
-  "level": "deputy",
+  "level": "head",
   "org_class": "gov",
   "region": "Псковская область",
   "title": "Самир Аль-Араби возглавил Псковскую областную инфекционную больницу",
@@ -367,23 +275,6 @@
   "rank": 1,
   "person": "Дмитрий Василенко",
   "orgs": []
- },
- {
-  "type": "anniversary",
-  "level": "head",
-  "org_class": "company",
-  "region": "Калининградская область",
-  "title": "Режиссёр Калининградского драмтеатра Михаил Салес отмечает 80-летие",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE9FVE0xU2lWRXNybzRjZnFEYjAzVV9DTWdVNVNGVE9DTGRvZ044LU1pQ2pJY3V0bUlkM3lHZlVLWno2ajh1TF9UZEhiSmwwN05fMU1aakVxZW4wTHNUbE04UzI5ZHRIT1BTbHhSVnBKMzlHUQ?oc=5",
-  "date": "2026-11-18",
-  "source": "Google Новости · Калининградская область",
-  "source_id": "gnews_klg",
-  "rank": 4,
-  "person": "Режиссёр Калининградского",
-  "orgs": [
-   "Калининградский драмтеатр"
-  ]
  },
  {
   "type": "title",

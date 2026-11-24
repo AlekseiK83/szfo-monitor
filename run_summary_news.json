@@ -2,15 +2,15 @@
  "date": "2026-11-24",
  "new": [],
  "diagnostics": {
-  "items_received": 3230,
-  "items_fresh": 2881,
-  "detected": 25,
-  "relevance_accepted": 19,
-  "relevance_rejected": 6,
+  "items_received": 3277,
+  "items_fresh": 2928,
+  "detected": 23,
+  "relevance_accepted": 16,
+  "relevance_rejected": 7,
   "region_rejected": 0,
-  "candidates": 19,
+  "candidates": 16,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 5,
+   "missing_regional_event_anchor": 6,
    "personal_media_award_not_scope": 1
   },
   "rejected_examples": [
@@ -43,10 +43,15 @@
     "reason": "missing_regional_event_anchor",
     "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
     "source": "Google Новости · Псковская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
+    "source": "Google Новости · Новгородская область"
    }
   ],
-  "not_detected": 2856,
-  "duplicates": 19,
+  "not_detected": 2905,
+  "duplicates": 16,
   "new_events": 0,
   "sources": [
    {
@@ -81,8 +86,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 57",
-    "items": 57
+    "status": "rss 59",
+    "items": 59
    },
    {
     "id": "vedomosti",
@@ -131,8 +136,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 80",
-    "items": 80
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "genproc_78",
@@ -156,13 +161,13 @@
    },
    {
     "id": "47news",
-    "status": "html 115",
-    "items": 115
+    "status": "html 116",
+    "items": 116
    },
    {
     "id": "online47",
-    "status": "html 27",
-    "items": 27
+    "status": "html 28",
+    "items": 28
    },
    {
     "id": "genproc_47",
@@ -196,8 +201,8 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "newsvo",
@@ -226,8 +231,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 75",
-    "items": 75
+    "status": "rss 78",
+    "items": 78
    },
    {
     "id": "genproc_39",
@@ -271,8 +276,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 6",
-    "items": 6
+    "status": "html 9",
+    "items": 9
    },
    {
     "id": "genproc_10",
@@ -281,8 +286,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 2",
-    "items": 2
+    "status": "rss 7",
+    "items": 7
    },
    {
     "id": "informpskov",
@@ -356,8 +361,8 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "first_arctic_tg",
@@ -371,8 +376,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "lentv24_tg",
@@ -431,23 +436,23 @@
    },
    {
     "id": "gnews_arh",
-    "status": "rss 54",
-    "items": 54
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_vol",
-    "status": "rss 42",
-    "items": 42
+    "status": "rss 44",
+    "items": 44
    },
    {
     "id": "gnews_klg",
-    "status": "rss 64",
-    "items": 64
+    "status": "rss 65",
+    "items": 65
    },
    {
     "id": "gnews_mur",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 31",
+    "items": 31
    },
    {
     "id": "gnews_kar",
@@ -461,29 +466,23 @@
    },
    {
     "id": "gnews_komi",
-    "status": "rss 16",
-    "items": 16
+    "status": "rss 33",
+    "items": 33
    },
    {
     "id": "gnews_nov",
-    "status": "rss 25",
-    "items": 25
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "rosbalt",
-    "status": "error: rosbalt_no_articles: no_article_links",
-    "items": 0
+    "status": "rosbalt via Google News 20 (direct: error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0)",
+    "items": 20
    }
   ],
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 1,
- "failed": [
-  {
-   "id": "rosbalt",
-   "name": "Росбалт",
-   "status": "error: rosbalt_no_articles: no_article_links"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

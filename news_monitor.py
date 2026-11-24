@@ -470,9 +470,59 @@ def detect_extra(title, summary, organizations, region_hint=None):
     return None
 
 
+# Судебное назначение арбитражного управляющего в процедуре банкротства —
+# не кадровое назначение руководителя компании или силового ведомства.
+# Проверяем СВЯЗКУ роли, действия и контекста, а не запрещаем слово «управляющий».
+INSOLVENCY_CONTEXT = re.compile(
+    r"\b(?:банкротств\w*|несостоятельност\w*|"
+    r"наблюден\w*|кредитор\w*|конкурсн\w+\s+производств\w*)",
+    re.I,
+)
+INSOLVENCY_ADMIN_ROLE = r"(?:временн|конкурсн|арбитражн|внешн|финансов)\w*\s+управляющ\w*"
+INSOLVENCY_ADMIN_ACTION = re.compile(
+    r"\b(?:назнач\w+|утвержд\w+|утверд\w+)\b.{0,100}?\b" + INSOLVENCY_ADMIN_ROLE +
+    r"|\b" + INSOLVENCY_ADMIN_ROLE + r"\b.{0,85}?\b(?:назнач\w+|утвержд\w+|утверд\w+)\b",
+    re.I,
+)
+REAL_LEADER_ROLE = (
+    r"(?:генеральн\w+\s+директор\w*|гендиректор\w*|директор\w*|"
+    r"глав\w*|председател\w*|начальник\w*|руководител\w*|"
+    r"министр\w*|ректор\w*|главврач\w*|прокурор\w*|губернатор\w*)"
+)
+OTHER_APPOINTMENT_IN_HEADLINE = re.compile(
+    r"\b(?:назнач\w+|возглавил\w*|стал\w+)\b.{0,110}?\b" + REAL_LEADER_ROLE +
+    r"|\b" + REAL_LEADER_ROLE + r"\b.{0,110}?\b(?:назнач\w+|возглавил\w*|стал\w+)\b",
+    re.I,
+)
+
+
+def bankruptcy_administrator_appointment(title, summary):
+    """История о судебном управляющем при банкротстве, а не о новом руководителе."""
+    title = normalize(title).strip()
+    lead = first_sentence(normalize(summary or ""), limit=440)
+    if not INSOLVENCY_CONTEXT.search(title + " " + lead):
+        return False
+    # Если настоящий директор назначен в заголовке, биографические/судебные
+    # подробности об управляющем в аннотации не отменяют новое назначение.
+    if INSOLVENCY_ADMIN_ACTION.search(title):
+        # Заголовок может содержать два разных назначения: например, директора
+        # и внешнего управляющего. Не теряем отдельное реальное назначение.
+        if OTHER_APPOINTMENT_IN_HEADLINE.search(title):
+            return False
+        return True
+    if OTHER_APPOINTMENT_IN_HEADLINE.search(title):
+        return False
+    return bool(INSOLVENCY_ADMIN_ACTION.search(lead))
+
+
 def detect_all(title, summary, organizations):
-    return (detect_proceedings(title, summary)
-            or detect(title, summary, organizations)
+    # Подтверждённое процессуальное событие о должностном лице сохраняем.
+    proceeding = detect_proceedings(title, summary)
+    if proceeding:
+        return proceeding
+    if bankruptcy_administrator_appointment(title, summary):
+        return None
+    return (detect(title, summary, organizations)
             or detect_staffing(title, summary, organizations, find_org_names)
             or detect_extra(title, summary, organizations))
 
@@ -833,6 +883,31 @@ def post_title(text, limit=160):
     return text[:cut if cut > 0 else limit].rstrip(" ,;:—-") + "…"
 
 
+def telegram_post_title(text):
+    """Первая осмысленная строка/заголовок Telegram, включая перенос посреди фразы.
+
+    Не склеиваем обычную новостную шапку с началом следующего абзаца.
+    """
+    lines = text.split("\n")
+    first = lines[0].strip() if lines else ""
+    if len(lines) > 1 and lines[1].strip():
+        continuation = lines[1].strip()
+        incomplete = bool(re.search(
+            r"(?:\b(?:на\s+(?:стадии|этапе)|в\s+ходе)|"
+            r"\b(?:в|во|на|для|из|от|по|при|о|об|с|со|к|и|что)|[,;:—-])$",
+            first, re.I))
+        # Начало второй строки со строчной буквы часто означает обычный
+        # перенос заголовка, а не новый абзац.
+        continued_lowercase = (len(first) < 135 and continuation[0].islower()
+                               and not re.search(r"[.!?…]$", first)
+                               and not APPOINT_VERB.search(first))
+        if incomplete or continued_lowercase:
+            first = first + " " + continuation
+    if len(first) < 20 and "\n" in text:
+        return post_title(text)
+    return post_title(first)
+
+
 def parse_telegram(page_html):
     items = []
     for block in TG_MSG_RE.findall(page_html):
@@ -845,11 +920,8 @@ def parse_telegram(page_html):
         text = re.sub(r"[ \t]+", " ", text).strip()
         if not text:
             continue
-        first = text.split("\n", 1)[0].strip()
-        if len(first) < 20 and "\n" in text:
-            first = " ".join(text.split("\n")[:2]).strip()
         time_m = TG_TIME_RE.search(block)
-        items.append({"title": post_title(first), "link": f"https://t.me/{post.group(1)}",
+        items.append({"title": telegram_post_title(text), "link": f"https://t.me/{post.group(1)}",
                       "date": time_m.group(1) if time_m else "", "summary": text[:800]})
     return items
 
@@ -1359,7 +1431,7 @@ def reconcile(events, cfg):
     for ev in events:
         ev["title"] = RUBRICS.sub("", DATE_WORDS.sub("", ev["title"])).strip()
         if srcs.get(ev.get("source_id"), {}).get("type") == "telegram" and ev.get("summary", "").startswith(ev["title"][:40]):
-            ev["title"] = post_title(ev["summary"])             # посты без заголовка: первое предложение, а не 220 знаков
+            ev["title"] = telegram_post_title(ev["summary"])   # сохранить переносы заголовка, не склеивать с лидом
         if len(ev["title"]) > 140:                       # заголовок, слипшийся с аннотацией (старые прогоны)
             ev["title"], tail = split_anchor(html_module.escape(ev["title"]))
             ev["title"] = html_module.unescape(ev["title"])
@@ -1880,7 +1952,11 @@ def notify():
     for region in sorted(by_region, key=lambda r: g.REGION_ORDER.index(r) if r in g.REGION_ORDER else 99):
         lines.append(f"\n<b>{esc(region)}</b>")
         for ev in by_region[region]:
-            lines.append(f"{icon.get(ev['type'], '•')} <a href=\"{esc(ev['link'])}\">{esc(ev['title'][:160])}</a>"
+            title = ev["title"].strip()
+            if len(title) > 160:
+                cut = title.rfind(" ", 40, 159)
+                title = title[:cut if cut > 0 else 159].rstrip(" ,;:—-") + "…"
+            lines.append(f"{icon.get(ev['type'], '•')} <a href=\"{esc(ev['link'])}\">{esc(title)}</a>"
                          f" <i>({esc(ev['source'])})</i>")
     if base:
         lines.append(f'\n<a href="{esc(base)}news.html">Все события →</a>')

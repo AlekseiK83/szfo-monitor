@@ -1,28 +1,66 @@
 {
  "date": "2026-11-24",
- "new": [],
+ "new": [
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Республика Коми",
+   "title": "Вера Железцова переназначена уполномоченным по правам человека в Коми",
+   "summary": "",
+   "link": "https://www.bnkomi.ru/data/news/206157/",
+   "date": "2026-11-24",
+   "source": "БНК",
+   "source_id": "bnkomi",
+   "rank": 3,
+   "person": "Вера Железцова",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "business",
+   "region": "Санкт-Петербург",
+   "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
+   "summary": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был известен как многолетний директор компании «Пилон», успел поработать и в руководстве КРТИ). Именно при…",
+   "link": "https://t.me/fontankaspb/114446",
+   "date": "2026-11-24",
+   "source": "Фонтанка (Telegram)",
+   "source_id": "fontanka_tg",
+   "rank": 3,
+   "person": "Метрострой Северной",
+   "orgs": [
+    "Метрострой"
+   ]
+  }
+ ],
  "diagnostics": {
-  "items_received": 3242,
-  "items_fresh": 2915,
-  "detected": 23,
-  "relevance_accepted": 16,
-  "relevance_rejected": 7,
+  "items_received": 3310,
+  "items_fresh": 3020,
+  "detected": 34,
+  "relevance_accepted": 22,
+  "relevance_rejected": 12,
   "region_rejected": 0,
-  "candidates": 16,
+  "candidates": 22,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 6,
+   "missing_regional_event_anchor": 11,
    "personal_media_award_not_scope": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "В Казахстане отправлен в отставку министр промышленности и строительства",
-    "source": "Интерфакс"
+    "title": "Путин присвоил звание \"Заслуженный врач\" жене главы Минздрава",
+    "source": "РИА Новости"
    },
    {
     "reason": "missing_regional_event_anchor",
     "title": "От формального к Большому // Режиссеру Андрею Могучему исполняется 65 лет",
     "source": "Коммерсантъ Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Генерал Нагуманов возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "source": "Ведомости"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -35,9 +73,24 @@
     "source": "Ведомости"
    },
    {
+    "reason": "missing_regional_event_anchor",
+    "title": "Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
+    "source": "Б-порт"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В «Мурмашинской тепловой компании» на стадии банкротства назначили временного управляющего",
+    "source": "Б-порт"
+   },
+   {
     "reason": "personal_media_award_not_scope",
     "title": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.",
     "source": "Деловой Петербург (Telegram)"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Наиб Нагуманов возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "source": "Google Новости · Архангельская область"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -46,13 +99,18 @@
    },
    {
     "reason": "missing_regional_event_anchor",
+    "title": "В Миллерово назначили нового главу города",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
     "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
     "source": "Google Новости · Псковская область"
    }
   ],
-  "not_detected": 2892,
-  "duplicates": 16,
-  "new_events": 0,
+  "not_detected": 2986,
+  "duplicates": 20,
+  "new_events": 2,
   "sources": [
    {
     "id": "kremlin",
@@ -86,8 +144,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 63",
-    "items": 63
+    "status": "rss 83",
+    "items": 83
    },
    {
     "id": "vedomosti",
@@ -101,13 +159,13 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "genproc_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "mchs_tg",
@@ -126,8 +184,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "dp",
@@ -136,8 +194,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 66",
-    "items": 66
+    "status": "html 71",
+    "items": 71
    },
    {
     "id": "genproc_78",
@@ -151,8 +209,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lo_zaks",
@@ -166,8 +224,8 @@
    },
    {
     "id": "online47",
-    "status": "html 26",
-    "items": 26
+    "status": "html 25",
+    "items": 25
    },
    {
     "id": "genproc_47",
@@ -176,8 +234,8 @@
    },
    {
     "id": "arh_gub_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "29ru",
@@ -186,8 +244,8 @@
    },
    {
     "id": "region29",
-    "status": "html 75",
-    "items": 75
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "news29",
@@ -196,18 +254,18 @@
    },
    {
     "id": "genproc_29",
-    "status": "html 52",
-    "items": 52
+    "status": "html 50",
+    "items": 50
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "newsvo",
-    "status": "rss 44",
-    "items": 44
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "krassever",
@@ -231,8 +289,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 75",
-    "items": 75
+    "status": "rss 89",
+    "items": 89
    },
    {
     "id": "genproc_39",
@@ -241,8 +299,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "html 53",
-    "items": 53
+    "status": "html 54",
+    "items": 54
    },
    {
     "id": "mur_gub_tg",
@@ -251,8 +309,8 @@
    },
    {
     "id": "bport",
-    "status": "html 32",
-    "items": 32
+    "status": "html 35",
+    "items": 35
    },
    {
     "id": "severpost",
@@ -261,8 +319,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "genproc_51",
@@ -276,8 +334,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 13",
-    "items": 13
+    "status": "html 33",
+    "items": 33
    },
    {
     "id": "genproc_10",
@@ -286,8 +344,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 13",
-    "items": 13
+    "status": "rss 37",
+    "items": 37
    },
    {
     "id": "informpskov",
@@ -351,8 +409,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 17",
+    "items": 17
    },
    {
     "id": "bport_tg",
@@ -366,13 +424,13 @@
    },
    {
     "id": "first_arctic_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "dp_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "online47_tg",
@@ -381,8 +439,8 @@
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 14",
+    "items": 14
    },
    {
     "id": "stolicaonego_tg",
@@ -391,8 +449,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "komiinform_tg",
@@ -426,53 +484,53 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 25",
-    "items": 25
+    "status": "rss 22",
+    "items": 22
    },
    {
     "id": "gnews_lo",
-    "status": "rss 40",
-    "items": 40
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_arh",
-    "status": "rss 53",
-    "items": 53
+    "status": "rss 45",
+    "items": 45
    },
    {
     "id": "gnews_vol",
-    "status": "rss 21",
-    "items": 21
+    "status": "rss 20",
+    "items": 20
    },
    {
     "id": "gnews_klg",
-    "status": "rss 31",
-    "items": 31
+    "status": "rss 32",
+    "items": 32
    },
    {
     "id": "gnews_mur",
-    "status": "rss 33",
-    "items": 33
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "gnews_kar",
-    "status": "rss 41",
-    "items": 41
+    "status": "rss 19",
+    "items": 19
    },
    {
     "id": "gnews_psk",
-    "status": "rss 60",
-    "items": 60
+    "status": "rss 61",
+    "items": 61
    },
    {
     "id": "gnews_komi",
-    "status": "rss 15",
-    "items": 15
+    "status": "rss 13",
+    "items": 13
    },
    {
     "id": "gnews_nov",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "rosbalt",

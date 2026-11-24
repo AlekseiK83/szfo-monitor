@@ -1,19 +1,19 @@
 [
  {
-  "type": "appointment",
+  "type": "launch",
   "level": "head",
   "org_class": "gov",
   "region": "Санкт-Петербург",
-  "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Jb1BTeGM4RUJIZFp6WDk5SW44T3ZfYzRBRmxLcVZjcEJHelFoel8wQ3J0d2JVMXBmXzJoXzN5Z3FzOGhwSTVENGxWaG5OczgtdHM0LXpLM3JKQUpy?oc=5",
+  "title": "Новый газопровод ввели в эксплуатацию в Пыталово",
+  "summary": "Специалисты компании «Газпром газораспределение Псков» построили и ввели в эксплуатацию газопровод протяжённостью 1,2 километра для догазификации 20 индивидуальных домовладений на улице Белорусской в Пыталово, сообщили ПАИ в пресс-службе организации. Первые три домовладения подключены к новым газовым сетям. \n\n \n\n Газификация индивидуальных жилых домов на улице Белорусской стала возможной благодаря",
+  "link": "https://informpskov.ru/news/523811.html",
   "date": "2026-11-24",
-  "source": "Google Новости · Архангельская область",
-  "source_id": "gnews_arh",
-  "rank": 4,
-  "person": "Сергей Салмин",
+  "source": "ПАИ",
+  "source_id": "informpskov",
+  "rank": 3,
+  "person": "",
   "orgs": [
-   "Водоканал"
+   "Газпром"
   ]
  },
  {
@@ -46,6 +46,36 @@
   "source_id": "bnkomi",
   "rank": 3,
   "person": "Вера Железцова",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Республика Коми",
+  "title": "Бюджет, социальные гарантии и кадровые решения: Александр Макаренко подвел итоги заседания сессии Госсовета Коми",
+  "summary": "Бюджет, социальные гарантии и кадровые решения: Александр Макаренко подвел итоги заседания сессии Госсовета Коми\n\nhttps://komiinform.ru/news/303329",
+  "link": "https://t.me/komiinform/104487",
+  "date": "2026-11-24",
+  "source": "Комиинформ (Telegram)",
+  "source_id": "komiinform_tg",
+  "rank": 3,
+  "person": "Александр Макаренко",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Республика Карелия",
+  "title": "Назначен новый руководитель карельского штаба Комитета семей воинов Отечества",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQUzRRNUl2RERuYzJYTGxnTWUwb0l0UTFDRVpjMnk3cU5GUFBySWtSRzIweXcyZ19xbE44MXYwS014OU5jTzNkN1NDM0Nvd25oUlNBUlpjbEhQSDREVkNHY0VwbGdlSXVmMVFNeEZKNGlxOFJnZHNYdGhHbWFBRGJtZURBUENvTi01Y2s4UDFZTHhuc1NMUC1lMVJLcnY2YThRc05Mc0xvdW1iNmJi?oc=5",
+  "date": "2026-11-24",
+  "source": "Google Новости · Республика Карелия",
+  "source_id": "gnews_kar",
+  "rank": 4,
+  "person": "",
   "orgs": []
  },
  {

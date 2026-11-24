@@ -145,7 +145,7 @@ ORG_BUSINESS = re.compile(
 
 # ── Звания ──
 TITLE_VERB = re.compile(
-    r"\b(?:присво(?:ен|ена|ено|ены|ил|ила|или|ят|ит)\w*|удостоен[аы]?|удостоил[аи]?|получил[аи]?\s+(?:звани|"
+    r"\b(?:присво(?:ен|ена|ено|ены|ил|ила|или|ят|ит)\b|присвоени\w*|удостоен[аы]?\b|удостоил[аи]?\b|получил[аи]?\s+(?:звани|"
     r"почётн|почетн|погоны|генеральск)|стал[аи]?\s+(?:почётн|почетн|заслуженн|народн|генерал|"
     r"контр-адмирал|вице-адмирал)|избран[аы]?\s+почётн|избран[аы]?\s+почетн|избрали\s+почётн|избрали\s+почетн|"
     r"пополнил[аи]?\s+(?:список|ряды)\s+почётн|пополнил[аи]?\s+(?:список|ряды)\s+почетн|"
@@ -163,6 +163,18 @@ CORE_TITLE = re.compile(
     r"народн\w+\s+(?:артист|художник|учител|врач)|генерал-майор|генерал-лейтенант|генерал-полковник|"
     r"генерал\s+армии|контр-адмирал|вице-адмирал|\bгенерал[аеу]?\b|погон\w*\s+генерал|"
     r"высш\w+\s+(?:офицер|начальствующ))", re.I)
+
+# Новости о выплатах/льготах уже награждённым людям не являются новыми
+# решениями о присвоении звания. Проверяем тему самого заголовка, а не
+# случайное слово «удостоен» / «присвоено» в исторической справке аннотации.
+# Если новое награждение явно заявлено в заголовке, оно не блокируется.
+SOCIAL_BENEFITS_HEADLINE = re.compile(
+    r"\b(?:выплат\w*|пособи\w*|пенси\w*|льгот\w*|субсиди\w*|"
+    r"компенсаци\w*|материнск\w*\s+капитал|социальн\w*\s+поддержк\w*|"
+    r"денежн\w*\s+(?:обеспечени|поощрени)|получа\w*\s+деньги|"
+    r"рассказал\w*\s+о\s+(?:мерах\s+поддержки|выплатах))\b",
+    re.I,
+)
 
 TITLE_NOUN = re.compile(
     r"(?:звани[еяюй]|почётн\w+\s+граждан\w*|почетн\w+\s+граждан\w*|почётн\w+\s+благотворител\w*|почетн\w+\s+благотворител\w*|"
@@ -350,11 +362,17 @@ def detect(title, summary, organizations):
     org_class = classify_org(head)
 
     # ── Звание ──
-    tv = TITLE_VERB.search(lead)
-    if tv and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
+    tv_title = TITLE_VERB.search(title)
+    tv = tv_title or TITLE_VERB.search(first_sentence(summary))
+    # Не превращать новость о пособиях/пенсиях в новое награждение только
+    # потому, что в её аннотации сказано «ранее присвоено звание».
+    historical_benefits = bool(SOCIAL_BENEFITS_HEADLINE.search(title) and not tv_title)
+    if tv and not historical_benefits and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
             and (not WEAK_TITLE_VERB.fullmatch(tv.group(0)) or STRONG_TITLE_NOUN.search(head)):
-        # ведомственные и общероссийские звания интересны только у руководителей
-        if CORE_TITLE.search(head) or POSITION.search(head):
+        # Должность комментатора из другой фразы аннотации — не должность
+        # человека, которому присваивают звание.
+        award_clause = title if tv_title else title + " " + first_sentence(summary)
+        if CORE_TITLE.search(head) or POSITION.search(award_clause):
             return {"type": "title", "level": "head", "org_class": org_class or "person", "orgs": orgs}
         return None
 

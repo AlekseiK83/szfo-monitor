@@ -625,8 +625,22 @@ FOREIGN_CITY_ADJECTIVES = re.compile(
     r"белгородск|смоленск|ярославск|воронежск|челябинск)\w*", re.I)
 
 
+def _street_name_mention(text, match):
+    """The Belorusskaya street is not a story happening in Belarus."""
+    before = (text or "")[max(0, match.start() - 45):match.start()]
+    after = (text or "")[match.end():match.end() + 32]
+    street = r"(?:улиц\w*|ул\.|проспект\w*|пр-т|переулк\w*|площад\w*|шосс\w*|бульвар\w*|набережн\w*)"
+    return bool(re.search(r"\b" + street + r"\s+(?:имени\s+)?$", before, re.I)
+                or re.match(r"^[а-яё\-]*\s+" + street + r"\b", after, re.I))
+
+
+def local_context_foreign_matches(text):
+    return [m for m in NEWS_FOREIGN.finditer(text or "")
+            if not _street_name_mention(text, m)]
+
+
 def foreign_place_matches(text):
-    return list(NEWS_FOREIGN.finditer(text or "")) + list(FOREIGN_CITY_ADJECTIVES.finditer(text or ""))
+    return local_context_foreign_matches(text) + list(FOREIGN_CITY_ADJECTIVES.finditer(text or ""))
 
 
 def has_foreign_place(text):
@@ -709,10 +723,70 @@ def outside_szfo_event_focus(title, summary="", source=None, orgs=(), event_type
     return False
 
 
+# Regional infrastructure monitoring: a routine street-level connection is
+# not the kind of large commissioning represented by the "launch" category.
+# ``газопровод`` in LAUNCH_SCALE previously sufficed on its own, regardless
+# of whether the work served twenty homes or a whole region.
+LOCAL_UTILITY_SUBJECT = re.compile(
+    r"\b(?:газопровод\w*|водопровод\w*|теплопровод\w*|теплосет\w*|"
+    r"газоснабжен\w*|водоснабжен\w*|водоотведен\w*|догазификац\w*|"
+    r"канализационн\w*\s+сет\w*|электросет\w*|"
+    r"сет\w*\s+(?:газ\w*|вод\w*|электроснабжен\w*|теплоснабжен\w*))\b",
+    re.I,
+)
+MAJOR_UTILITY_CONTEXT = re.compile(
+    r"\b(?:магистральн\w*|межрегиональн\w*|международн\w*|"
+    r"газоперерабатывающ\w*|газохимическ\w*|нефтехимическ\w*|"
+    r"газосжижен\w*|\bСПГ\b|"
+    r"(?:крупнейш\w*|стратегическ\w*)\s+"
+    r"(?:проект\w*|объект\w*|магистрал\w*|комплекс\w*)|"
+    r"промышленн\w*\s+(?:предприяти\w*|площадк\w*|комплекс\w*)|"
+    r"индустриальн\w*\s+парк\w*|газопровод\w*\s+для\s+завод\w*|"
+    r"поставк\w*\s+газа\s+на\s+завод\w*)\b",
+    re.I,
+)
+UTILITY_LENGTH_KM = re.compile(
+    r"\b(?:протяж[её]нност\w*|длин\w*|проложил\w*|построил\w*)"
+    r"[^.!?]{0,55}?\b(\d+(?:[.,]\d+)?)\s*(?:км|километр\w*)\b",
+    re.I,
+)
+UTILITY_HOUSEHOLDS = re.compile(
+    r"\b(\d[\d \u00a0]{0,9})\s+(?:домовладен\w*|домохозяйств\w*|жил\w*\s+дом\w*)\b",
+    re.I,
+)
+UTILITY_INVESTMENT = re.compile(
+    r"\b(?:\d+(?:[.,]\d+)?\s*млрд|\d+(?:[.,]\d+)?\s*миллиард\w*)\s*(?:рубл\w*|₽)",
+    re.I,
+)
+
+
+def minor_local_utility_launch(title, summary=""):
+    """Conservatively reject small/unsized distribution-network launches.
+
+    A large main pipeline or a demonstrably strategic, regional/industrial
+    project can pass. Unknown scale is not evidence of major significance.
+    This applies to launch only, never appointments or court decisions.
+    """
+    title = normalize(title or "")
+    if not LOCAL_UTILITY_SUBJECT.search(title):
+        return False
+    anchor = title + " " + first_sentence(normalize(summary or ""), limit=550)
+    if MAJOR_UTILITY_CONTEXT.search(anchor) or UTILITY_INVESTMENT.search(anchor):
+        return False
+    if any(float(m.group(1).replace(",", ".")) >= 50 for m in UTILITY_LENGTH_KM.finditer(anchor)):
+        return False
+    for m in UTILITY_HOUSEHOLDS.finditer(anchor):
+        if int(re.sub(r"\D", "", m.group(1))) >= 1000:
+            return False
+    return True
+
+
 def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
     if detection["type"] in ("appointment", "ownership") and historical_appointment_backstory(title, summary):
         return False, "historical_appointment_not_new_event"
+    if detection["type"] == "launch" and minor_local_utility_launch(title, summary):
+        return False, "minor_local_utility_without_regional_scale"
     if detection["type"] not in ("workforce", "proceeding") and outside_szfo_event_focus(
             title, summary, source, detection.get("orgs", ()), detection["type"]):
         return False, "foreign_event_geography_overrides_org_dictionary"
@@ -1177,7 +1251,7 @@ REGION_INSTITUTION = re.compile(r"(?:правительств\w*|админис�
 def news_region(text):
     """Регион СЗФО по тексту новости. Побеждает самое раннее упоминание;
     при явном чужом регионе — None (как в generate.match_region)."""
-    if not text or g._has_foreign_region(text) or NEWS_FOREIGN.search(text):
+    if not text or g._has_foreign_region(text) or local_context_foreign_matches(text):
         return None
     best = None
     for name, _slug, patterns in g.SZFO_COMPILED:
@@ -1209,7 +1283,7 @@ def attribute_region(src, text, orgs):
     if orgs:
         return orgs[0][0]
     if src.get("region") and not src.get("region_from_text"):
-        if g._has_foreign_region(text) or NEWS_FOREIGN.search(text):   # региональное СМИ пишет о чужом регионе
+        if g._has_foreign_region(text) or local_context_foreign_matches(text):   # региональное СМИ пишет о чужом регионе
             return None
         return src["region"]
     return None

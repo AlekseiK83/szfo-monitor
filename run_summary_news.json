@@ -2,8 +2,8 @@
  "date": "2026-11-24",
  "new": [],
  "diagnostics": {
-  "items_received": 3277,
-  "items_fresh": 2928,
+  "items_received": 3242,
+  "items_fresh": 2915,
   "detected": 23,
   "relevance_accepted": 16,
   "relevance_rejected": 7,
@@ -16,8 +16,8 @@
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Японская оппозиция потребовала отставки министра",
-    "source": "ТАСС"
+    "title": "В Казахстане отправлен в отставку министр промышленности и строительства",
+    "source": "Интерфакс"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -41,16 +41,16 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
-    "source": "Google Новости · Псковская область"
+    "title": "Уральского министра из команды Куйвашева отправили в отставку. Раньше он работал в Тюменской области",
+    "source": "Google Новости · Архангельская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Новгородская область"
+    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
+    "source": "Google Новости · Псковская область"
    }
   ],
-  "not_detected": 2905,
+  "not_detected": 2892,
   "duplicates": 16,
   "new_events": 0,
   "sources": [
@@ -86,8 +86,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 59",
-    "items": 59
+    "status": "rss 63",
+    "items": 63
    },
    {
     "id": "vedomosti",
@@ -101,8 +101,8 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "genproc_tg",
@@ -136,8 +136,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 76",
-    "items": 76
+    "status": "html 66",
+    "items": 66
    },
    {
     "id": "genproc_78",
@@ -146,13 +146,13 @@
    },
    {
     "id": "lo_gov",
-    "status": "html 82",
-    "items": 82
+    "status": "html 83",
+    "items": 83
    },
    {
     "id": "lo_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "lo_zaks",
@@ -161,13 +161,13 @@
    },
    {
     "id": "47news",
-    "status": "html 116",
-    "items": 116
+    "status": "html 115",
+    "items": 115
    },
    {
     "id": "online47",
-    "status": "html 28",
-    "items": 28
+    "status": "html 26",
+    "items": 26
    },
    {
     "id": "genproc_47",
@@ -186,8 +186,8 @@
    },
    {
     "id": "region29",
-    "status": "html 74",
-    "items": 74
+    "status": "html 75",
+    "items": 75
    },
    {
     "id": "news29",
@@ -201,8 +201,8 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "newsvo",
@@ -226,13 +226,13 @@
    },
    {
     "id": "klops",
-    "status": "html 29",
-    "items": 29
+    "status": "html 27",
+    "items": 27
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 78",
-    "items": 78
+    "status": "rss 75",
+    "items": 75
    },
    {
     "id": "genproc_39",
@@ -251,8 +251,8 @@
    },
    {
     "id": "bport",
-    "status": "html 35",
-    "items": 35
+    "status": "html 32",
+    "items": 32
    },
    {
     "id": "severpost",
@@ -276,8 +276,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 9",
-    "items": 9
+    "status": "html 13",
+    "items": 13
    },
    {
     "id": "genproc_10",
@@ -286,8 +286,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 7",
-    "items": 7
+    "status": "rss 13",
+    "items": 13
    },
    {
     "id": "informpskov",
@@ -296,8 +296,8 @@
    },
    {
     "id": "pskovkp_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "genproc_60",
@@ -361,13 +361,13 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "first_arctic_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "dp_tg",
@@ -376,8 +376,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lentv24_tg",
@@ -426,33 +426,33 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 25",
+    "items": 25
    },
    {
     "id": "gnews_lo",
-    "status": "rss 29",
-    "items": 29
+    "status": "rss 40",
+    "items": 40
    },
    {
     "id": "gnews_arh",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 53",
+    "items": 53
    },
    {
     "id": "gnews_vol",
-    "status": "rss 44",
-    "items": 44
+    "status": "rss 21",
+    "items": 21
    },
    {
     "id": "gnews_klg",
-    "status": "rss 65",
-    "items": 65
+    "status": "rss 31",
+    "items": 31
    },
    {
     "id": "gnews_mur",
-    "status": "rss 31",
-    "items": 31
+    "status": "rss 33",
+    "items": 33
    },
    {
     "id": "gnews_kar",
@@ -461,18 +461,18 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 33",
-    "items": 33
+    "status": "rss 60",
+    "items": 60
    },
    {
     "id": "gnews_komi",
-    "status": "rss 33",
-    "items": 33
+    "status": "rss 15",
+    "items": 15
    },
    {
     "id": "gnews_nov",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "rosbalt",

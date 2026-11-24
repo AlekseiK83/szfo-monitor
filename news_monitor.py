@@ -803,7 +803,7 @@ def fetch_source(src, feeds_cache, today=None):
             page = http_get(news_url)
         except requests.RequestException:
             if src.get("id") == "rosbalt":
-                return fetch_rosbalt_fallback(src, http_get, today=today)
+                return fetch_rosbalt_fallback(src, http_get, today=today or g.msk_today())
             raise
         found = discover_feed(page, news_url)
         if found and found != feed_url:
@@ -816,7 +816,7 @@ def fetch_source(src, feeds_cache, today=None):
                 pass
         items = parse_html_news(page, news_url)
         if src.get("id") == "rosbalt" and not items:
-            return fetch_rosbalt_fallback(src, http_get, today=today)
+            return fetch_rosbalt_fallback(src, http_get, today=today or g.msk_today())
         return items, (f"html {len(items)}" if items else "error: на странице нет заголовков")
     except requests.RequestException as ex:
         code = getattr(getattr(ex, "response", None), "status_code", None)
@@ -1242,7 +1242,9 @@ def run(today=None, verbose=True):
         if not src.get("enabled", True):
             continue
         t0 = time.time()
-        items, status = fetch_source(src, feeds_cache, today=today)
+        # Совместимость с исходным контрактом fetch_source(src, feeds_cache).
+        # Тесты и внешние интеграции могут подменять эту функцию двухаргументным mock.
+        items, status = fetch_source(src, feeds_cache)
         trace.source(src["id"], status, len(items))
         statuses.append((src["id"], src["name"], status, round(time.time() - t0, 1)))
         if verbose:

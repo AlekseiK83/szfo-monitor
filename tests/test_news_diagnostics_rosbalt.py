@@ -132,6 +132,30 @@ class TraceTests(unittest.TestCase):
             finally:
                 os.chdir(old)
 
+    def test_run_keeps_legacy_two_argument_fetch_source_mock(self):
+        """Regression: the old tests replace fetch_source with a two-arg lambda."""
+        with tempfile.TemporaryDirectory() as td:
+            previous = Path.cwd()
+            try:
+                os.chdir(td)
+                config = {'sources': [{'id': 'mock', 'type': 'site', 'name': 'Тест',
+                                       'url': 'https://example.org/', 'region': None}],
+                          'organizations': {}}
+                Path('news_sources.json').write_text(
+                    json.dumps(config, ensure_ascii=False), encoding='utf-8')
+                fake_g = types.SimpleNamespace(
+                    REGION_ORDER=['Мурманская область'], BASE_CSS='',
+                    format_display_date=lambda s: s,
+                    format_weekday=lambda s: 'понедельник',
+                    format_msk=lambda s: s, _plural=lambda n, *w: w[0])
+                with patch.object(nm, 'g', fake_g), patch.object(
+                    nm, 'fetch_source', side_effect=lambda src, cache: ([], 'mock 0')):
+                    new, statuses = nm.run(today=date(2026, 11, 23), verbose=False)
+                self.assertEqual(new, [])
+                self.assertEqual(statuses[0][2], 'mock 0')
+            finally:
+                os.chdir(previous)
+
     def test_audit_reads_trace_without_fetch_or_mutation(self):
         with tempfile.TemporaryDirectory() as td:
             old=Path.cwd()

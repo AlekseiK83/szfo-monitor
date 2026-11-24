@@ -2,22 +2,21 @@
  "date": "2026-11-24",
  "new": [],
  "diagnostics": {
-  "items_received": 3320,
-  "items_fresh": 2983,
+  "items_received": 3230,
+  "items_fresh": 2881,
   "detected": 25,
   "relevance_accepted": 19,
   "relevance_rejected": 6,
   "region_rejected": 0,
   "candidates": 19,
   "rejection_reasons": {
-   "generic_federal_without_local_anchor": 1,
-   "missing_regional_event_anchor": 4,
+   "missing_regional_event_anchor": 5,
    "personal_media_award_not_scope": 1
   },
   "rejected_examples": [
    {
-    "reason": "generic_federal_without_local_anchor",
-    "title": "Эксперт Балынин рассказал, кому повысят пенсию в декабре",
+    "reason": "missing_regional_event_anchor",
+    "title": "Японская оппозиция потребовала отставки министра",
     "source": "ТАСС"
    },
    {
@@ -46,7 +45,437 @@
     "source": "Google Новости · Псковская область"
    }
   ],
-  "new_events": 0
+  "not_detected": 2856,
+  "duplicates": 19,
+  "new_events": 0,
+  "sources": [
+   {
+    "id": "kremlin",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "kremlin_tg",
+    "status": "telegram 18",
+    "items": 18
+   },
+   {
+    "id": "government",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "tass",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "ria",
+    "status": "rss 92",
+    "items": 92
+   },
+   {
+    "id": "interfax",
+    "status": "rss 25",
+    "items": 25
+   },
+   {
+    "id": "kommersant_spb",
+    "status": "rss 57",
+    "items": 57
+   },
+   {
+    "id": "vedomosti",
+    "status": "rss 200",
+    "items": 200
+   },
+   {
+    "id": "abnews",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "sledcom_tg",
+    "status": "telegram 14",
+    "items": 14
+   },
+   {
+    "id": "genproc_tg",
+    "status": "telegram 10",
+    "items": 10
+   },
+   {
+    "id": "mchs_tg",
+    "status": "telegram 5",
+    "items": 5
+   },
+   {
+    "id": "rosguard",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "spb_smolny_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "spb_beglov_tg",
+    "status": "telegram 5",
+    "items": 5
+   },
+   {
+    "id": "dp",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "spbdnevnik",
+    "status": "html 80",
+    "items": 80
+   },
+   {
+    "id": "genproc_78",
+    "status": "html 52",
+    "items": 52
+   },
+   {
+    "id": "lo_gov",
+    "status": "html 82",
+    "items": 82
+   },
+   {
+    "id": "lo_tg",
+    "status": "telegram 4",
+    "items": 4
+   },
+   {
+    "id": "lo_zaks",
+    "status": "html 42",
+    "items": 42
+   },
+   {
+    "id": "47news",
+    "status": "html 115",
+    "items": 115
+   },
+   {
+    "id": "online47",
+    "status": "html 27",
+    "items": 27
+   },
+   {
+    "id": "genproc_47",
+    "status": "html 50",
+    "items": 50
+   },
+   {
+    "id": "arh_gub_tg",
+    "status": "telegram 10",
+    "items": 10
+   },
+   {
+    "id": "29ru",
+    "status": "rss 99",
+    "items": 99
+   },
+   {
+    "id": "region29",
+    "status": "html 74",
+    "items": 74
+   },
+   {
+    "id": "news29",
+    "status": "html 24",
+    "items": 24
+   },
+   {
+    "id": "genproc_29",
+    "status": "html 52",
+    "items": 52
+   },
+   {
+    "id": "vol_gub_tg",
+    "status": "telegram 6",
+    "items": 6
+   },
+   {
+    "id": "newsvo",
+    "status": "rss 44",
+    "items": 44
+   },
+   {
+    "id": "krassever",
+    "status": "html 83",
+    "items": 83
+   },
+   {
+    "id": "cherinfo",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "genproc_35",
+    "status": "html 49",
+    "items": 49
+   },
+   {
+    "id": "klops",
+    "status": "html 29",
+    "items": 29
+   },
+   {
+    "id": "newkaliningrad",
+    "status": "rss 75",
+    "items": 75
+   },
+   {
+    "id": "genproc_39",
+    "status": "html 47",
+    "items": 47
+   },
+   {
+    "id": "mur_gov",
+    "status": "html 53",
+    "items": 53
+   },
+   {
+    "id": "mur_gub_tg",
+    "status": "telegram 5",
+    "items": 5
+   },
+   {
+    "id": "bport",
+    "status": "html 35",
+    "items": 35
+   },
+   {
+    "id": "severpost",
+    "status": "rss 30",
+    "items": 30
+   },
+   {
+    "id": "tv21_tg",
+    "status": "telegram 10",
+    "items": 10
+   },
+   {
+    "id": "genproc_51",
+    "status": "html 49",
+    "items": 49
+   },
+   {
+    "id": "kar_tg",
+    "status": "telegram 8",
+    "items": 8
+   },
+   {
+    "id": "stolicaonego",
+    "status": "html 6",
+    "items": 6
+   },
+   {
+    "id": "genproc_10",
+    "status": "html 44",
+    "items": 44
+   },
+   {
+    "id": "pln",
+    "status": "rss 2",
+    "items": 2
+   },
+   {
+    "id": "informpskov",
+    "status": "rss 50",
+    "items": 50
+   },
+   {
+    "id": "pskovkp_tg",
+    "status": "telegram 10",
+    "items": 10
+   },
+   {
+    "id": "genproc_60",
+    "status": "html 50",
+    "items": 50
+   },
+   {
+    "id": "bnkomi",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "bnkomi_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "komiinform",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "genproc_11",
+    "status": "html 49",
+    "items": 49
+   },
+   {
+    "id": "nov_gov",
+    "status": "html 77",
+    "items": 77
+   },
+   {
+    "id": "nov_official_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "53news",
+    "status": "html 41",
+    "items": 41
+   },
+   {
+    "id": "novgorod_ru",
+    "status": "rss 30",
+    "items": 30
+   },
+   {
+    "id": "genproc_53",
+    "status": "html 46",
+    "items": 46
+   },
+   {
+    "id": "fontanka_tg",
+    "status": "telegram 9",
+    "items": 9
+   },
+   {
+    "id": "bport_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "rusever_tg",
+    "status": "telegram 14",
+    "items": 14
+   },
+   {
+    "id": "first_arctic_tg",
+    "status": "telegram 14",
+    "items": 14
+   },
+   {
+    "id": "dp_tg",
+    "status": "telegram 19",
+    "items": 19
+   },
+   {
+    "id": "online47_tg",
+    "status": "telegram 9",
+    "items": 9
+   },
+   {
+    "id": "lentv24_tg",
+    "status": "telegram 12",
+    "items": 12
+   },
+   {
+    "id": "stolicaonego_tg",
+    "status": "telegram 16",
+    "items": 16
+   },
+   {
+    "id": "informpskov_tg",
+    "status": "telegram 16",
+    "items": 16
+   },
+   {
+    "id": "komiinform_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "novgorodru_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "vol_gov2_tg",
+    "status": "telegram 18",
+    "items": 18
+   },
+   {
+    "id": "mchs_10_tg",
+    "status": "telegram 20",
+    "items": 20
+   },
+   {
+    "id": "mvd_51_tg",
+    "status": "telegram 14",
+    "items": 14
+   },
+   {
+    "id": "mvd_53_tg",
+    "status": "telegram 19",
+    "items": 19
+   },
+   {
+    "id": "gnews_spb",
+    "status": "rss 24",
+    "items": 24
+   },
+   {
+    "id": "gnews_lo",
+    "status": "rss 29",
+    "items": 29
+   },
+   {
+    "id": "gnews_arh",
+    "status": "rss 54",
+    "items": 54
+   },
+   {
+    "id": "gnews_vol",
+    "status": "rss 42",
+    "items": 42
+   },
+   {
+    "id": "gnews_klg",
+    "status": "rss 64",
+    "items": 64
+   },
+   {
+    "id": "gnews_mur",
+    "status": "rss 37",
+    "items": 37
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 41",
+    "items": 41
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 33",
+    "items": 33
+   },
+   {
+    "id": "gnews_komi",
+    "status": "rss 16",
+    "items": 16
+   },
+   {
+    "id": "gnews_nov",
+    "status": "rss 25",
+    "items": 25
+   },
+   {
+    "id": "rosbalt",
+    "status": "error: rosbalt_no_articles: no_article_links",
+    "items": 0
+   }
+  ],
+  "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
  "sources_failed": 1,
@@ -54,7 +483,7 @@
   {
    "id": "rosbalt",
    "name": "Росбалт",
-   "status": "error: на странице нет заголовков"
+   "status": "error: rosbalt_no_articles: no_article_links"
   }
  ]
 }

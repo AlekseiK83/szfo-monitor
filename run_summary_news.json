@@ -1,24 +1,23 @@
 {
- "date": "2026-11-23",
+ "date": "2026-11-24",
  "new": [],
  "diagnostics": {
-  "items_received": 3296,
-  "items_fresh": 3040,
-  "detected": 33,
-  "relevance_accepted": 25,
-  "relevance_rejected": 8,
+  "items_received": 3320,
+  "items_fresh": 2983,
+  "detected": 25,
+  "relevance_accepted": 19,
+  "relevance_rejected": 6,
   "region_rejected": 0,
-  "candidates": 25,
+  "candidates": 19,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 5,
-   "national_aggregate_not_local_event": 1,
-   "personal_media_award_not_scope": 1,
-   "minor_public_space_not_scope": 1
+   "generic_federal_without_local_anchor": 1,
+   "missing_regional_event_anchor": 4,
+   "personal_media_award_not_scope": 1
   },
   "rejected_examples": [
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "BNS: Литва присоединится к расследованию поджогов оборудования Starlink",
+    "reason": "generic_federal_without_local_anchor",
+    "title": "Эксперт Балынин рассказал, кому повысят пенсию в декабре",
     "source": "ТАСС"
    },
    {
@@ -37,19 +36,9 @@
     "source": "Ведомости"
    },
    {
-    "reason": "national_aggregate_not_local_event",
-    "title": "В России с начала 2026 года открыли 250 месторождений полезных ископаемых",
-    "source": "Столица на Onego"
-   },
-   {
     "reason": "personal_media_award_not_scope",
     "title": "Фотокорреспондент \"Делового Петербурга\" Сергей Ермохин стал лауреатом конкурса на премию правительства Петербурга в области журналистики по итогам 2026 года.",
     "source": "Деловой Петербург (Telegram)"
-   },
-   {
-    "reason": "minor_public_space_not_scope",
-    "title": "Губернатор Георгий Филимонов сообщил об открытии обновлённой территории у Колхозного рынка в Череповце",
-    "source": "Вологодская область (Telegram)"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -59,7 +48,7 @@
   ],
   "new_events": 0
  },
- "sources_total": 86,
+ "sources_total": 85,
  "sources_failed": 1,
  "failed": [
   {

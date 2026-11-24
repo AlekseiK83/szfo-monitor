@@ -134,11 +134,13 @@ def fetch_rosbalt_fallback(src, get_text, today=None, max_articles=16):
     home = src.get('url', 'https://www.rosbalt.ru/')
     pages = [src.get('news_url', 'https://www.rosbalt.ru/news'), home]
     links, errors = [], []
+    page_stats = []  # только размеры/количество ссылок, НЕ полный ответ сайта
     seen = set()
     for url in dict.fromkeys(pages):
         try:
             page = get_text(url)
             found = listing_links(page, url, today=today, limit=24)
+            page_stats.append(f'{urlsplit(url).path or "/"}:len={len(page)},links={len(found)}')
             for item in found:
                 if item not in seen:
                     seen.add(item)
@@ -163,7 +165,8 @@ def fetch_rosbalt_fallback(src, get_text, today=None, max_articles=16):
                 errors.append(type(exc).__name__)
     if not links:
         detail = ','.join(errors[:4]) if errors else 'no_article_links'
-        return [], 'error: rosbalt_no_articles: ' + detail
+        sizes = ';'.join(page_stats)[:130]
+        return [], 'error: rosbalt_no_articles: ' + detail + ('; page_stats=' + sizes if sizes else '')
     items = []
     for url in links[:max_articles]:
         try:
@@ -175,3 +178,50 @@ def fetch_rosbalt_fallback(src, get_text, today=None, max_articles=16):
     if not items:
         return [], f'error: rosbalt_no_article_metadata: links={len(links)}'
     return items, f'rosbalt articles {len(items)} (links={len(links)}, errors={len(errors)})'
+
+# Публичный RSS-поиск Google News — запасной способ обнаружить публикации,
+# когда сайт не отдаёт HTML-ссылки GitHub Actions. Это не API Росбалта:
+# статус источника должен явно фиксировать переход к агрегатору.
+ROSBALT_GOOGLE_RSS = (
+    'https://news.google.com/rss/search?'
+    'q=site%3Arosbalt.ru%2Fnews+when%3A4d&hl=ru&gl=RU&ceid=RU%3Aru'
+)
+
+
+def google_news_rosbalt(xml_text, today=None, max_items=20):
+    """Взять только записи, где Google RSS указывает издателя Росбалт.
+
+    Не считаем все результаты запроса принадлежащими Росбалту. Сохраняем
+    Google URL как промежуточную ссылку, не выдавая её за прямой адрес статьи.
+    """
+    import xml.etree.ElementTree as ET
+    from email.utils import parsedate_to_datetime
+    try:
+        root = ET.fromstring(xml_text.encode('utf-8') if isinstance(xml_text, str) else xml_text)
+    except ET.ParseError:
+        return []
+    out = []
+    for entry in root.iter('item'):
+        publisher = (entry.findtext('source') or '').strip().lower().replace('ё', 'е')
+        publisher_url = (entry.find('source').get('url', '')
+                         if entry.find('source') is not None else '')
+        if 'росбалт' not in publisher and 'rosbalt.ru' not in publisher_url:
+            continue
+        title = (entry.findtext('title') or '').strip()
+        title = re.sub(r'\s+[-—]\s+(?:Росбалт|ИА Росбалт)\s*$', '', title, flags=re.I)
+        url = (entry.findtext('link') or '').strip()
+        pub_date = (entry.findtext('pubDate') or '').strip()
+        if len(title) < 20 or not ('news.google.com' in url or ROSBALT_ARTICLE.search(url)):
+            continue
+        if today and pub_date:
+            try:
+                published = parsedate_to_datetime(pub_date).date()
+                if not today - timedelta(days=4) <= published <= today:
+                    continue
+            except (ValueError, TypeError, OverflowError):
+                pass
+        out.append({'title': title[:300], 'summary': '',
+                    'link': url, 'date': pub_date})
+        if len(out) >= max_items:
+            break
+    return out

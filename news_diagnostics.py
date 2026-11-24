@@ -1,7 +1,9 @@
-"""Компактная, безопасная для JSON трассировка последнего прогона новостей.
+"""Прозрачная трассировка каждого полученного сообщения второго потока.
 
-Сохраняются только хеши публичных URL, источник, этап и причина решения.
-Никаких токенов Telegram и содержимого приватных ответов.
+В формате сохранена обратная совместимость поля `links` (поиск по ссылке).
+Поле `records` не склеивает разные источники или одноимённые URL и содержит
+ровно одну запись на каждый полученный элемент. Не сохраняет полный текст
+статей, заголовки ограничены 200 символами, query-параметры ссылок не пишутся.
 """
 import hashlib
 import json
@@ -34,8 +36,34 @@ class Trace:
         self.date = str(run_date)
         self.links = {}
         self.sources = []
+        self.records = []
+
+    def start_item(self, url, source_id, title=''):
+        """Зарегистрировать входную статью ещё до проверок и вернуть её индекс."""
+        safe_url = canonical_url(url)
+        safe_url = safe_url.split('?', 1)[0] if safe_url else ''
+        idx = len(self.records)
+        self.records.append({
+            'source': source_id,
+            'url': safe_url[:600],
+            'url_hash': url_key(url),
+            'title': str(title or '').strip()[:200],
+            'status': 'received',
+            'reason': ''
+        })
+        return idx
+
+    def update(self, index, status, reason=''):
+        record = self.records[index]
+        record['status'] = status
+        record['reason'] = reason
+        if record['url_hash']:
+            self.links[record['url_hash']] = {
+                'source': record['source'], 'status': status, 'reason': reason
+            }
 
     def record(self, url, source_id, status, reason=''):
+        """Прежний интерфейс сохраняется для внешнего кода и тестов."""
         key = url_key(url)
         if key:
             self.links[key] = {'source': source_id, 'status': status, 'reason': reason}
@@ -45,7 +73,9 @@ class Trace:
 
     def payload(self):
         return {'date': self.date, 'sources': self.sources, 'links': self.links,
-                'legend': {'old': 'старше окна свежести', 'not_detected': 'не распознано событие',
+                'records': self.records, 'record_count': len(self.records),
+                'legend': {'old': 'старше окна свежести',
+                           'not_detected': 'не распознано событие',
                            'relevance_rejected': 'не прошёл фильтр релевантности',
                            'region_rejected': 'нет подтверждённого региона',
                            'candidate': 'прошёл фильтры, до дедупликации',
@@ -63,7 +93,6 @@ def lookup(url, path=None):
     if not src.exists():
         return {'found': False, 'reason': 'trace_missing'}
     data = json.loads(src.read_text(encoding='utf-8'))
-    k = url_key(url)
-    entry = data.get('links', {}).get(k)
+    entry = data.get('links', {}).get(url_key(url))
     return {'found': bool(entry), 'run_date': data.get('date'),
             **(entry if entry else {'reason': 'not_seen_in_last_run'})}

@@ -42,7 +42,7 @@ import generate as g
 from news_relevance import check_relevance
 from news_staffing import detect_staffing, staffing_region_for_story, workforce_fingerprint
 from news_proceedings import detect_proceedings
-from news_source_rosbalt import fetch_rosbalt_fallback, article_metadata
+from news_source_rosbalt import fetch_rosbalt_fallback, article_metadata, google_news_rosbalt, ROSBALT_GOOGLE_RSS
 from news_diagnostics import Trace, lookup as trace_lookup, canonical_url, TRACE_FILE
 
 SOURCES_FILE = Path("news_sources.json")
@@ -357,7 +357,7 @@ def detect(title, summary, organizations):
     # ── Назначение / уход ──
     if CRIMINAL.search(head) and COURT_ROUTINE.search(head):      # «бывшего главврача освободили из-под стражи»
         return None
-    if re.search(r"назнач\w+\s+(?:ему|ей|им)?\s*(?:\d+\s*(?:лет|год|месяц)|реальн|условн|срок|наказан|штраф|дат[уы]|проверк|экспертиз|выплат|пособ|пенси)", lead, re.I) \
+    if re.search(r"назнач\w+\s+(?:ему|ей|им)?\s*(?:\d+\s*(?:лет|год|месяц)|реальн|условн|срок|наказан|штраф|дат[аыуые]|проверк|экспертиз|выплат|пособ|пенси)", lead, re.I) \
             or re.search(r"\bсуд\w*\s+(?:назначил|приговорил|вынес|признал|оштрафовал)", lead, re.I):
         return None
     has_pos = POSITION.search(head)
@@ -373,7 +373,10 @@ def detect(title, summary, organizations):
         return None
     if DISTRICT_HEAD.search(head) and not re.search(r"петербург|спб", head, re.I):
         return None
-    level = "deputy" if DEPUTY.search(head) else "head"
+    # Предмет назначения определяет заголовок; лицо, представлявшее нового
+    # начальника в аннотации (замминистра, первый зампред), не меняет его уровень.
+    role_text = title if (POSITION.search(title) or INSTRUMENTAL.search(title) or HEAD_VERB.search(title)) else lead
+    level = "deputy" if DEPUTY.search(role_text) else "head"
     etype = "appointment" if appoint else "leave"
     return {"type": etype, "level": level, "org_class": org_class or "company", "orgs": orgs}
 
@@ -410,6 +413,9 @@ def detect_extra(title, summary, organizations, region_hint=None):
     # 3. Круглый юбилей организации (25, 30, 40, 50 … лет)
     am = ANNIVERSARY.search(lead)
     if am and ANNIVERSARY_CTX.search(head) and known and not PERSON_ANNIV.search(lead) and not HISTORIC_ANNIV.search(head) \
+            and not re.search(r"\b(?:фестивал\w*|концерт\w*|шоу|квест\w*|праздничн\w*\s+конкурс\w*)\b", title, re.I) \
+            and not re.search(r"\b(?:военн\w+\s+оркестр\w*|оркестр\w*\s+(?:штаба|военн\w+)|оркестр\w*\s+Росгварди\w*)\b", title, re.I) \
+            and not re.search(r"^(?:режисс[её]р|акт[её]р|артист|писатель|художник|музыкант|певец|певица|драматург)\b.{0,95}\b(?:отмечает|отметил|празднует|исполнилось|исполняется)\b", title, re.I) \
             and not (has_pos and re.search(r"\b(?:отметил[аи]?|отпраздновал[аи]?|празднует|исполнилось|исполняется)\b", lead, re.I)):
         n = int(am.group(1))
         if n >= 25 and n % 5 == 0 and not re.search(r"\bлет(?:ие|ия|ию)?\s+(?:со\s+дня\s+рождения|\S+\s+\S+(?:ич|вн)[ауе]?\b)", head, re.I) \
@@ -418,6 +424,12 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
     # 4. Запуск крупного объекта, спуск судна, ввод в эксплуатацию, крупный контракт
     lm = LAUNCH.search(title) or (LAUNCH.search(lead) and LAUNCH_TITLE_NOUN.search(title))
+    # «Запуск своего дела» = субсидия/предпринимательство, не открытие
+    # инфраструктурного объекта; само упоминание крупной суммы не основание.
+    if re.search(r"(?:на\s+запуск\s+(?:своего|собственного)\s+дела|"
+                 r"(?:смогут|может|планиру\w*)\s+получить[^.]{0,90}?\b(?:рубл|миллион)|"
+                 r"на\s+открытие\s+(?:своего|собственного)\s+(?:дела|бизнеса))", title, re.I):
+        lm = None
     if lm and (re.search(r"\d+\s*%|процент|больше,?\s+чем|меньше,?\s+чем|снизил|сократил|вырос|упал|закрыл", title, re.I)
                or not (LAUNCH_OBJECT.search(title) or LAUNCH_SCALE.search(title) or LAUNCH_TITLE_NOUN.search(title))):
         lm = None                                      # «закрылось на 39 % больше, чем открылось» — статистика, не запуск
@@ -775,6 +787,24 @@ def parse_date(s):
     return None
 
 
+def fetch_rosbalt_resilient(src, today=None):
+    """HTML Росбалта -> публичный поисковый RSS, с явной маркировкой канала."""
+    today = today or g.msk_today()
+    items, status = fetch_rosbalt_fallback(src, http_get, today=today)
+    if items:
+        return items, status
+    try:
+        xml = http_get(ROSBALT_GOOGLE_RSS)
+        rss_items = google_news_rosbalt(xml, today=today)
+        if rss_items:
+            return rss_items, f'rosbalt via Google News {len(rss_items)} (direct: {status})'
+        return [], status + '; google_news: no_matching_articles'
+    except requests.RequestException as exc:
+        return [], status + f'; google_news: {type(exc).__name__}'
+    except Exception as exc:
+        return [], status + f'; google_news: {type(exc).__name__}'
+
+
 def fetch_source(src, feeds_cache, today=None):
     """→ (items, status). status: 'rss N' | 'html N' | 'telegram N' | 'error: …'."""
     kind = src["type"]
@@ -803,7 +833,7 @@ def fetch_source(src, feeds_cache, today=None):
             page = http_get(news_url)
         except requests.RequestException:
             if src.get("id") == "rosbalt":
-                return fetch_rosbalt_fallback(src, http_get, today=today or g.msk_today())
+                return fetch_rosbalt_resilient(src, today=today or g.msk_today())
             raise
         found = discover_feed(page, news_url)
         if found and found != feed_url:
@@ -816,7 +846,7 @@ def fetch_source(src, feeds_cache, today=None):
                 pass
         items = parse_html_news(page, news_url)
         if src.get("id") == "rosbalt" and not items:
-            return fetch_rosbalt_fallback(src, http_get, today=today or g.msk_today())
+            return fetch_rosbalt_resilient(src, today=today or g.msk_today())
         return items, (f"html {len(items)}" if items else "error: на странице нет заголовков")
     except requests.RequestException as ex:
         code = getattr(getattr(ex, "response", None), "status_code", None)
@@ -1071,6 +1101,66 @@ def same_proceeding(a, b):
     return proceeding_office(a) == proceeding_office(b) == "governor"
 
 
+
+ANNIVERSARY_YEARS = re.compile(r"\b(\d{2,3})\s*(?:-?лети[яеюйм]?|лет\b|годовщи)", re.I)
+ANNIVERSARY_WORDS_IGNORE = {"областн", "клинич", "городск", "сегодн", "отмети", "отмеча", "исполн", "праздн", "юбиле", "состо", "своег", "перву"}
+
+def same_organization_anniversary(a, b):
+    """Сопоставление ЮБИЛЕЯ одной организации в разных сообщениях.
+
+    Требует тот же регион, тот же возраст (80/100 и т.д.) и устойчивое
+    название учреждения. Не склеивает два разных юбилея одной отрасли.
+    """
+    ma, mb = ANNIVERSARY_YEARS.search(a.get("title", "")), ANNIVERSARY_YEARS.search(b.get("title", ""))
+    if not ma or not mb or ma.group(1) != mb.group(1):
+        return False
+    def core(ev):
+        text = expand_abbrev(normalize(ev.get("title", ""))).lower().replace("ё", "е")
+        text = re.sub(r"\b\d{2,3}\s*(?:-?лет\w*|годовщин\w*)", " ", text)
+        return {w[:6] for w in re.findall(r"[а-я]{5,}", text)
+                if w[:6] not in ANNIVERSARY_WORDS_IGNORE and
+                not w.startswith(("отмеч", "исполн", "праздн", "прошл", "участ", "предст"))}
+    wa, wb = core(a), core(b)
+    # Географические прилагательные сами по себе не доказывают,
+    # что речь идёт об одной организации.
+    institution_kinds = {"больни", "театр", "универ", "музей", "школа", "оркест",
+                         "комбин", "завод", "поликл", "инстит", "филарм", "центра"}
+    common = wa & wb
+    if not common.intersection(institution_kinds) and len(common) < 3:
+        return False
+    # Одно и то же городское/областное учреждение нельзя склеить лишь
+    # потому, что обе публикации упоминают город и слово «больница».
+    qualifiers = {"област", "городс", "районн", "детска", "центра", "инфекц",
+                  "психиа", "клинич"}
+    qa = (wa & qualifiers) - {"клинич"}
+    qb = (wb & qualifiers) - {"клинич"}
+    if qa != qb:
+        return False
+    return len(common) >= 2
+
+UNIQUE_FORCE_OFFICE = re.compile(r"\b(?:УФСБ|управлени[яюем]\s+ФСБ|"
+                                 r"(?:региональн\w+|областн\w+)\s+управлени[яюем]\s+ФСБ)\b", re.I)
+
+def same_unique_regional_force_office(a, b):
+    """Назначен и представлен один руководитель управления ФСБ региона.
+
+    Совпадение допускается без имени в одной публикации только для
+    уникальной должности главы управления, но не для заместителей.
+    """
+    def head_fsb(ev):
+        t = (ev.get("title") or "") + " " + (ev.get("summary") or "")[:160]
+        if re.search(r"\b(?:заместител[а-яё]*|замначальник[а-яё]*|вице-)\s+(?:\S+\s+){0,3}?(?:УФСБ|управлени[яюем]\s+ФСБ)", t, re.I):
+            return False
+        if ev.get("level") == "deputy":
+            return False
+        return bool(UNIQUE_FORCE_OFFICE.search(t) and
+                    re.search(r"\b(?:начальник|глав[аоыую]|руководител|возглав|назнач|представил)\w*", t, re.I))
+    if not (head_fsb(a) and head_fsb(b) and a.get("type") == b.get("type") == "appointment"):
+        return False
+    named_a = name_pairs(a.get("title", ""))
+    named_b = name_pairs(b.get("title", ""))
+    return not (named_a and named_b and not (named_a & named_b))
+
 def similar(a, b):
     """Дедупликация с учётом сущности и стадии, а не идентичности заголовков."""
     if a["type"] == "proceeding" or b["type"] == "proceeding":
@@ -1079,9 +1169,15 @@ def similar(a, b):
     if a["region"] != b["region"] or (a["type"] != b["type"] and not {a["type"], b["type"]} <= family):
         return False
     try:
-        if abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days) > 3:
-            return False
-    except ValueError:
+        days_apart = abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days)
+    except (KeyError, ValueError, TypeError):
+        return False
+    if a["type"] == b["type"] == "anniversary" and days_apart <= 14:
+        return same_organization_anniversary(a, b)
+    if a["type"] == b["type"] == "appointment" and days_apart <= 10:
+        if same_unique_regional_force_office(a, b):
+            return True
+    if days_apart > 3:
         return False
     if name_pairs(a["title"]) & name_pairs(b["title"]):      # одно «Имя Фамилия» (в любом падеже) в обоих заголовках
         return True
@@ -1236,6 +1332,7 @@ def run(today=None, verbose=True):
     fresh_from = today - timedelta(days=FRESH_DAYS)
 
     candidates, statuses = [], []
+    trace_for_candidate = {}
     diagnostics = {"items_received": 0, "items_fresh": 0, "detected": 0, "relevance_accepted": 0, "relevance_rejected": 0, "region_rejected": 0, "candidates": 0, "rejection_reasons": {}, "rejected_examples": [], "not_detected": 0, "duplicates": 0}
     trace = Trace(today.isoformat())
     for src in cfg["sources"]:
@@ -1250,22 +1347,23 @@ def run(today=None, verbose=True):
         if verbose:
             print(f"  {src['id']:<16} {status:<40} {time.time() - t0:4.1f}s", flush=True)
         for it in items:
+            trace_index = trace.start_item(it.get("link"), src["id"], it.get("title", ""))
             diagnostics["items_received"] += 1
             d = parse_date(it.get("date"))
             if d and d < fresh_from:
-                trace.record(it.get("link"), src["id"], "old", "outside_freshness_window")
+                trace.update(trace_index, "old", "outside_freshness_window")
                 continue
             diagnostics["items_fresh"] += 1
             det = detect_all(it["title"], it.get("summary", ""), organizations)
             if not det:
                 diagnostics["not_detected"] += 1
-                trace.record(it.get("link"), src["id"], "not_detected", "event_not_recognized")
+                trace.update(trace_index, "not_detected", "event_not_recognized")
                 continue
             diagnostics["detected"] += 1
             relevant, reason = event_relevance(
                 it["title"], it.get("summary", ""), det, src, organizations)
             if not relevant:
-                trace.record(it.get("link"), src["id"], "relevance_rejected", reason)
+                trace.update(trace_index, "relevance_rejected", reason)
                 diagnostics["relevance_rejected"] += 1
                 diagnostics["rejection_reasons"][reason] = diagnostics["rejection_reasons"].get(reason, 0) + 1
                 if len(diagnostics["rejected_examples"]) < 15:
@@ -1277,7 +1375,7 @@ def run(today=None, verbose=True):
             text = f"{it['title']} {it.get('summary', '')}"
             region = event_region(src, it["title"], it.get("summary", ""), det)
             if not region:
-                trace.record(it.get("link"), src["id"], "region_rejected", "region_not_confirmed")
+                trace.update(trace_index, "region_rejected", "region_not_confirmed")
                 diagnostics["region_rejected"] += 1
                 continue
             ev = {"type": det["type"], "level": det["level"], "org_class": det["org_class"],
@@ -1291,7 +1389,8 @@ def run(today=None, verbose=True):
             if det["type"] == "proceeding":
                 ev["procedure_stage"] = det["stage"]
             candidates.append(ev)
-            trace.record(it.get("link"), src["id"], "candidate")
+            trace_for_candidate[id(ev)] = trace_index
+            trace.update(trace_index, "candidate")
             diagnostics["candidates"] += 1
 
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
@@ -1303,7 +1402,7 @@ def run(today=None, verbose=True):
         match = next((e for e in recent + new_events if similar(ev, e) or set(keys) & set(event_keys(e))), None)
         if match is not None:
             diagnostics["duplicates"] += 1
-            trace.record(ev.get("link"), ev["source_id"], "duplicate", "same_event_existing_or_in_run")
+            trace.update(trace_for_candidate[id(ev)], "duplicate", "same_event_existing_or_in_run")
             # то же событие уже есть; если новый источник авторитетнее — заменяем запись, не уведомляя повторно
             if priority(ev) < priority(match) and match not in new_events:
                 ev["upgraded"] = True
@@ -1311,22 +1410,22 @@ def run(today=None, verbose=True):
                 events.remove(match)
                 recent.remove(match)
                 new_events.append(ev)
-                trace.record(ev.get("link"), ev["source_id"], "upgraded", "better_source")
+                trace.update(trace_for_candidate[id(ev)], "upgraded", "better_source")
             elif priority(ev) < priority(match):
-                trace.record(match.get("link"), match["source_id"], "duplicate", "superseded_by_better_source")
+                trace.update(trace_for_candidate[id(match)], "duplicate", "superseded_by_better_source")
                 new_events[new_events.index(match)] = ev
-                trace.record(ev.get("link"), ev["source_id"], "upgraded", "better_source")
+                trace.update(trace_for_candidate[id(ev)], "upgraded", "better_source")
             for k in keys:
                 seen[k] = today.isoformat()
             continue
         if blocked_by_seen(keys, seen, today):
             diagnostics["duplicates"] += 1
-            trace.record(ev.get("link"), ev["source_id"], "duplicate", "seen_key")
+            trace.update(trace_for_candidate[id(ev)], "duplicate", "seen_key")
             continue
         for k in keys:
             seen[k] = today.isoformat()
         new_events.append(ev)
-        trace.record(ev.get("link"), ev["source_id"], "new")
+        trace.update(trace_for_candidate[id(ev)], "new")
     fresh_new = [e for e in new_events if not e.pop("upgraded", False)]
 
     # ── сохранить ──

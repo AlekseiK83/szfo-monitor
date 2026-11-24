@@ -20,6 +20,7 @@
                                         (таблица в лог, ничего не сохраняется)
     python news_monitor.py --rebuild  — пересобрать news.html из сохранённых событий
     python news_monitor.py --notify   — отправить новые события в Telegram
+    python news_monitor.py --audit-url URL — почему новость прошла/не прошла
 
 Источники и словарь организаций — в news_sources.json.
 """
@@ -41,6 +42,8 @@ import generate as g
 from news_relevance import check_relevance
 from news_staffing import detect_staffing, staffing_region_for_story, workforce_fingerprint
 from news_proceedings import detect_proceedings
+from news_source_rosbalt import fetch_rosbalt_fallback, article_metadata
+from news_diagnostics import Trace, lookup as trace_lookup, canonical_url, TRACE_FILE
 
 SOURCES_FILE = Path("news_sources.json")
 DATA_DIR = Path("data/news")
@@ -772,7 +775,7 @@ def parse_date(s):
     return None
 
 
-def fetch_source(src, feeds_cache):
+def fetch_source(src, feeds_cache, today=None):
     """→ (items, status). status: 'rss N' | 'html N' | 'telegram N' | 'error: …'."""
     kind = src["type"]
     try:
@@ -796,7 +799,12 @@ def fetch_source(src, feeds_cache):
             except requests.RequestException:
                 pass
         news_url = src.get("news_url") or src["url"]
-        page = http_get(news_url)
+        try:
+            page = http_get(news_url)
+        except requests.RequestException:
+            if src.get("id") == "rosbalt":
+                return fetch_rosbalt_fallback(src, http_get, today=today)
+            raise
         found = discover_feed(page, news_url)
         if found and found != feed_url:
             try:
@@ -807,6 +815,8 @@ def fetch_source(src, feeds_cache):
             except requests.RequestException:
                 pass
         items = parse_html_news(page, news_url)
+        if src.get("id") == "rosbalt" and not items:
+            return fetch_rosbalt_fallback(src, http_get, today=today)
         return items, (f"html {len(items)}" if items else "error: на странице нет заголовков")
     except requests.RequestException as ex:
         code = getattr(getattr(ex, "response", None), "status_code", None)
@@ -1226,12 +1236,14 @@ def run(today=None, verbose=True):
     fresh_from = today - timedelta(days=FRESH_DAYS)
 
     candidates, statuses = [], []
-    diagnostics = {"items_received": 0, "items_fresh": 0, "detected": 0, "relevance_accepted": 0, "relevance_rejected": 0, "region_rejected": 0, "candidates": 0, "rejection_reasons": {}, "rejected_examples": []}
+    diagnostics = {"items_received": 0, "items_fresh": 0, "detected": 0, "relevance_accepted": 0, "relevance_rejected": 0, "region_rejected": 0, "candidates": 0, "rejection_reasons": {}, "rejected_examples": [], "not_detected": 0, "duplicates": 0}
+    trace = Trace(today.isoformat())
     for src in cfg["sources"]:
         if not src.get("enabled", True):
             continue
         t0 = time.time()
-        items, status = fetch_source(src, feeds_cache)
+        items, status = fetch_source(src, feeds_cache, today=today)
+        trace.source(src["id"], status, len(items))
         statuses.append((src["id"], src["name"], status, round(time.time() - t0, 1)))
         if verbose:
             print(f"  {src['id']:<16} {status:<40} {time.time() - t0:4.1f}s", flush=True)
@@ -1239,15 +1251,19 @@ def run(today=None, verbose=True):
             diagnostics["items_received"] += 1
             d = parse_date(it.get("date"))
             if d and d < fresh_from:
+                trace.record(it.get("link"), src["id"], "old", "outside_freshness_window")
                 continue
             diagnostics["items_fresh"] += 1
             det = detect_all(it["title"], it.get("summary", ""), organizations)
             if not det:
+                diagnostics["not_detected"] += 1
+                trace.record(it.get("link"), src["id"], "not_detected", "event_not_recognized")
                 continue
             diagnostics["detected"] += 1
             relevant, reason = event_relevance(
                 it["title"], it.get("summary", ""), det, src, organizations)
             if not relevant:
+                trace.record(it.get("link"), src["id"], "relevance_rejected", reason)
                 diagnostics["relevance_rejected"] += 1
                 diagnostics["rejection_reasons"][reason] = diagnostics["rejection_reasons"].get(reason, 0) + 1
                 if len(diagnostics["rejected_examples"]) < 15:
@@ -1259,6 +1275,7 @@ def run(today=None, verbose=True):
             text = f"{it['title']} {it.get('summary', '')}"
             region = event_region(src, it["title"], it.get("summary", ""), det)
             if not region:
+                trace.record(it.get("link"), src["id"], "region_rejected", "region_not_confirmed")
                 diagnostics["region_rejected"] += 1
                 continue
             ev = {"type": det["type"], "level": det["level"], "org_class": det["org_class"],
@@ -1272,6 +1289,7 @@ def run(today=None, verbose=True):
             if det["type"] == "proceeding":
                 ev["procedure_stage"] = det["stage"]
             candidates.append(ev)
+            trace.record(it.get("link"), src["id"], "candidate")
             diagnostics["candidates"] += 1
 
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
@@ -1282,6 +1300,8 @@ def run(today=None, verbose=True):
         keys = event_keys(ev)
         match = next((e for e in recent + new_events if similar(ev, e) or set(keys) & set(event_keys(e))), None)
         if match is not None:
+            diagnostics["duplicates"] += 1
+            trace.record(ev.get("link"), ev["source_id"], "duplicate", "same_event_existing_or_in_run")
             # то же событие уже есть; если новый источник авторитетнее — заменяем запись, не уведомляя повторно
             if priority(ev) < priority(match) and match not in new_events:
                 ev["upgraded"] = True
@@ -1289,16 +1309,22 @@ def run(today=None, verbose=True):
                 events.remove(match)
                 recent.remove(match)
                 new_events.append(ev)
+                trace.record(ev.get("link"), ev["source_id"], "upgraded", "better_source")
             elif priority(ev) < priority(match):
+                trace.record(match.get("link"), match["source_id"], "duplicate", "superseded_by_better_source")
                 new_events[new_events.index(match)] = ev
+                trace.record(ev.get("link"), ev["source_id"], "upgraded", "better_source")
             for k in keys:
                 seen[k] = today.isoformat()
             continue
         if blocked_by_seen(keys, seen, today):
+            diagnostics["duplicates"] += 1
+            trace.record(ev.get("link"), ev["source_id"], "duplicate", "seen_key")
             continue
         for k in keys:
             seen[k] = today.isoformat()
         new_events.append(ev)
+        trace.record(ev.get("link"), ev["source_id"], "new")
     fresh_new = [e for e in new_events if not e.pop("upgraded", False)]
 
     # ── сохранить ──
@@ -1310,8 +1336,11 @@ def run(today=None, verbose=True):
     save_json(EVENTS_FILE, events)
     save_json(SEEN_FILE, seen)
     save_json(FEEDS_CACHE, feeds_cache)
+    trace.write()
     errors = [s for s in statuses if s[2].startswith("error")]
     diagnostics["new_events"] = len(fresh_new)
+    diagnostics["sources"] = trace.sources
+    diagnostics["trace_file"] = str(TRACE_FILE)
     save_json(RUN_SUMMARY, {"date": today.isoformat(), "new": fresh_new, "diagnostics": diagnostics,
                             "sources_total": len(statuses), "sources_failed": len(errors),
                             "failed": [{"id": s[0], "name": s[1], "status": s[2]} for s in errors]})
@@ -1326,6 +1355,83 @@ def run(today=None, verbose=True):
             print(f"  [{ev['type']}/{ev['level']}] {ev['region']}: {ev['title'][:100]}")
     return fresh_new, statuses
 
+
+
+def audit_url(url, title_override=None, summary_override=""):
+    """Только диагностика. Не меняет события, не запускает рассылку."""
+    from urllib.parse import urlsplit
+    result = {"url": url, "trace": trace_lookup(url), "published": False}
+    key = canonical_url(url)
+    if not key:
+        result["error"] = "URL должен быть http/https"
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 2
+    events = load_json(EVENTS_FILE, [])
+    result["published"] = any(canonical_url(e.get("link")) == key for e in events)
+    cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
+    host = urlsplit(url).hostname or ""
+    matched = None
+    for src in cfg.get("sources", []):
+        source_url = src.get("url", "") or src.get("news_url", "")
+        if src.get("type") == "telegram":
+            source_url = "https://t.me/" + source_url
+        try:
+            shost = urlsplit(source_url).hostname or ""
+        except ValueError:
+            shost = ""
+        if shost and (host == shost or host == "www." + shost or shost == "www." + host):
+            matched = src
+            break
+    result["source_registered"] = bool(matched)
+    result["source_id"] = (matched or {}).get("id")
+    if TRACE_FILE.exists():
+        trace_data = load_json(TRACE_FILE, {})
+        result["source_last_run"] = next((entry for entry in trace_data.get("sources", [])
+            if entry.get("id") == result["source_id"]), None)
+    if result["trace"].get("found"):
+        result["interpretation"] = "Решение записано при последнем прогоне; классификатор повторно не запускается"
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+    result["interpretation"] = "URL не найден в последнем прогоне. Проверяем возможность классификации отдельно; это НЕ гарантия попадания в ленту"
+    try:
+        item = ({"title": title_override, "summary": summary_override, "link": url}
+                if title_override else article_metadata(http_get(url), url))
+        if not item:
+            result["analysis"] = {"status": "unreadable", "reason": "article_title_unavailable"}
+        else:
+            title, summary = item["title"], item.get("summary", "")
+            det = detect_all(title, summary, cfg.get("organizations", {}))
+            if not det:
+                result["analysis"] = {"status": "not_detected", "title": title}
+            else:
+                src = matched or {"id": "audit_only", "region": None}
+                ok, reason = event_relevance(title, summary, det, src, cfg.get("organizations", {}))
+                region = event_region(src, title, summary, det) if ok else None
+                duplicate = False
+                if ok and region:
+                    probe = {"title": title, "summary": summary, "link": url,
+                             "date": str(item.get("date", ""))[:10] or date.today().isoformat(),
+                             "type": det["type"], "level": det["level"],
+                             "org_class": det["org_class"], "region": region,
+                             "orgs": sorted({o[1] for o in det.get("orgs", [])}),
+                             "person": (det.get("subject", "") if det["type"] == "proceeding"
+                                        else "" if det["type"] == "workforce" else extract_person(title))}
+                    if det["type"] == "proceeding":
+                        probe["procedure_stage"] = det["stage"]
+                    probe_keys = set(event_keys(probe))
+                    duplicate = any(similar(probe, e) or bool(probe_keys & set(event_keys(e)))
+                                    for e in events)
+                result["analysis"] = {"title": title, "event_type": det["type"], "relevant": ok,
+                                      "reason": reason, "region": region,
+                                      "duplicate_existing": duplicate,
+                                      "status": ("already_in_events" if duplicate else "eligible")
+                                                if ok and region else "rejected"}
+    except requests.RequestException as exc:
+        result["analysis"] = {"status": "fetch_failed", "reason": type(exc).__name__}
+    except Exception as exc:
+        result["analysis"] = {"status": "error", "reason": type(exc).__name__}
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
 
 def check_sources():
     cfg = load_json(SOURCES_FILE, {"sources": []})
@@ -1607,7 +1713,12 @@ def main():
     ap.add_argument("--check", action="store_true", help="проверить доступность источников")
     ap.add_argument("--rebuild", action="store_true", help="пересобрать news.html")
     ap.add_argument("--notify", action="store_true", help="отправить новые события в Telegram")
+    ap.add_argument("--audit-url", metavar="URL", help="проверить URL по журналу и правилам без публикации")
+    ap.add_argument("--audit-title", help="заголовок, если сайт не открывается")
+    ap.add_argument("--audit-summary", default="", help="первый абзац, если сайт не открывается")
     args = ap.parse_args()
+    if args.audit_url:
+        return audit_url(args.audit_url, args.audit_title, args.audit_summary)
     if args.check:
         check_sources()
         return 0

@@ -1,0 +1,70 @@
+name: Однократно — убрать ложное назначение из исторической справки
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: szfo-data
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Зависимости
+        run: pip install -r requirements.txt
+
+      - name: Точечно обновить текущие файлы в репозитории
+        run: python scripts/patch_historical_appointment.py --apply
+
+      - name: Новые регрессионные тесты
+        run: python -m unittest tests.test_news_historical_appointment -v
+
+      - name: Исходные регрессионные тесты
+        run: python -m unittest tests.test_news -v
+
+      - name: Защита существующих правил качества
+        run: |
+          python -m unittest tests.test_news_proceedings_and_noise -v
+          python -m unittest tests.test_news_quality_20261124 -v
+          python -m unittest tests.test_news_branding_20261124 -v
+
+      - name: Удалить старые ложные карточки из events.json и пересобрать страницу
+        run: python news_monitor.py --rebuild
+
+      - name: Контроль удаления именно этой карточки
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f = Path('data/news/events.json')
+          records = json.loads(f.read_text(encoding='utf-8')) if f.exists() else []
+          bad = [e for e in records if 't.me/fontankaspb/114446' in e.get('link','')
+                 and e.get('type') == 'appointment']
+          if bad:
+              raise SystemExit('Ошибка: ложная карточка Шмидта осталась в events.json')
+          print(f'PASS: карточки Шмидта нет, сохранено событий: {len(records)}')
+          PY
+
+      - name: Сохранить исправления в main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add news_monitor.py .github/workflows/news.yml news.html data/news/events.json data/news/seen.json
+          if git diff --cached --quiet; then
+            echo 'Изменений нет — предыдущий запуск уже применил исправление'
+          else
+            git commit -m 'Значимые события: историческая справка не является назначением'
+            git pull --rebase --autostash -q
+            git push
+          fi

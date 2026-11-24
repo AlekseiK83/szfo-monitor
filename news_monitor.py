@@ -1,16 +1,12 @@
-"""Мониторинг новостей СЗФО: назначения руководителей и новые звания.
+"""«Значимые события СЗФО» — второй поток мониторинга проекта szfo-monitor.
 
-Второй поток szfo-monitor. Указы Президента ловит generate.py; этот скрипт
-читает новостные ленты (RSS, страницы новостей, публичные Telegram-каналы)
-и выбирает два типа событий:
-
-  1. звание   — региональные звания («Почётный гражданин …», «Заслуженный …
-               области»), генеральские и специальные звания руководителям
-               ведомств в регионе;
-  2. назначение — назначен / возглавил / освобождён от должности руководитель
-               или заместитель: правительство региона, подведомственные
-               учреждения, крупнейшие компании, МВД, ФСИН, Росгвардия, МЧС,
-               прокуратура, Следственный комитет.
+Первый поток наградных указов Президента реализован в generate.py и не
+зависит от этого скрипта. Здесь обрабатываются региональные новостные ленты
+(RSS, сайты и публичные Telegram-каналы) по значимым инфоповодам:
+кадровые решения, награды и звания, визиты, открытия и крупные проекты,
+юбилеи организаций, изменение персонала и официально подтверждённые
+процессуальные события. Перечень и правила категорий определяет детектор;
+переименование потока их не меняет.
 
 Запуск:
     python news_monitor.py            — прогон: собрать ленты, найти события,
@@ -51,7 +47,15 @@ EVENTS_FILE = DATA_DIR / "events.json"
 SEEN_FILE = DATA_DIR / "seen.json"
 FEEDS_CACHE = DATA_DIR / "feeds.json"
 RUN_SUMMARY = Path("run_summary_news.json")
-PAGE_FILE = Path("news.html")
+PAGE_FILE = Path("news.html")  # Публичный URL остаётся прежним.
+
+# Единая айдентика второго потока: HTML и Telegram получают одно название.
+STREAM_NAME = "Значимые события"
+STREAM_FULL_NAME = f"{STREAM_NAME} СЗФО"
+STREAM_DESCRIPTION = (
+    "Кадровые решения и отставки · награды и звания · крупные проекты и открытия · "
+    "юбилеи организаций · изменения персонала · процессуальные события"
+)
 
 KEEP_EVENTS_DAYS = 120       # сколько держать события на странице
 KEEP_SEEN_DAYS = 45          # память дедупликации
@@ -1560,7 +1564,7 @@ def check_sources():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# Страница news.html
+# Страница «Значимые события СЗФО» (news.html)
 # ═══════════════════════════════════════════════════════════════════════
 
 TYPE_LABEL = {"appointment": "Назначение", "leave": "Отставка", "title": "Звание", "obituary": "Утрата",
@@ -1684,7 +1688,11 @@ def render_page(events, today):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15120f" media="(prefers-color-scheme: dark)">
-<title>Назначения и звания в СЗФО — мониторинг новостей</title>
+<title>{esc(STREAM_FULL_NAME)} — мониторинг новостей</title>
+<meta name="description" content="{esc(STREAM_DESCRIPTION)}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{esc(STREAM_FULL_NAME)}">
+<meta property="og:description" content="{esc(STREAM_DESCRIPTION)}">
 <style>
 {g.BASE_CSS}
 {PAGE_CSS}
@@ -1695,10 +1703,9 @@ def render_page(events, today):
   <div class="nav"><a href="index.html">← Наградные указы</a></div>
   <div class="report">
     <div class="report-head">
-      <div class="eyebrow">Мониторинг новостей СЗФО</div>
-      <h1>Назначения и звания</h1>
-      <div class="period">руководители и заместители в органах власти, ведомствах, учреждениях и крупнейших компаниях ·
-        региональные и генеральские звания</div>
+      <div class="eyebrow">Мониторинг Северо-Западного федерального округа</div>
+      <h1>{esc(STREAM_NAME)}</h1>
+      <div class="period">{esc(STREAM_DESCRIPTION)}</div>
       <div class="rule"></div>
     </div>
     <div class="filter-bar"><span class="filter-label">Регион:</span>{''.join(chips)}</div>
@@ -1785,7 +1792,7 @@ def notify():
         by_region.setdefault(ev["region"], []).append(ev)
     icon = {"appointment": "👤", "leave": "🚪", "title": "🎖", "obituary": "🕯", "visit": "🏛", "anniversary": "🎂",
             "launch": "🚀", "award": "🏅", "status": "⭐", "ownership": "🏦", "workforce": "👥", "proceeding": "⚖️"}
-    lines = [f"📰 <b>Назначения и звания в СЗФО</b> — {len(new)} "
+    lines = [f"📰 <b>{esc(STREAM_FULL_NAME)}</b> — {len(new)} "
              f"{nt.plural(len(new), 'новое событие', 'новых события', 'новых событий')}"]
     for region in sorted(by_region, key=lambda r: g.REGION_ORDER.index(r) if r in g.REGION_ORDER else 99):
         lines.append(f"\n<b>{esc(region)}</b>")

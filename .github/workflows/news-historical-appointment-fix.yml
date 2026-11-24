@@ -1,31 +1,8 @@
-name: Однократно — убрать ложное назначение из исторической справки
-
-on:
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-concurrency:
-  group: szfo-data
-  cancel-in-progress: false
-
-jobs:
-  fix:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Зависимости
-        run: pip install -r requirements.txt
-
-      - name: Точечно обновить текущие файлы в репозитории
-        run: python scripts/patch_historical_appointment.py --apply
+          git restore --source=HEAD --worktree -- .github/workflows/news.yml
+          if ! git diff --quiet -- .github/workflows; then
+            echo '::error::В workflow остались незапланированные изменения'
+            exit 1
+          fi
 
       - name: Новые регрессионные тесты
         run: python -m unittest tests.test_news_historical_appointment -v
@@ -60,7 +37,12 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add news_monitor.py .github/workflows/news.yml news.html data/news/events.json data/news/seen.json
+          git add news_monitor.py news.html data/news/events.json data/news/seen.json
+          # Предварительная защита: не разрешаем коммитить workflow-файлы.
+          if git diff --cached --name-only | grep -q '^\.github/workflows/'; then
+            echo '::error::Обнаружено изменение .github/workflows в коммите'
+            exit 1
+          fi
           if git diff --cached --quiet; then
             echo 'Изменений нет — предыдущий запуск уже применил исправление'
           else

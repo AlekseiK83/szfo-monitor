@@ -1,54 +1,23 @@
 {
  "date": "2026-11-24",
- "new": [
-  {
-   "type": "title",
-   "level": "head",
-   "org_class": "person",
-   "region": "Мурманская область",
-   "title": "Кательникова стала заслуженным работником местного самоуправления",
-   "summary": "Президент присвоил председателю Совдепа Апатитов Светлане Кательниковой звание «Заслуженный работник местного самоуправления».\n«За заслуги в области местного самоуправления и...",
-   "link": "https://severpost.ru/read/216487",
-   "date": "2026-11-24",
-   "source": "СеверПост",
-   "source_id": "severpost",
-   "rank": 3,
-   "person": "Совдепа Апатитов",
-   "orgs": []
-  },
-  {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "force",
-   "region": "Мурманская область",
-   "title": "✅ В «Мурмашинской тепловой компании» на стадии",
-   "summary": "✅ В «Мурмашинской тепловой компании» на стадии\nбанкротства назначили временного управляющего\n\nВ «Мурмашинской тепловой компании» назначили временного управляющего и введено наблюдение. Решение принято заседания Арбитражного суда Мурманской области, которое состоялось 24 ноября 2026 года.\n\nВ сентябре 2026 года в суд поступило заявление о признании компании банкротом. Сообщается, что должник сам ини",
-   "link": "https://t.me/bportcom/87218",
-   "date": "2026-11-24",
-   "source": "Б-порт (Telegram)",
-   "source_id": "bport_tg",
-   "rank": 3,
-   "person": "",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3277,
-  "items_fresh": 2963,
-  "detected": 38,
-  "relevance_accepted": 23,
-  "relevance_rejected": 15,
+  "items_received": 3186,
+  "items_fresh": 2878,
+  "detected": 28,
+  "relevance_accepted": 18,
+  "relevance_rejected": 10,
   "region_rejected": 0,
-  "candidates": 23,
+  "candidates": 18,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 14,
+   "missing_regional_event_anchor": 9,
    "historical_appointment_not_new_event": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Путин присвоил звание \"Заслуженный врач\" жене главы Минздрава",
-    "source": "РИА Новости"
+    "title": "Фадеев: новые члены СПЧ усилят его работу в сфере здравоохранения",
+    "source": "ТАСС"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -76,11 +45,6 @@
     "source": "Б-порт"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "В «Мурмашинской тепловой компании» на стадии банкротства назначили временного управляющего",
-    "source": "Б-порт"
-   },
-   {
     "reason": "historical_appointment_not_new_event",
     "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
     "source": "Фонтанка (Telegram)"
@@ -97,33 +61,13 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Уральского министра из команды Куйвашева отправили в отставку. Раньше он работал в Тюменской области",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "В Миллерово назначили нового главу города",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
     "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
     "source": "Google Новости · Псковская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Новгородская область"
    }
   ],
-  "not_detected": 2925,
-  "duplicates": 21,
-  "new_events": 2,
+  "not_detected": 2850,
+  "duplicates": 18,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -142,8 +86,8 @@
    },
    {
     "id": "tass",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 99",
+    "items": 99
    },
    {
     "id": "ria",
@@ -157,8 +101,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 89",
-    "items": 89
+    "status": "rss 91",
+    "items": 91
    },
    {
     "id": "vedomosti",
@@ -202,13 +146,13 @@
    },
    {
     "id": "dp",
-    "status": "rss 100",
-    "items": 100
+    "status": "html 38",
+    "items": 38
    },
    {
     "id": "spbdnevnik",
-    "status": "html 62",
-    "items": 62
+    "status": "html 56",
+    "items": 56
    },
    {
     "id": "genproc_78",
@@ -217,8 +161,8 @@
    },
    {
     "id": "lo_gov",
-    "status": "html 83",
-    "items": 83
+    "status": "error: ReadTimeout",
+    "items": 0
    },
    {
     "id": "lo_tg",
@@ -232,8 +176,8 @@
    },
    {
     "id": "47news",
-    "status": "html 116",
-    "items": 116
+    "status": "html 115",
+    "items": 115
    },
    {
     "id": "online47",
@@ -277,8 +221,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 46",
-    "items": 46
+    "status": "rss 45",
+    "items": 45
    },
    {
     "id": "krassever",
@@ -302,8 +246,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 90",
-    "items": 90
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "genproc_39",
@@ -312,8 +256,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "error: ReadTimeout",
-    "items": 0
+    "status": "html 54",
+    "items": 54
    },
    {
     "id": "mur_gub_tg",
@@ -322,8 +266,8 @@
    },
    {
     "id": "bport",
-    "status": "html 36",
-    "items": 36
+    "status": "html 37",
+    "items": 37
    },
    {
     "id": "severpost",
@@ -347,8 +291,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 37",
-    "items": 37
+    "status": "html 39",
+    "items": 39
    },
    {
     "id": "genproc_10",
@@ -357,8 +301,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "informpskov",
@@ -372,8 +316,8 @@
    },
    {
     "id": "genproc_60",
-    "status": "error: HTTP 502",
-    "items": 0
+    "status": "html 50",
+    "items": 50
    },
    {
     "id": "bnkomi",
@@ -392,13 +336,13 @@
    },
    {
     "id": "genproc_11",
-    "status": "error: HTTP 502",
-    "items": 0
+    "status": "html 49",
+    "items": 49
    },
    {
     "id": "nov_gov",
-    "status": "html 76",
-    "items": 76
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "nov_official_tg",
@@ -447,8 +391,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lentv24_tg",
@@ -462,8 +406,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "komiinform_tg",
@@ -507,28 +451,28 @@
    },
    {
     "id": "gnews_arh",
-    "status": "rss 45",
-    "items": 45
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_vol",
-    "status": "rss 20",
-    "items": 20
-   },
-   {
-    "id": "gnews_klg",
-    "status": "rss 61",
-    "items": 61
-   },
-   {
-    "id": "gnews_mur",
     "status": "rss 42",
     "items": 42
    },
    {
+    "id": "gnews_klg",
+    "status": "rss 32",
+    "items": 32
+   },
+   {
+    "id": "gnews_mur",
+    "status": "rss 43",
+    "items": 43
+   },
+   {
     "id": "gnews_kar",
-    "status": "rss 19",
-    "items": 19
+    "status": "rss 42",
+    "items": 42
    },
    {
     "id": "gnews_psk",
@@ -537,13 +481,13 @@
    },
    {
     "id": "gnews_komi",
-    "status": "rss 13",
-    "items": 13
+    "status": "rss 37",
+    "items": 37
    },
    {
     "id": "gnews_nov",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "rosbalt",
@@ -557,19 +501,19 @@
  "sources_failed": 3,
  "failed": [
   {
-   "id": "mur_gov",
-   "name": "Правительство Мурманской области",
+   "id": "lo_gov",
+   "name": "Правительство Ленинградской области",
    "status": "error: ReadTimeout"
   },
   {
-   "id": "genproc_60",
-   "name": "Прокуратура Псковской области",
-   "status": "error: HTTP 502"
+   "id": "nov_gov",
+   "name": "Правительство Новгородской области",
+   "status": "error: ConnectionError"
   },
   {
-   "id": "genproc_11",
-   "name": "Прокуратура Республики Коми",
-   "status": "error: HTTP 502"
+   "id": "gnews_arh",
+   "name": "Google Новости · Архангельская область",
+   "status": "error: HTTP 429"
   }
  ]
 }

@@ -3,6 +3,40 @@
   "type": "appointment",
   "level": "head",
   "org_class": "gov",
+  "region": "Санкт-Петербург",
+  "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Jb1BTeGM4RUJIZFp6WDk5SW44T3ZfYzRBRmxLcVZjcEJHelFoel8wQ3J0d2JVMXBmXzJoXzN5Z3FzOGhwSTVENGxWaG5OczgtdHM0LXpLM3JKQUpy?oc=5",
+  "date": "2026-11-24",
+  "source": "Google Новости · Архангельская область",
+  "source_id": "gnews_arh",
+  "rank": 4,
+  "person": "Сергей Салмин",
+  "orgs": [
+   "Водоканал"
+  ]
+ },
+ {
+  "type": "award",
+  "level": "head",
+  "org_class": "company",
+  "region": "Санкт-Петербург",
+  "title": "В Петропавловской крепости наградили победителей всероссийского конкурса «Суворовское знамя»",
+  "summary": "",
+  "link": "https://spbdnevnik.ru/news/2026-11-24/v-petropavlovskoi-kreposti-nagradili-pobeditelei-vserossiiskogo-konkursa-suvorovskoe-znamia",
+  "date": "2026-11-24",
+  "source": "Петербургский дневник",
+  "source_id": "spbdnevnik",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Петропавловская крепость"
+  ]
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "gov",
   "region": "Республика Коми",
   "title": "Вера Железцова переназначена уполномоченным по правам человека в Коми",
   "summary": "",
@@ -27,6 +61,21 @@
   "source_id": "severpost",
   "rank": 3,
   "person": "Совдепа Апатитов",
+  "orgs": []
+ },
+ {
+  "type": "launch",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Ленинградская область",
+  "title": "Для дошкольников и родителей запустили новый образовательный портал «Главный детский»",
+  "summary": "",
+  "link": "https://online47.ru/2026/11/24/dlya-doskolnikov-i-roditelei-zapustili-novyi-obrazovatelnyi-portal-glavnyi-detskii-248251",
+  "date": "2026-11-24",
+  "source": "Online47",
+  "source_id": "online47",
+  "rank": 3,
+  "person": "",
   "orgs": []
  },
  {

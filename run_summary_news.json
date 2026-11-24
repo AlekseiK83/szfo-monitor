@@ -1,16 +1,67 @@
 {
  "date": "2026-11-24",
- "new": [],
+ "new": [
+  {
+   "type": "award",
+   "level": "head",
+   "org_class": "company",
+   "region": "Санкт-Петербург",
+   "title": "В Петропавловской крепости наградили победителей всероссийского конкурса «Суворовское знамя»",
+   "summary": "",
+   "link": "https://spbdnevnik.ru/news/2026-11-24/v-petropavlovskoi-kreposti-nagradili-pobeditelei-vserossiiskogo-konkursa-suvorovskoe-znamia",
+   "date": "2026-11-24",
+   "source": "Петербургский дневник",
+   "source_id": "spbdnevnik",
+   "rank": 3,
+   "person": "",
+   "orgs": [
+    "Петропавловская крепость"
+   ]
+  },
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Ленинградская область",
+   "title": "Для дошкольников и родителей запустили новый образовательный портал «Главный детский»",
+   "summary": "",
+   "link": "https://online47.ru/2026/11/24/dlya-doskolnikov-i-roditelei-zapustili-novyi-obrazovatelnyi-portal-glavnyi-detskii-248251",
+   "date": "2026-11-24",
+   "source": "Online47",
+   "source_id": "online47",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Санкт-Петербург",
+   "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Jb1BTeGM4RUJIZFp6WDk5SW44T3ZfYzRBRmxLcVZjcEJHelFoel8wQ3J0d2JVMXBmXzJoXzN5Z3FzOGhwSTVENGxWaG5OczgtdHM0LXpLM3JKQUpy?oc=5",
+   "date": "2026-11-24",
+   "source": "Google Новости · Архангельская область",
+   "source_id": "gnews_arh",
+   "rank": 4,
+   "person": "Сергей Салмин",
+   "orgs": [
+    "Водоканал"
+   ]
+  }
+ ],
  "diagnostics": {
-  "items_received": 3186,
-  "items_fresh": 2878,
-  "detected": 28,
-  "relevance_accepted": 18,
-  "relevance_rejected": 10,
+  "items_received": 3333,
+  "items_fresh": 3053,
+  "detected": 37,
+  "relevance_accepted": 24,
+  "relevance_rejected": 13,
   "region_rejected": 0,
-  "candidates": 18,
+  "candidates": 24,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 9,
+   "missing_regional_event_anchor": 11,
+   "generic_federal_without_local_anchor": 1,
    "historical_appointment_not_new_event": 1
   },
   "rejected_examples": [
@@ -45,19 +96,34 @@
     "source": "Б-порт"
    },
    {
+    "reason": "generic_federal_without_local_anchor",
+    "title": "О полагающихся матерям-героиням выплатах рассказали псковичам",
+    "source": "ПАИ"
+   },
+   {
     "reason": "historical_appointment_not_new_event",
     "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
     "source": "Фонтанка (Telegram)"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Жюри фестиваля «Виват, Театр!» в Тамбове вновь возглавила Элеонора Макарова",
-    "source": "Google Новости · Санкт-Петербург"
+    "title": "🇷🇺 Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
+    "source": "Б-порт (Telegram)"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Санкт-Петербург"
+    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Уральского министра из команды Куйвашева отправили в отставку. Раньше он работал в Тюменской области",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "В Миллерово назначили нового главу города",
+    "source": "Google Новости · Архангельская область"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -65,9 +131,9 @@
     "source": "Google Новости · Псковская область"
    }
   ],
-  "not_detected": 2850,
-  "duplicates": 18,
-  "new_events": 0,
+  "not_detected": 3016,
+  "duplicates": 21,
+  "new_events": 3,
   "sources": [
    {
     "id": "kremlin",
@@ -86,13 +152,13 @@
    },
    {
     "id": "tass",
-    "status": "rss 99",
-    "items": 99
+    "status": "rss 96",
+    "items": 96
    },
    {
     "id": "ria",
-    "status": "rss 99",
-    "items": 99
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "interfax",
@@ -101,8 +167,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 91",
-    "items": 91
+    "status": "rss 94",
+    "items": 94
    },
    {
     "id": "vedomosti",
@@ -116,8 +182,8 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 18",
-    "items": 18
+    "status": "telegram 17",
+    "items": 17
    },
    {
     "id": "genproc_tg",
@@ -131,8 +197,8 @@
    },
    {
     "id": "rosguard",
-    "status": "rss 20",
-    "items": 20
+    "status": "html 62",
+    "items": 62
    },
    {
     "id": "spb_smolny_tg",
@@ -146,13 +212,13 @@
    },
    {
     "id": "dp",
-    "status": "html 38",
-    "items": 38
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "spbdnevnik",
-    "status": "html 56",
-    "items": 56
+    "status": "html 55",
+    "items": 55
    },
    {
     "id": "genproc_78",
@@ -166,8 +232,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "lo_zaks",
@@ -176,8 +242,8 @@
    },
    {
     "id": "47news",
-    "status": "html 115",
-    "items": 115
+    "status": "html 116",
+    "items": 116
    },
    {
     "id": "online47",
@@ -216,8 +282,8 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "newsvo",
@@ -246,8 +312,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 91",
+    "items": 91
    },
    {
     "id": "genproc_39",
@@ -291,8 +357,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 39",
-    "items": 39
+    "status": "html 41",
+    "items": 41
    },
    {
     "id": "genproc_10",
@@ -301,8 +367,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 54",
+    "items": 54
    },
    {
     "id": "informpskov",
@@ -341,8 +407,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "nov_official_tg",
@@ -371,8 +437,8 @@
    },
    {
     "id": "bport_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "rusever_tg",
@@ -381,8 +447,8 @@
    },
    {
     "id": "first_arctic_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "dp_tg",
@@ -406,8 +472,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "komiinform_tg",
@@ -441,8 +507,8 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 59",
-    "items": 59
+    "status": "rss 22",
+    "items": 22
    },
    {
     "id": "gnews_lo",
@@ -451,43 +517,43 @@
    },
    {
     "id": "gnews_arh",
-    "status": "error: HTTP 429",
-    "items": 0
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "gnews_vol",
-    "status": "rss 42",
-    "items": 42
+    "status": "rss 20",
+    "items": 20
    },
    {
     "id": "gnews_klg",
-    "status": "rss 32",
-    "items": 32
-   },
-   {
-    "id": "gnews_mur",
-    "status": "rss 43",
-    "items": 43
-   },
-   {
-    "id": "gnews_kar",
-    "status": "rss 42",
-    "items": 42
-   },
-   {
-    "id": "gnews_psk",
     "status": "rss 62",
     "items": 62
    },
    {
+    "id": "gnews_mur",
+    "status": "rss 49",
+    "items": 49
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 43",
+    "items": 43
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 31",
+    "items": 31
+   },
+   {
     "id": "gnews_komi",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 14",
+    "items": 14
    },
    {
     "id": "gnews_nov",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 25",
+    "items": 25
    },
    {
     "id": "rosbalt",
@@ -498,22 +564,12 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 3,
+ "sources_failed": 1,
  "failed": [
   {
    "id": "lo_gov",
    "name": "Правительство Ленинградской области",
    "status": "error: ReadTimeout"
-  },
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectionError"
-  },
-  {
-   "id": "gnews_arh",
-   "name": "Google Новости · Архангельская область",
-   "status": "error: HTTP 429"
   }
  ]
 }

@@ -1677,10 +1677,10 @@ def render_news_banner():
         stats += stat(other, "другое событие", "других события", "других событий")
 
     return f'''
-  <a class="news-banner" href="news.html" aria-label="Перейти к новостям: назначения и звания">
+  <a class="news-banner" href="news.html" aria-label="Перейти к новостям: Значимые события">
     <div class="news-banner-body">
       <div class="eyebrow">Второй поток · новости регионов</div>
-      <div class="news-banner-title">Назначения и звания</div>
+      <div class="news-banner-title">Значимые события</div>
       {stage}
       {dots}
     </div>

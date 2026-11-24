@@ -1,0 +1,53 @@
+name: Однократно — название виджета новостей на главной
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: szfo-data
+  cancel-in-progress: false
+
+jobs:
+  rename-home-widget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Самопроверка точечной замены
+        run: python scripts/rename_home_news_widget.py --self-test
+
+      - name: Предварительная проверка двух файлов без изменений
+        run: python scripts/rename_home_news_widget.py --dry-run
+
+      - name: Заменить название виджета в index.html и generate.py
+        run: python scripts/rename_home_news_widget.py
+
+      - name: Проверить изменения и отсутствие иных правок
+        run: |
+          python -m py_compile generate.py
+          git diff --check
+          git diff --stat -- index.html generate.py
+          git diff --unified=1 -- index.html generate.py
+          python scripts/rename_home_news_widget.py --dry-run
+
+      - name: Коммитить только index.html и generate.py
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- index.html generate.py
+          if git diff --cached --quiet; then
+            echo "Переименование уже выполнено; новых изменений нет"
+          else
+            git commit -m "Главная: Значимые события вместо Назначения и звания"
+            git push
+          fi

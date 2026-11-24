@@ -1,4 +1,4 @@
-name: Новости — назначения и звания
+name: Значимые события СЗФО
 
 on:
   schedule:
@@ -55,10 +55,13 @@ jobs:
       - name: Контроль качества от 24 ноября (шум, дубли, трассировка)
         run: python -m unittest tests.test_news_quality_20261124 -v
 
+      - name: Проверка названия потока и неизменности маршрутов
+        run: python -m unittest tests.test_news_branding_20261124 -v
+
       - name: Подключить Росбалт ко второму потоку
         run: python scripts/add_rosbalt_source.py
 
-      - name: Сбор новостей и поиск событий
+      - name: Сбор значимых событий СЗФО
         run: python news_monitor.py
 
       - name: Убедиться, что интервью врио министра не опубликовано
@@ -75,7 +78,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Изменений нет — коммит не создаётся"
           else
-            git commit -m "Новости: назначения и звания, $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "Значимые события СЗФО, $(date -u +'%Y-%m-%d %H:%M UTC')"
             git pull --rebase --autostash -q || true
             git push
           fi

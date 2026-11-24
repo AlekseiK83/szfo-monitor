@@ -1,10 +1,10 @@
-name: Новости — проверить статью по ссылке
+name: Значимые события СЗФО — проверка публикации
 
 on:
   workflow_dispatch:
     inputs:
       article_url:
-        description: 'Полная ссылка на статью для проверки (второй поток)'
+        description: 'Полная ссылка на публикацию для проверки (Значимые события СЗФО)'
         type: string
         required: true
       article_title:

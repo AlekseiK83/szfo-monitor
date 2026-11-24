@@ -2,64 +2,33 @@
  "date": "2026-11-24",
  "new": [
   {
-   "type": "appointment",
+   "type": "leave",
    "level": "head",
    "org_class": "gov",
-   "region": "Республика Коми",
-   "title": "Бюджет, социальные гарантии и кадровые решения: Александр Макаренко подвел итоги заседания сессии Госсовета Коми",
-   "summary": "Бюджет, социальные гарантии и кадровые решения: Александр Макаренко подвел итоги заседания сессии Госсовета Коми\n\nhttps://komiinform.ru/news/303329",
-   "link": "https://t.me/komiinform/104487",
-   "date": "2026-11-24",
-   "source": "Комиинформ (Telegram)",
-   "source_id": "komiinform_tg",
-   "rank": 3,
-   "person": "Александр Макаренко",
-   "orgs": []
-  },
-  {
-   "type": "launch",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Санкт-Петербург",
-   "title": "Новый газопровод ввели в эксплуатацию в Пыталово",
-   "summary": "Специалисты компании «Газпром газораспределение Псков» построили и ввели в эксплуатацию газопровод протяжённостью 1,2 километра для догазификации 20 индивидуальных домовладений на улице Белорусской в Пыталово, сообщили ПАИ в пресс-службе организации. Первые три домовладения подключены к новым газовым сетям. \n\n \n\n Газификация индивидуальных жилых домов на улице Белорусской стала возможной благодаря",
-   "link": "https://informpskov.ru/news/523811.html",
-   "date": "2026-11-24",
-   "source": "ПАИ",
-   "source_id": "informpskov",
-   "rank": 3,
-   "person": "",
-   "orgs": [
-    "Газпром"
-   ]
-  },
-  {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Республика Карелия",
-   "title": "Назначен новый руководитель карельского штаба Комитета семей воинов Отечества",
+   "region": "Мурманская область",
+   "title": "Миллиардные хищения и бегство в СВО: задержанный глава Мурманской области Андрей Чибис на допросах отрицает вину и просит об отставке",
    "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQUzRRNUl2RERuYzJYTGxnTWUwb0l0UTFDRVpjMnk3cU5GUFBySWtSRzIweXcyZ19xbE44MXYwS014OU5jTzNkN1NDM0Nvd25oUlNBUlpjbEhQSDREVkNHY0VwbGdlSXVmMVFNeEZKNGlxOFJnZHNYdGhHbWFBRGJtZURBUENvTi01Y2s4UDFZTHhuc1NMUC1lMVJLcnY2YThRc05Mc0xvdW1iNmJi?oc=5",
+   "link": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxOYVhXMnBkbFlDT29CVGNpWVFSQXVRQW04U3dieGlVZWVJNkhVeFpPOTlTQWhBd2RNeFNPb1FZcEpnWXRFaHMwSE5PbXpqcl9ZVXQ5OGhFdUJUOTZqMElsamxNZkpNQzYyUjFtWE5sU2lzQVJvdW1Dd3dhVnp5WXIwMHVrcm1kSWlnNGl3Z0xkZ2Z0al9RNVZwVTVGU3BfTWtncFhQd0h6VWhxOFZSN3ZNZ1kwM0ZaWE9uQ09Fc29XUE1rSWRsZXNWZUxFczFxaHR0TE9NV1VyWDBZa1c4ZmV0dkF2cHhOcExoNzhSd2lLWDdGQlB3Y1JEUkxFcUc?oc=5",
    "date": "2026-11-24",
-   "source": "Google Новости · Республика Карелия",
-   "source_id": "gnews_kar",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
    "rank": 4,
    "person": "",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3351,
-  "items_fresh": 3069,
-  "detected": 45,
-  "relevance_accepted": 30,
-  "relevance_rejected": 15,
+  "items_received": 3402,
+  "items_fresh": 3113,
+  "detected": 44,
+  "relevance_accepted": 27,
+  "relevance_rejected": 17,
   "region_rejected": 1,
-  "candidates": 29,
+  "candidates": 26,
   "rejection_reasons": {
    "missing_regional_event_anchor": 8,
-   "foreign_event_geography_overrides_org_dictionary": 5,
+   "foreign_event_geography_overrides_org_dictionary": 6,
+   "minor_local_utility_without_regional_scale": 1,
    "generic_federal_without_local_anchor": 1,
    "historical_appointment_not_new_event": 1
   },
@@ -88,6 +57,11 @@
     "reason": "missing_regional_event_anchor",
     "title": "Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
     "source": "Б-порт"
+   },
+   {
+    "reason": "minor_local_utility_without_regional_scale",
+    "title": "Новый газопровод ввели в эксплуатацию в Пыталово",
+    "source": "ПАИ"
    },
    {
     "reason": "generic_federal_without_local_anchor",
@@ -133,16 +107,11 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
     "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
-    "source": "Google Новости · Псковская область"
    }
   ],
-  "not_detected": 3024,
-  "duplicates": 26,
-  "new_events": 3,
+  "not_detected": 3069,
+  "duplicates": 25,
+  "new_events": 1,
   "sources": [
    {
     "id": "kremlin",
@@ -161,8 +130,8 @@
    },
    {
     "id": "tass",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "ria",
@@ -226,8 +195,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 59",
-    "items": 59
+    "status": "html 58",
+    "items": 58
    },
    {
     "id": "genproc_78",
@@ -256,8 +225,8 @@
    },
    {
     "id": "online47",
-    "status": "html 26",
-    "items": 26
+    "status": "html 25",
+    "items": 25
    },
    {
     "id": "genproc_47",
@@ -296,8 +265,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 45",
-    "items": 45
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "krassever",
@@ -321,8 +290,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 94",
+    "items": 94
    },
    {
     "id": "genproc_39",
@@ -351,8 +320,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "genproc_51",
@@ -366,8 +335,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 48",
-    "items": 48
+    "status": "html 50",
+    "items": 50
    },
    {
     "id": "genproc_10",
@@ -376,8 +345,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 73",
-    "items": 73
+    "status": "rss 75",
+    "items": 75
    },
    {
     "id": "informpskov",
@@ -416,8 +385,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "nov_official_tg",
@@ -436,13 +405,13 @@
    },
    {
     "id": "genproc_53",
-    "status": "html 46",
-    "items": 46
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "bport_tg",
@@ -471,8 +440,8 @@
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "stolicaonego_tg",
@@ -481,8 +450,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 13",
-    "items": 13
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "komiinform_tg",
@@ -516,13 +485,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 57",
-    "items": 57
+    "status": "rss 56",
+    "items": 56
    },
    {
     "id": "gnews_lo",
-    "status": "rss 41",
-    "items": 41
+    "status": "rss 43",
+    "items": 43
    },
    {
     "id": "gnews_arh",
@@ -531,8 +500,8 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 45",
-    "items": 45
+    "status": "rss 19",
+    "items": 19
    },
    {
     "id": "gnews_klg",
@@ -541,13 +510,13 @@
    },
    {
     "id": "gnews_mur",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "gnews_kar",
-    "status": "rss 21",
-    "items": 21
+    "status": "rss 44",
+    "items": 44
    },
    {
     "id": "gnews_psk",
@@ -561,8 +530,8 @@
    },
    {
     "id": "gnews_nov",
-    "status": "rss 25",
-    "items": 25
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "rosbalt",
@@ -576,8 +545,8 @@
  "sources_failed": 1,
  "failed": [
   {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
+   "id": "genproc_53",
+   "name": "Прокуратура Новгородской области",
    "status": "error: ConnectionError"
   }
  ]

@@ -20,6 +20,9 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
 
       - uses: actions/setup-python@v6
         with:
@@ -70,18 +73,54 @@ jobs:
       - name: Проверить публикацию Росбалта от 23 ноября
         run: python scripts/check_featured_news.py
 
-      - name: Коммит и push изменений
+      - name: Безопасная публикация результатов (с повторной сборкой при конкурирующем коммите)
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "Изменений нет — коммит не создаётся"
-          else
+
+          # Не коммитим код, файлы workflow и чужие артефакты: только результаты этого потока.
+          for attempt in 1 2 3; do
+            base=$(git rev-parse HEAD)
+            git add -A -- data/news news.html run_summary_news.json news_sources.json
+            if git diff --cached --quiet; then
+              echo "Изменений нет — публиковать нечего"
+              exit 0
+            fi
+
             git commit -m "Значимые события СЗФО, $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git pull --rebase --autostash -q || true
-            git push
-          fi
+            if git push origin HEAD:refs/heads/main; then
+              echo "Результаты опубликованы в main (попытка $attempt)"
+              exit 0
+            fi
+
+            # Коммит не опубликован. Нельзя продолжать rebase после конфликта.
+            # Повторный сбор запускается ТОЛЬКО когда main действительно обновился.
+            echo "::warning::Публикация отклонена; проверяем, не обновился ли main"
+            git fetch origin '+refs/heads/main:refs/remotes/origin/main'
+            remote=$(git rev-parse refs/remotes/origin/main)
+            if [[ "$remote" == "$base" ]]; then
+              echo "::error::main не изменился: причина отказа push не в конкурирующем коммите"
+              exit 1
+            fi
+            if ! git merge-base --is-ancestor "$base" "$remote"; then
+              echo "::error::Обнаружено переписывание истории main; автоматически не перезаписываем"
+              exit 1
+            fi
+            if (( attempt == 3 )); then
+              echo "::error::main обновился 3 раза подряд; безопасно завершаем без публикации"
+              exit 1
+            fi
+
+            echo "::notice::Получаем свежий main и повторяем сбор без конфликтного rebase"
+            git checkout -B main refs/remotes/origin/main
+            python -m unittest discover -s tests -q
+            python scripts/add_rosbalt_source.py
+            python news_monitor.py
+            python scripts/check_pln_interview.py
+            python scripts/check_featured_news.py
+          done
 
       - name: Уведомление в Telegram о новых событиях
         if: success()

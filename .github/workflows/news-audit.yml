@@ -1,0 +1,39 @@
+name: Новости — проверить статью по ссылке
+
+on:
+  workflow_dispatch:
+    inputs:
+      article_url:
+        description: 'Полная ссылка на статью для проверки (второй поток)'
+        type: string
+        required: true
+      article_title:
+        description: 'Необязательно: заголовок, если сайт не открывается'
+        type: string
+        required: false
+      article_summary:
+        description: 'Необязательно: первый абзац'
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Установка зависимостей
+        run: pip install -r requirements.txt
+      - name: Диагностика новости без изменения данных и Telegram
+        env:
+          ARTICLE_URL: ${{ inputs.article_url }}
+          ARTICLE_TITLE: ${{ inputs.article_title }}
+          ARTICLE_SUMMARY: ${{ inputs.article_summary }}
+        run: python news_monitor.py --audit-url "$ARTICLE_URL" --audit-title "$ARTICLE_TITLE" --audit-summary "$ARTICLE_SUMMARY"

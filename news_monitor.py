@@ -608,10 +608,114 @@ def historical_appointment_backstory(title, summary):
             return True
     return False
 
+# A Google News feed is a discovery channel, NOT evidence that an event
+# belongs to the region named in its query.  Avoid "Водоканал" from a
+# remote city inheriting the Saint Petersburg organization-dictionary entry.
+# The decision is made on the event headline and its first lead, not on an
+# entire scraped article containing incidental place names.
+AMBIGUOUS_GEO_ORGANIZATIONS = frozenset({
+    "водоканал", "метрострой", "теплосеть", "горводоканал", "университет",
+    "политех", "администрация", "мэрия",
+})
+# Adjectival forms of large non-SZFO cities that the legacy NEWS_FOREIGN
+# list (designed mainly for inflected city nouns) does not cover.
+FOREIGN_CITY_ADJECTIVES = re.compile(
+    r"\b(?:тульск|казанск|уфимск|нижегородск|самарск|ростовск|"
+    r"свердловск|краснодарск|екатеринбургск|ульяновск|орловск|"
+    r"белгородск|смоленск|ярославск|воронежск|челябинск)\w*", re.I)
+
+
+def foreign_place_matches(text):
+    return list(NEWS_FOREIGN.finditer(text or "")) + list(FOREIGN_CITY_ADJECTIVES.finditer(text or ""))
+
+
+def has_foreign_place(text):
+    return bool(foreign_place_matches(text) or g._has_foreign_region(text or ""))
+
+
+def foreign_place_qualifies_organization(title):
+    """A city belongs to the *named enterprise*, not to an author's bio.
+
+    Examples: 'Оренбург Водоканал', 'Тульский водоканал',
+    'Водоканал Оренбурга'. Also works when Petersburg is mentioned as the
+    place where a reporter heard news about an enterprise elsewhere.
+    """
+    kind = r"(?:водоканал\w*|горводоканал\w*|метростро\w*|теплосет\w*|" \
+           r"университет\w*|завод\w*|комбинат\w*|предприяти\w*|компани\w*)"
+    for foreign in foreign_place_matches(title):
+        tail = title[foreign.end():foreign.end()+55]
+        if re.match(r"^[а-яё]{0,14}[\s\-«»]{1,8}" + kind + r"\b", tail, re.I):
+            return True
+        prior = title[max(0, foreign.start()-40):foreign.start()]
+        if re.search(r"\b" + kind + r"[\s«»]{1,5}$", prior, re.I):
+            return True
+    return False
+
+
+def explicit_szfo_place(text):
+    """An explicit SZFO place mentioned in *text*, independent of foreign hits.
+
+    Unlike news_region(), this can detect mixed-region headlines ("an expert
+    from Orenburg appointed in Petersburg"). It is not sufficient by itself
+    to accept a story; the normal relevance filter still applies.
+    """
+    if not text:
+        return False
+    for _region, _slug, patterns in g.SZFO_COMPILED:
+        if any(p.search(text) for p in patterns):
+            return True
+    return any(any(p.search(text) for p in pats)
+               for _region, pats in _NEWS_REGION_COMPILED)
+
+
+def outside_szfo_event_focus(title, summary="", source=None, orgs=(), event_type=""):
+    """Reject clear non-SZFO subjects before organization-based relevance.
+
+    Google News queries and short generic enterprise names are not
+    geographical evidence. The actual event must be located in the SZFO.
+    Biographical origins remain permissible when the headline explicitly
+    identifies an SZFO event location.
+    """
+    title = title or ""
+    lead = first_sentence(summary or "", limit=260)
+    title_foreign = has_foreign_place(title)
+    title_local = explicit_szfo_place(title)
+    # A qualified foreign company name is an event subject even if the
+    # headline says that it was discussed *in* Saint Petersburg.
+    if title_foreign and foreign_place_qualifies_organization(title):
+        return True
+    if title_foreign and not title_local:
+        # An award of a uniquely named local institution may be presented
+        # outside the SZFO (e.g. Севмаш awarded at a Moscow ceremony). The
+        # recipient, not the ceremony venue, defines its regional relevance.
+        if event_type in ("award", "title") and any(
+                name.casefold() not in AMBIGUOUS_GEO_ORGANIZATIONS
+                and org_pattern(name).search(title)
+                for _region, name in orgs):
+            return False
+        return True
+    # Syndication may omit the location from the title but provide it in the
+    # lead. Only generic organization names need this fallback; 'Севмаш' etc.
+    # are distinctive local names and should not be discarded on biography.
+    if not explicit_szfo_place(title + " " + lead):
+        generic = any(name.casefold().strip(' «»"') in AMBIGUOUS_GEO_ORGANIZATIONS
+                      for _region, name in orgs)
+        if generic and has_foreign_place(lead):
+            return True
+        # A Google News source is labelled with the SEARCH region, not with
+        # the region of any given article. Generic names alone cannot anchor.
+        if source and source.get("region_from_text") and generic:
+            return True
+    return False
+
+
 def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
     if detection["type"] in ("appointment", "ownership") and historical_appointment_backstory(title, summary):
         return False, "historical_appointment_not_new_event"
+    if detection["type"] not in ("workforce", "proceeding") and outside_szfo_event_focus(
+            title, summary, source, detection.get("orgs", ()), detection["type"]):
+        return False, "foreign_event_geography_overrides_org_dictionary"
     if detection["type"] == "workforce":
         region = staffing_region_for_story(title, summary)
         return (True, "workforce_explicit_szfo_worksite") if region else (False, "workforce_no_szfo_worksite")

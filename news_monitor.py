@@ -537,6 +537,53 @@ def bankruptcy_administrator_appointment(title, summary):
     return bool(INSOLVENCY_ADMIN_ACTION.search(lead))
 
 
+# Профессиональная общенациональная премия руководителю вуза — самостоятельная
+# награда, не «звание» и не рейтинг студентов. Реальный лауреат должен быть
+# назван как ректор, а получение премии — утверждаться в заголовке.
+RECTOR_PRIZE = re.compile(
+    r"\bректор\w*\b.{0,155}?(?:получил[аи]?|удостоен[аы]?|"
+    r"стал[аи]?\s+лауреат\w*|награжд[её]н[аы]?)\b.{0,105}?"
+    r"\bпреми\w*\b",
+    re.I,
+)
+RECTOR_PRIZE_NAME = re.compile(
+    r"\b(?:преми\w*\s+[«\"']?ректор\s+года|"
+    r"(?:общенациональн\w*|национальн\w*|всероссийск\w*)\s+преми\w*)",
+    re.I,
+)
+RECTOR_INSTITUTION = re.compile(
+    r"\b(?:РГПУ|университет\w*|институт\w*|академи\w*|вуз\w*)\b", re.I,
+)
+
+
+RECTOR_AWARD_ACTOR = re.compile(
+    r"\b([А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+)\s+"
+    r"(?:получил[аи]?|удостоен[аы]?|стал[аи]?\s+лауреат\w*|награжд[её]н[аы]?)\b",
+    re.I,
+)
+
+
+def rector_award_actor(title):
+    m = RECTOR_AWARD_ACTOR.search(normalize(title))
+    return m.group(1) if m else ""
+
+
+def detected_person(det, title, summary=""):
+    if det["type"] == "workforce":
+        return ""
+    if det["type"] == "proceeding":
+        return det.get("subject", "")
+    if det["type"] == "award" and national_rector_award(title):
+        return rector_award_actor(title) or extract_person(title)
+    return extract_person(title) or extract_person(first_sentence(summary))
+
+
+def national_rector_award(title):
+    t = normalize(title)
+    return bool(RECTOR_PRIZE.search(t) and RECTOR_PRIZE_NAME.search(t)
+                and RECTOR_INSTITUTION.search(t))
+
+
 def detect_all(title, summary, organizations):
     # Подтверждённое процессуальное событие о должностном лице сохраняем.
     proceeding = detect_proceedings(title, summary)
@@ -544,6 +591,9 @@ def detect_all(title, summary, organizations):
         return proceeding
     if bankruptcy_administrator_appointment(title, summary):
         return None
+    if national_rector_award(title):
+        return {"type": "award", "level": "head", "org_class": "podved",
+                "orgs": find_org_names(title, organizations)}
     return (detect(title, summary, organizations)
             or detect_staffing(title, summary, organizations, find_org_names)
             or detect_extra(title, summary, organizations))
@@ -803,10 +853,71 @@ def minor_local_utility_launch(title, summary=""):
     return True
 
 
+# Ожидания гостиничных открытий и незавершённые стройки — не ввод объекта.
+# Требуется контекст И незавершённости, и гостиничного объекта, а не один
+# запрет слова «гостиница» (иначе потеряем реальные открытия крупных отелей).
+HOSPITALITY_OBJECT = re.compile(r"\b(?:гостиниц\w*|отел[ьяюе]\w*|гостев\w*\s+дом\w*)", re.I)
+UNFINISHED_PROJECT = re.compile(
+    r"\b(?:строительств\w*[^.!?]{0,85}?(?:не\s+заверш\w*|не\s+законч\w*|продолжа\w*|пока\s+не\s+заверш\w*)|"
+    r"(?:не\s+заверш\w*|не\s+закончен\w*|пока\s+не\s+готов\w*|"
+    r"в\s+процессе\s+строительств\w*|перенес\w*\s+срок\w*|"
+    r"строительств\w*\s+не\s+успе\w*|строительств\w*\s+продолжа\w*))",
+    re.I,
+)
+HOSPITALITY_EXPECTATION = re.compile(
+    r"\b(?:ждут\s+открыти\w*|когда\s+ждать\s+открыти\w*|"
+    r"срок\w*\s+открыти\w*|откро\w*\s+(?:в\s+следующем|в\s+20\d{2})|"
+    r"планиру\w*\s+откры\w*|пока\s+не\s+откр\w*)", re.I,
+)
+COMPLETED_HOSPITALITY = re.compile(
+    r"\b(?:(?:открыл[аио]|открылся|открылась|открылось|открылись)\s+(?:нов\w*\s+)?(?:гостиниц\w*|отел[ьяюе]\w*)|"
+    r"(?:гостиниц\w*|отел[ьяюе]\w*)\s+(?:уже\s+)?(?:открыл[аио]с[ья]?|открылся|открылась|открылось|открылись|"
+    r"введ[её]н[аыо]?\s+в\s+эксплуатацию)|"
+    r"ввел[аи]?\s+в\s+эксплуатацию\s+(?:гостиниц\w*|отел[ьяюе]\w*))", re.I,
+)
+
+
+def uncompleted_hospitality_launch(title, summary=""):
+    head = normalize(title)
+    lead = first_sentence(normalize(summary or ""), limit=460)
+    if not HOSPITALITY_OBJECT.search(head + " " + lead):
+        return False
+    # Прямой ввод одного отеля нельзя отклонять из-за рассказа о другом.
+    if COMPLETED_HOSPITALITY.search(head):
+        return False
+    return bool(UNFINISHED_PROJECT.search(lead) or
+                (HOSPITALITY_EXPECTATION.search(head) and
+                 not COMPLETED_HOSPITALITY.search(lead)))
+
+
+# Новость о реакции/биографии ПОСЛЕ уже состоявшегося назначения не должна
+# повторно публиковаться как новое кадровое решение, если в самом заголовке
+# нет глагола фактического назначения. «Напомним, ... назначена» в теле статьи
+# является справкой, а не вторым назначением.
+APPOINTMENT_COMMENTARY_TITLE = re.compile(
+    r"\b(?:рассказал[аи]?\s+о\s+(?:пути|карьер|новом|назначени)|"
+    r"(?:оценил[аи]?|прокомментировал[аи]?|поздравил[аи]?)\b.{0,70}?"
+    r"(?:назначени|вице[- ]?губернатор|заместител\w*\s+губернатор)|"
+    r"путь\s+от\s+.{0,70}?(?:вице[- ]?губернатор|заместител\w*\s+губернатор))",
+    re.I,
+)
+
+
+def followup_appointment_commentary(title, summary=""):
+    if APPOINT_VERB.search(title) and not re.search(r"\bкадров\w+\s+(?:решени|изменени)", title, re.I):
+        return False
+    return bool(APPOINTMENT_COMMENTARY_TITLE.search(title) and
+                re.search(r"\b(?:назначен[аыо]?|стал[аи]?|стала|возглавил[аи]?)\b", summary, re.I))
+
+
 def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
+    if detection["type"] == "appointment" and followup_appointment_commentary(title, summary):
+        return False, "secondary_commentary_not_new_appointment"
     if detection["type"] in ("appointment", "ownership") and historical_appointment_backstory(title, summary):
         return False, "historical_appointment_not_new_event"
+    if detection["type"] == "launch" and uncompleted_hospitality_launch(title, summary):
+        return False, "hotel_project_not_opened"
     if detection["type"] == "launch" and minor_local_utility_launch(title, summary):
         return False, "minor_local_utility_without_regional_scale"
     if detection["type"] not in ("workforce", "proceeding") and outside_szfo_event_focus(
@@ -1179,10 +1290,82 @@ def fetch_rosbalt_resilient(src, today=None):
         return [], status + f'; google_news: {type(exc).__name__}'
 
 
+# Официальный источник федерального вуза: вакансий и обычных новостей много,
+# поэтому читаем лишь заголовки ПОДТВЕРЖДЁННЫХ профессиональных премий ректоров.
+# Сведения о дате берём из страницы самой новости; без даты не публикуем
+# (иначе старые статьи из HTML-листинга будут становиться «сегодняшними»).
+HERZEN_SOURCE = {
+    "id": "herzen_official", "name": "РГПУ им. А. И. Герцена",
+    "type": "site", "url": "https://www.herzen.spb.ru/news-events/news/",
+    "region": "Санкт-Петербург", "rank": 1, "verified": True,
+}
+HERZEN_DATE = re.compile(
+    r"\b([0-3]?\d)\s+(янв\w*|фев\w*|мар\w*|апр\w*|ма[йя]|июн\w*|июл\w*|"
+    r"авг\w*|сен\w*|окт\w*|ноя\w*|дек\w*)\s+(20\d{2})\b", re.I,
+)
+HERZEN_MONTH = {"янв": 1, "фев": 2, "мар": 3, "апр": 4, "мая": 5,
+                "май": 5, "июн": 6, "июл": 7, "авг": 8, "сен": 9,
+                "окт": 10, "ноя": 11, "дек": 12}
+
+
+def ensure_university_source(cfg):
+    """Источник и короткий узнаваемый алиас — во время исполнения, без правки JSON."""
+    if not any(s.get("id") == "gnews_spb" and
+               s.get("url", "").startswith("https://news.google.com/")
+               for s in cfg.get("sources", [])):
+        return cfg  # тестовые и неполные конфигурации не расширяем
+    if not any(s.get("id") == HERZEN_SOURCE["id"] for s in cfg["sources"]):
+        cfg["sources"].append(dict(HERZEN_SOURCE))
+    spb = cfg.setdefault("organizations", {}).setdefault("Санкт-Петербург", [])
+    if "РГПУ" not in spb:
+        spb.append("РГПУ")
+    return cfg
+
+
+def fetch_herzen_awards(src):
+    page = http_get(src["url"])
+    items, seen = [], set()
+    # В листинге бывает несколько одинаковых ссылок на один материал. Берём
+    # прямые ссылки на статьи и дедуплицируем по ELEMENT_ID до отбора.
+    for href, inner in ANCHOR_RE.findall(COMMENT_RE.sub(" ", page)):
+        url = urljoin(src["url"], html_module.unescape(href))
+        parsed = urlparse(url)
+        if parsed.netloc not in ("www.herzen.spb.ru", "herzen.spb.ru") or                 not parsed.path.rstrip("/").endswith("/news-events/news") or                 not re.search(r"(?:^|&)ELEMENT_ID=\d+", parsed.query, re.I):
+            continue
+        title, _ = split_anchor(inner)
+        title = normalize(RUBRICS.sub("", DATE_WORDS.sub("", title))).strip()
+        if not national_rector_award(title) or url in seen:
+            continue
+        seen.add(url)
+        # Отбор до скачивания статьи: не больше 8 дополнительных запросов.
+        if len(items) >= 8:
+            break
+        detail = http_get(url)
+        content = re.sub(r"\s+", " ", html_module.unescape(re.sub(r"<[^>]*>", " ", detail)))
+        marker = content.find(title[:40])
+        area = content[marker:marker + 1800] if marker >= 0 else content[:2500]
+        match = HERZEN_DATE.search(area)
+        if not match:
+            continue
+        month = next((v for prefix, v in HERZEN_MONTH.items()
+                      if match.group(2).lower().startswith(prefix)), None)
+        if not month:
+            continue
+        try:
+            published = date(int(match.group(3)), month, int(match.group(1)))
+        except ValueError:
+            continue
+        items.append({"title": title, "link": url,
+                      "date": published.isoformat(), "summary": ""})
+    return items, f"herzen {len(items)}"
+
+
 def fetch_source(src, feeds_cache, today=None):
     """→ (items, status). status: 'rss N' | 'html N' | 'telegram N' | 'error: …'."""
     kind = src["type"]
     try:
+        if src.get("id") == HERZEN_SOURCE["id"]:
+            return fetch_herzen_awards(src)
         if kind == "curated":
             # Один раз прогоняем через стандартный детектор, фильтр и дедупликацию.
             items = src.get("items", [])
@@ -1570,7 +1753,11 @@ def regional_governor_stage(ev):
         governor_is_target = bool(re.search(
             r"\b(?:снял[аи]?|уволил[аи]?|отправил[аи]?\s+в\s+отставку|"
             r"прекратил[аи]?\s+полномочия|освободил[аи]?\s+от\s+должности)"
-            r"[^.!?]{0,100}?\b(?:с\s+поста\s+губернатора|губернатора\s+)", title, re.I))
+            # «отправил в отставку ... главу Мурманской области» — та же
+            # уникальная должность, что и «губернатора Мурманской области».
+            r"[^.!?]{0,100}?\b(?:с\s+поста\s+губернатора|губернатора\s+|"
+            r"глав[уа]\s+(?:[А-ЯЁ][а-яё-]+\s+)?(?:области|республики|региона|края)\b)",
+            title, re.I))
         governor_is_subject = bool(re.search(
             r"\bгубернатор\w*\b[^.!?]{0,75}?\b(?:уш\w*\s+в\s+отставку|"
             r"освобожд\w*\s+от\s+должности|покинул\w*\s+пост|отправлен\w*\s+в\s+отставку)",
@@ -1606,31 +1793,90 @@ def regional_governor_actor(ev, stage):
             if surname_token and surname_token.lower() not in {"области", "региона", "глава", "главы"}:
                 names.add(name_stem(surname_token))
         return names
-    # Нужна фамилия ушедшего главы, а не назначившего его президента.
+    # Берём только участника отставки, но не назначившего его президента.
+    # После «губернатора Мурманской области» стоит ТОПОНИМ, а не фамилия:
+    # именно эту ошибку раньше делал жадный regex («мурманск» вместо Чибиса).
     names = set()
-    for match in re.finditer(
-        r"\bгубернатор\w*\s+(?:(?:[А-ЯЁ][а-яё-]+\s+)?области\s+)?"
-        r"(?:(?:[А-ЯЁ][а-яё-]+)\s+)?([А-ЯЁ][а-яё-]{3,})\b|"
-        r"\b([А-ЯЁ][а-яё-]+)\s+([А-ЯЁ][а-яё-]{3,})\s+с\s+поста\s+губернатора",
-        title,
+    for role in re.finditer(
+        r"\b(?:губернатор[а-яё]*|глав[уа]\s+(?:[А-ЯЁ][а-яё-]+\s+)?"
+        r"(?:области|республики|региона|края))\b", title, re.I
     ):
-        last = match.group(1) or match.group(3)
-        if last and last.lower() not in {"области", "региона", "края", "республики"}:
-            names.add(name_stem(last))
-    if not names:
-        names = {last for _first, last in name_pairs(title)}
+        after = title[role.end():].lstrip()
+        # Сначала убираем полное наименование региона, только потом ищем имя.
+        after = re.sub(
+            r"^(?:(?:[А-ЯЁ][а-яё-]+\s+(?:области|края|округа))|"
+            r"(?:Республики\s+[А-ЯЁ][а-яё-]+))\b\s*", "", after
+        )
+        named = re.match(
+            r"([А-ЯЁ][а-яё-]{3,})(?:\s+([А-ЯЁ][а-яё-]{3,}))?\b", after
+        )
+        if named:
+            last = named.group(2) or named.group(1)
+            if last.lower() not in {
+                "области", "региона", "края", "республики", "мурманской",
+                "новгородской", "псковской", "архангельской", "вологодской",
+                "ленинградской", "калининградской", "губернатора",
+            }:
+                names.add(name_stem(last))
+    # «Снял Андрея Чибиса с поста губернатора» — имя до должности.
+    for match in re.finditer(
+        r"\b[А-ЯЁ][а-яё-]{3,}\s+([А-ЯЁ][а-яё-]{3,})\s+"
+        r"с\s+поста\s+губернатора\b", title
+    ):
+        names.add(name_stem(match.group(1)))
     return names
 
 
 def same_regional_governor_decision(a, b, days_apart):
-    if a.get("region") != b.get("region") or days_apart > 3:
+    if a.get("region") != b.get("region"):
         return False
     stage = regional_governor_stage(a)
     if not stage or stage != regional_governor_stage(b):
         return False
+    # Повторные публикации о прекращении полномочий продолжают выходить
+    # несколько дней; для врио сохраняем прежний более короткий горизонт.
+    if days_apart > (10 if stage == "governor_departure" else 3):
+        return False
     pa = regional_governor_actor(a, stage)
     pb = regional_governor_actor(b, stage)
     return not (pa and pb and pa.isdisjoint(pb))
+
+
+REGIONAL_DEPUTY_GOV = re.compile(
+    r"\b(?:вице[- ]?губернатор\w*|заместител\w*\s+губернатор\w*|"
+    r"замгубернатор\w*)\b", re.I,
+)
+
+
+def regional_deputy_appointees(ev):
+    """Имена кандидатов в заголовке, а если их нет — в первом предложении.
+
+    Не склеиваем новости про двух заместителей лишь из-за общего губернатора
+    или совпадения ключа должности: заместителей в регионе несколько.
+    """
+    title = ev.get("title", "")
+    explicit = name_pairs(title)
+    if explicit:
+        # Имя может входить в комментарий, не относящийся к назначенному;
+        # в таких случаях не рискуем использовать имя другого комментатора.
+        if re.search(r"\b(?:рассказал|оценила?|поздравил|поделил\w*)\s+о\b", title, re.I):
+            return set()
+        return explicit
+    lead = first_sentence(ev.get("summary", ""), limit=290)
+    names = name_pairs(lead)
+    return names if len(names) == 1 else set()
+
+
+def same_regional_deputy_appointment(a, b, days_apart):
+    if days_apart > 3 or a.get("type") != b.get("type") or a.get("type") != "appointment":
+        return False
+    if a.get("region") != b.get("region") or a.get("level") != b.get("level") != "deputy":
+        return False
+    if not (REGIONAL_DEPUTY_GOV.search(a.get("title", "") + " " + a.get("summary", "")[:140])
+            and REGIONAL_DEPUTY_GOV.search(b.get("title", "") + " " + b.get("summary", "")[:140])):
+        return False
+    pa, pb = regional_deputy_appointees(a), regional_deputy_appointees(b)
+    return bool(pa and pb and pa & pb)
 
 
 def similar(a, b):
@@ -1651,6 +1897,10 @@ def similar(a, b):
     # При этом арест, увольнение и назначение — разные стадии.
     if regional_governor_stage(a) or regional_governor_stage(b):
         return same_regional_governor_decision(a, b, days_apart)
+    # «вице-губернатор» = «заместитель губернатора», но только когда
+    # установлен один и тот же человек (несколько заместителей — разные посты).
+    if same_regional_deputy_appointment(a, b, days_apart):
+        return True
     if a["type"] == b["type"] == "appointment" and days_apart <= 10:
         if same_unique_regional_force_office(a, b):
             return True
@@ -1771,9 +2021,7 @@ def reconcile(events, cfg):
             ev["procedure_stage"] = det["stage"]
         else:
             ev.pop("procedure_stage", None)
-        ev["person"] = ("" if det["type"] == "workforce" else
-                        (det.get("subject", "") if det["type"] == "proceeding" else
-                         (extract_person(ev["title"]) or extract_person(first_sentence(ev.get("summary", ""))))))
+        ev["person"] = detected_person(det, ev["title"], ev.get("summary", ""))
         src = srcs.get(ev.get("source_id"), {"region": ev.get("region")})
         region = event_region(src, ev["title"], ev.get("summary", ""), det)
         if not region:
@@ -1789,7 +2037,7 @@ def reconcile(events, cfg):
 
 
 def run(today=None, verbose=True):
-    cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
+    cfg = ensure_university_source(load_json(SOURCES_FILE, {"sources": [], "organizations": {}}))
     organizations = cfg.get("organizations", {})
     feeds_cache = load_json(FEEDS_CACHE, {})
     today = today or g.msk_today()
@@ -1859,9 +2107,7 @@ def run(today=None, verbose=True):
                   "region": region, "title": normalize(it["title"]).strip(), "summary": normalize(it.get("summary", ""))[:400],
                   "link": it.get("link", ""), "date": (d or today).isoformat(),
                   "source": src["name"], "source_id": src["id"], "rank": src.get("rank", 3),
-                  "person": ("" if det["type"] == "workforce" else
-                             (det.get("subject", "") if det["type"] == "proceeding" else
-                              (extract_person(it["title"]) or extract_person(it.get("summary", "")[:300])))),
+                  "person": detected_person(det, it["title"], it.get("summary", "")),
                   "orgs": sorted({o[1] for o in det["orgs"]})}
             if det["type"] == "proceeding":
                 ev["procedure_stage"] = det["stage"]
@@ -1873,7 +2119,15 @@ def run(today=None, verbose=True):
     # одно событие — одна запись: сначала самый авторитетный источник, остальные склеиваются
     candidates.sort(key=priority)
     new_events = []
-    recent = [e for e in events if e.get("date", "") >= (today - timedelta(days=4)).isoformat()]
+    # Старое решение об отставке губернатора может получить новые заголовки
+    # спустя несколько дней. Проверяем его в сохранённой базе до 10 дней;
+    # остальные события остаются на прежнем коротком окне.
+    recent_cut = (today - timedelta(days=4)).isoformat()
+    departure_cut = (today - timedelta(days=10)).isoformat()
+    recent = [e for e in events if e.get("date", "") >= recent_cut or (
+        e.get("date", "") >= departure_cut
+        and regional_governor_stage(e) == "governor_departure"
+    )]
     for ev in candidates:
         keys = event_keys(ev)
         match = next((e for e in recent + new_events if similar(ev, e) or set(keys) & set(event_keys(e))), None)
@@ -1946,7 +2200,7 @@ def audit_url(url, title_override=None, summary_override=""):
         return 2
     events = load_json(EVENTS_FILE, [])
     result["published"] = any(canonical_url(e.get("link")) == key for e in events)
-    cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
+    cfg = ensure_university_source(load_json(SOURCES_FILE, {"sources": [], "organizations": {}}))
     host = urlsplit(url).hostname or ""
     matched = None
     for src in cfg.get("sources", []):
@@ -1992,8 +2246,7 @@ def audit_url(url, title_override=None, summary_override=""):
                              "type": det["type"], "level": det["level"],
                              "org_class": det["org_class"], "region": region,
                              "orgs": sorted({o[1] for o in det.get("orgs", [])}),
-                             "person": (det.get("subject", "") if det["type"] == "proceeding"
-                                        else "" if det["type"] == "workforce" else extract_person(title))}
+                             "person": detected_person(det, title, summary)}
                     if det["type"] == "proceeding":
                         probe["procedure_stage"] = det["stage"]
                     probe_keys = set(event_keys(probe))
@@ -2012,7 +2265,7 @@ def audit_url(url, title_override=None, summary_override=""):
     return 0
 
 def check_sources():
-    cfg = load_json(SOURCES_FILE, {"sources": []})
+    cfg = ensure_university_source(load_json(SOURCES_FILE, {"sources": []}))
     feeds_cache = {}
     rows, ok = [], 0
     print(f"{'id':<16} {'тип':<9} {'статус':<48} {'сек':>5}  источник")
@@ -2316,7 +2569,7 @@ def main():
         check_sources()
         return 0
     if args.rebuild:
-        cfg = load_json(SOURCES_FILE, {"sources": [], "organizations": {}})
+        cfg = ensure_university_source(load_json(SOURCES_FILE, {"sources": [], "organizations": {}}))
         before = load_json(EVENTS_FILE, [])
         events, seen = reconcile(before, cfg)
         events.sort(key=lambda e: (e["date"], e["region"], e["title"]), reverse=True)

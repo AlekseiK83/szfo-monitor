@@ -1097,11 +1097,26 @@ def telegram_post_title(text):
         continued_lowercase = (len(first) < 135 and continuation[0].islower()
                                and not re.search(r"[.!?…]$", first)
                                and not APPOINT_VERB.search(first))
-        if incomplete or continued_lowercase:
+        # Региональное имя с заглавной буквы тоже бывает продолжением:
+        # «... сессии Госсовета\nКоми». Не склеивать с самостоятельным
+        # абзацем или URL на первоисточник.
+        continued_region = bool(
+            len(first) < 240
+            and not re.search(r"[.!?…]$", first)
+            and re.search(r"\b(?:госсовет\w*|республик\w*|правительств\w*|област\w*|собрани\w*)$", first, re.I)
+            and re.fullmatch(
+                r"(?:Коми|Карелии|Карелия|Петербурга|Санкт-Петербурга|"
+                r"Мурманской|Псковской|Архангельской|Вологодской|"
+                r"Новгородской|Ленинградской|Калининградской)"
+                r"(?:\s+(?:области|республики))?",
+                continuation, re.I))
+        if incomplete or continued_lowercase or continued_region:
             first = first + " " + continuation
     if len(first) < 20 and "\n" in text:
         return post_title(text)
-    return post_title(first)
+    # 160 символов — ограничение короткой аннотации, а не заголовка
+    # исходного Telegram-поста. На странице сохраняем длинные заголовки.
+    return post_title(first, limit=260)
 
 
 def parse_telegram(page_html):
@@ -1628,7 +1643,7 @@ def reconcile(events, cfg):
         ev["title"] = RUBRICS.sub("", DATE_WORDS.sub("", ev["title"])).strip()
         if srcs.get(ev.get("source_id"), {}).get("type") == "telegram" and ev.get("summary", "").startswith(ev["title"][:40]):
             ev["title"] = telegram_post_title(ev["summary"])   # сохранить переносы заголовка, не склеивать с лидом
-        if len(ev["title"]) > 140:                       # заголовок, слипшийся с аннотацией (старые прогоны)
+        if len(ev["title"]) > 260:                       # только очевидно слипшийся заголовок с аннотацией
             ev["title"], tail = split_anchor(html_module.escape(ev["title"]))
             ev["title"] = html_module.unescape(ev["title"])
             if tail and not ev.get("summary"):
@@ -2005,8 +2020,16 @@ def render_page(events, today):
                 meta.append(f"<span>{esc(', '.join(ev['orgs'][:3]))}</span>")
             link = esc(ev["link"])
             summary = ev.get("summary", "")
+            # Публичный Telegram-пост часто содержит ровно заголовок и URL
+            # статьи. Не выводим их второй раз как обрезанную «аннотацию».
+            if urlparse(ev.get("link", "")).hostname in ("t.me", "www.t.me", "telegram.me"):
+                if summary.strip().startswith(ev["title"].strip()):
+                    summary = summary.strip()[len(ev["title"].strip()):].strip()
+                summary = re.sub(r"https?://[^\s<>]+", "", summary).strip(" \n—-;,.:")
             if summary and summary.strip() != ev["title"].strip():
-                summary = summary[:280] + ("…" if len(summary) > 280 else "")
+                if len(summary) > 280:
+                    end = summary.rfind(" ", 180, 280)
+                    summary = summary[:end if end > 0 else 280].rstrip(" ,;:—-") + "…"
             else:
                 summary = ""
             rows.append(f"""

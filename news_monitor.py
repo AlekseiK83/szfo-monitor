@@ -391,6 +391,10 @@ def detect(title, summary, organizations):
     leave = LEAVE_VERB.search(lead)
     if not appoint and not leave:
         return None
+    # «Врио станет один из замов» — предварительное предположение, а не
+    # подтверждённый выбор конкретного руководителя.
+    if appoint and UNNAMED_GOVERNOR_FORECAST.search(title):
+        return None
     if not org_class and not orgs:
         return None
     if DISTRICT_HEAD.search(head) and not re.search(r"петербург|спб", head, re.I):
@@ -1531,6 +1535,104 @@ def same_unique_regional_force_office(a, b):
     named_b = name_pairs(b.get("title", ""))
     return not (named_a and named_b and not (named_a & named_b))
 
+# Для единственной должности руководителя региона перефразировки с именем
+# и без имени должны образовывать одно событие. Не применяем эту эвристику
+# к заместителям, министрам и руководителям учреждений (там постов несколько).
+REGIONAL_ACTING_HEAD = re.compile(
+    r"\b(?:врио|в\.?\s*р\.?\s*и\.?\s*о\.?)\s+(?:глав[ыа]|губернатор\w*|руководител\w*)\s+"
+    r"(?:региона|области|края|республики|[А-ЯЁ][а-яё-]+\s+области)\b|"
+    r"\bвременн\w*\s+возглав\w*\s+(?:регион|област|республик)\w*\b|"
+    r"\b(?:регион|област|республик)\w*\s+временн\w*\s+возглав\w*\b",
+    re.I,
+)
+REGIONAL_GOVERNOR_LEAVE = re.compile(
+    r"\bгубернатор\w*\b|\bглав[ыуе]\s+(?:[А-ЯЁ][а-яё-]+\s+)?(?:области|республики|региона|края)\b",
+    re.I,
+)
+UNNAMED_GOVERNOR_FORECAST = re.compile(
+    r"\b(?:станет|может\s+стать|предположительно\s+станет)\b.{0,90}?"
+    r"\b(?:один|одна|кто[- ]то)\s+из\s+(?:замов|заместител\w*|кандидат\w*)\b",
+    re.I,
+)
+
+
+def regional_governor_stage(ev):
+    """Только события о смене главы СУБЪЕКТА, не смена городского мэра."""
+    title = ev.get("title", "")
+    if ev.get("type") == "appointment" and REGIONAL_ACTING_HEAD.search(title):
+        # «врио главы города» не равно «врио главы области».
+        if re.search(r"\bврио\s+глав[ыа]\s+(?:города|района|муниципал)", title, re.I):
+            return ""
+        return "acting_governor"
+    if ev.get("type") == "leave" and REGIONAL_GOVERNOR_LEAVE.search(title):
+        # Упоминание «спецпредставителя губернатора» в сообщении об уходе
+        # главы комитета — НЕ отставка самого губернатора.
+        governor_is_target = bool(re.search(
+            r"\b(?:снял[аи]?|уволил[аи]?|отправил[аи]?\s+в\s+отставку|"
+            r"прекратил[аи]?\s+полномочия|освободил[аи]?\s+от\s+должности)"
+            r"[^.!?]{0,100}?\b(?:с\s+поста\s+губернатора|губернатора\s+)", title, re.I))
+        governor_is_subject = bool(re.search(
+            r"\bгубернатор\w*\b[^.!?]{0,75}?\b(?:уш\w*\s+в\s+отставку|"
+            r"освобожд\w*\s+от\s+должности|покинул\w*\s+пост|отправлен\w*\s+в\s+отставку)",
+            title, re.I))
+        if not (governor_is_target or governor_is_subject):
+            return ""
+        if re.search(r"\b(?:заместител\w*|замгубернатор\w*|вице[- ]губернатор\w*)\s+"
+                     r"(?:[А-ЯЁ][а-яё-]+\s+)?губернатор", title, re.I):
+            return ""
+        return "governor_departure"
+    return ""
+
+
+def regional_governor_actor(ev, stage):
+    """Имя именно участника кадрового решения, без фамилии предшественника.
+
+    Если имя не установлено, сравниваем уникальную должность, но два
+    РАЗНЫХ явно названных человека никогда не склеиваем.
+    """
+    title = ev.get("title", "")
+    if stage == "acting_governor":
+        # «после ареста Андрея Чибиса» — это не фамилия нового врио;
+        # «один из замов Чибиса» — тем более не имя назначенного.
+        title = re.split(r"\bпосле\s+(?:ареста|задержания|отставки|увольнения)|"
+                         r"\b(?:один|одна)\s+из\s+зам", title, maxsplit=1, flags=re.I)[0]
+        names = {last for _first, last in name_pairs(title)}
+        for match in re.finditer(
+            r"\b([А-ЯЁ][а-яё-]{3,})\s+(?:стал[аи]?\s+врио|"
+            r"временн\w*\s+возглав\w*|назначен[аы]?\s+врио)\b|"
+            r"\b(?:правительства\s+)?региона\s+([А-ЯЁ][а-яё-]{3,})\s*$", title
+        ):
+            surname_token = next((v for v in match.groups() if v), "")
+            if surname_token and surname_token.lower() not in {"области", "региона", "глава", "главы"}:
+                names.add(name_stem(surname_token))
+        return names
+    # Нужна фамилия ушедшего главы, а не назначившего его президента.
+    names = set()
+    for match in re.finditer(
+        r"\bгубернатор\w*\s+(?:(?:[А-ЯЁ][а-яё-]+\s+)?области\s+)?"
+        r"(?:(?:[А-ЯЁ][а-яё-]+)\s+)?([А-ЯЁ][а-яё-]{3,})\b|"
+        r"\b([А-ЯЁ][а-яё-]+)\s+([А-ЯЁ][а-яё-]{3,})\s+с\s+поста\s+губернатора",
+        title,
+    ):
+        last = match.group(1) or match.group(3)
+        if last and last.lower() not in {"области", "региона", "края", "республики"}:
+            names.add(name_stem(last))
+    if not names:
+        names = {last for _first, last in name_pairs(title)}
+    return names
+
+
+def same_regional_governor_decision(a, b, days_apart):
+    if a.get("region") != b.get("region") or days_apart > 3:
+        return False
+    stage = regional_governor_stage(a)
+    if not stage or stage != regional_governor_stage(b):
+        return False
+    pa = regional_governor_actor(a, stage)
+    pb = regional_governor_actor(b, stage)
+    return not (pa and pb and pa.isdisjoint(pb))
+
+
 def similar(a, b):
     """Дедупликация с учётом сущности и стадии, а не идентичности заголовков."""
     if a["type"] == "proceeding" or b["type"] == "proceeding":
@@ -1544,6 +1646,11 @@ def similar(a, b):
         return False
     if a["type"] == b["type"] == "anniversary" and days_apart <= 14:
         return same_organization_anniversary(a, b)
+    # Уникальная должность главы региона: разные заголовки и пропущенное
+    # имя назначенного не должны создавать много Telegram-уведомлений.
+    # При этом арест, увольнение и назначение — разные стадии.
+    if regional_governor_stage(a) or regional_governor_stage(b):
+        return same_regional_governor_decision(a, b, days_apart)
     if a["type"] == b["type"] == "appointment" and days_apart <= 10:
         if same_unique_regional_force_office(a, b):
             return True

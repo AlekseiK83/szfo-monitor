@@ -1,19 +1,34 @@
 {
- "date": "2026-11-24",
- "new": [],
+ "date": "2026-11-25",
+ "new": [
+  {
+   "type": "status",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Мурманский курсант вошёл в число сильнейших на всероссийском чемпионате пилотирования дронов",
+   "summary": "Курсант мурманского филиала Центра «ВОИН» Алексей Энис вошёл в число лучших пилотов России, сообщило региональное министерство образования и науки.\nВ дисциплине «Гонка дронов....",
+   "link": "https://severpost.ru/read/216506",
+   "date": "2026-11-24",
+   "source": "СеверПост",
+   "source_id": "severpost",
+   "rank": 3,
+   "person": "Алексей Энис",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 3519,
-  "items_fresh": 3215,
-  "detected": 45,
-  "relevance_accepted": 26,
-  "relevance_rejected": 19,
+  "items_received": 3458,
+  "items_fresh": 3077,
+  "detected": 35,
+  "relevance_accepted": 24,
+  "relevance_rejected": 11,
   "region_rejected": 1,
-  "candidates": 25,
+  "candidates": 23,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 11,
-   "foreign_event_geography_overrides_org_dictionary": 6,
+   "missing_regional_event_anchor": 9,
    "minor_local_utility_without_regional_scale": 1,
-   "historical_appointment_not_new_event": 1
+   "foreign_event_geography_overrides_org_dictionary": 1
   },
   "rejected_examples": [
    {
@@ -23,12 +38,7 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Путин назвал неизбежным ответ России на удары ВСУ по объектам ТЭК",
-    "source": "ТАСС"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Путин провел совещание по развитию энергетического комплекса",
+    "title": "Два сербских министра подали в отставку",
     "source": "РИА Новости"
    },
    {
@@ -43,16 +53,6 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "В России запустили портал дошкольного образования «Главный детский»",
-    "source": "Ведомости"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "В США назначили временного главу управления Белого дома по кибербезопасности",
-    "source": "Ведомости"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
     "title": "Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
     "source": "Б-порт"
    },
@@ -62,24 +62,9 @@
     "source": "ПАИ"
    },
    {
-    "reason": "historical_appointment_not_new_event",
-    "title": "Задержанный в Петербурге Владимир Шмидт возглавил «Метрострой Северной столицы» практически с самого его возникновения в конце 2020 года (до этого он был…",
-    "source": "Фонтанка (Telegram)"
-   },
-   {
     "reason": "missing_regional_event_anchor",
     "title": "🇷🇺 Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
     "source": "Б-порт (Telegram)"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Жюри фестиваля «Виват, Театр!» в Тамбове вновь возглавила Элеонора Макарова",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Большая перезагрузка власти: в Северной Осетии за один день сменили восемь министров и назначили нового главу Владикавказа",
-    "source": "Google Новости · Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -87,14 +72,24 @@
     "source": "Google Новости · Архангельская область"
    },
    {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Уральского министра из команды Куйвашева отправили в отставку. Раньше он работал в Тюменской области",
+    "reason": "missing_regional_event_anchor",
+    "title": "В Миллерово назначили нового главу города",
     "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
+    "source": "Google Новости · Псковская область"
    }
   ],
-  "not_detected": 3170,
-  "duplicates": 25,
-  "new_events": 0,
+  "not_detected": 3042,
+  "duplicates": 22,
+  "new_events": 1,
   "sources": [
    {
     "id": "kremlin",
@@ -118,8 +113,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 96",
+    "items": 96
    },
    {
     "id": "interfax",
@@ -128,8 +123,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 106",
+    "items": 106
    },
    {
     "id": "vedomosti",
@@ -168,8 +163,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "dp",
@@ -178,8 +173,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 56",
-    "items": 56
+    "status": "html 68",
+    "items": 68
    },
    {
     "id": "genproc_78",
@@ -203,8 +198,8 @@
    },
    {
     "id": "47news",
-    "status": "html 115",
-    "items": 115
+    "status": "html 116",
+    "items": 116
    },
    {
     "id": "online47",
@@ -228,13 +223,13 @@
    },
    {
     "id": "region29",
-    "status": "html 76",
-    "items": 76
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "news29",
-    "status": "html 27",
-    "items": 27
+    "status": "html 24",
+    "items": 24
    },
    {
     "id": "genproc_29",
@@ -243,13 +238,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "newsvo",
-    "status": "rss 46",
-    "items": 46
+    "status": "rss 42",
+    "items": 42
    },
    {
     "id": "krassever",
@@ -273,8 +268,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 94",
-    "items": 94
+    "status": "rss 99",
+    "items": 99
    },
    {
     "id": "genproc_39",
@@ -318,8 +313,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 51",
-    "items": 51
+    "status": "html 1",
+    "items": 1
    },
    {
     "id": "genproc_10",
@@ -328,8 +323,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 76",
-    "items": 76
+    "status": "html 90",
+    "items": 90
    },
    {
     "id": "informpskov",
@@ -393,8 +388,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 18",
-    "items": 18
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "bport_tg",
@@ -418,13 +413,13 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "stolicaonego_tg",
@@ -433,8 +428,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "komiinform_tg",
@@ -468,53 +463,53 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 57",
-    "items": 57
+    "status": "rss 24",
+    "items": 24
    },
    {
     "id": "gnews_lo",
-    "status": "rss 43",
-    "items": 43
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "gnews_arh",
-    "status": "rss 46",
-    "items": 46
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "gnews_vol",
-    "status": "rss 43",
-    "items": 43
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "gnews_klg",
-    "status": "rss 62",
-    "items": 62
+    "status": "rss 31",
+    "items": 31
    },
    {
     "id": "gnews_mur",
-    "status": "rss 53",
-    "items": 53
-   },
-   {
-    "id": "gnews_kar",
-    "status": "rss 44",
-    "items": 44
-   },
-   {
-    "id": "gnews_psk",
     "status": "rss 60",
     "items": 60
    },
    {
+    "id": "gnews_kar",
+    "status": "rss 20",
+    "items": 20
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 61",
+    "items": 61
+   },
+   {
     "id": "gnews_komi",
-    "status": "rss 15",
-    "items": 15
+    "status": "rss 36",
+    "items": 36
    },
    {
     "id": "gnews_nov",
-    "status": "rss 47",
-    "items": 47
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "rosbalt",

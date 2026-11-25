@@ -2,80 +2,323 @@
  "date": "2026-11-25",
  "new": [
   {
-   "type": "status",
+   "type": "proceeding",
    "level": "head",
-   "org_class": "podved",
-   "region": "Архангельская область",
-   "title": "Спектакль Архангельского театра драмы вошёл в список дипломантов «Золотой маски»",
-   "summary": "",
-   "link": "https://region29.ru/2026/11/25/6b069be0e05db83dc40781a5.html",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Мурманскому губернатору Андрею Чибису предъявили обвинение в растрате и получении взятки",
+   "summary": "Следственный департамент МВД предъявил обвинение губернатору Мурманской области Андрею Чибису в растрате более 1 млрд рублей и получении взятки. Об этом «Ъ» сообщил собственный источник в правоохранительных органах.",
+   "link": "https://www.kommersant.ru/doc/9130100",
    "date": "2026-11-25",
-   "source": "Регион 29",
-   "source_id": "region29",
+   "source": "Коммерсантъ Санкт-Петербург",
+   "source_id": "kommersant_spb",
+   "rank": 2,
+   "person": "Андрею Чибису",
+   "orgs": [],
+   "procedure_stage": "charge"
+  },
+  {
+   "type": "proceeding",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Суд арестовал губернатора Мурманской области Чибиса",
+   "summary": "Он отправлен в СИЗО до 23 января",
+   "link": "https://www.vedomosti.ru/society/news/2026/11/25/1415133-sud-arestoval-chibisa",
+   "date": "2026-11-25",
+   "source": "Ведомости",
+   "source_id": "vedomosti",
+   "rank": 2,
+   "person": "",
+   "orgs": [],
+   "procedure_stage": "arrest"
+  },
+  {
+   "type": "proceeding",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Суд арестовал губернатора Мурманской области Андрея Чибиса по делу о хищении и растрате бюджетных средств, сообщает РИА Новости",
+   "summary": "Суд арестовал губернатора Мурманской области Андрея Чибиса по делу о хищении и растрате бюджетных средств, сообщает РИА Новости\n\n «Избрать меру пресечения в виде заключения под стражу сроком на два месяца, до 23 января 2027 года», – такие слова судьи приводит информагентство. \n\nГубернатора Мурманской области задержали 23 ноября в Москве. По версии следствия, он замешан в хищении более 39 миллионов",
+   "link": "https://t.me/tv21_life/16893",
+   "date": "2026-11-25",
+   "source": "ТВ-21 (Telegram)",
+   "source_id": "tv21_tg",
    "rank": 3,
-   "person": "Спектакль Архангельского",
-   "orgs": [
-    "Архангельский театр драмы"
-   ]
+   "person": "Андрея Чибиса",
+   "orgs": [],
+   "procedure_stage": "arrest"
   },
   {
    "type": "appointment",
    "level": "deputy",
    "org_class": "gov",
    "region": "Псковская область",
-   "title": "Оксана Иванова назначена заместителем губернатора Псковской области",
-   "summary": "Оксана Иванова назначена заместителем губернатора Псковской области. Об этом сообщил глава региона Михаил Ведерников в Мах. [...]",
-   "link": "http://pln-pskov.ru/politics/606792.html",
+   "title": "Константин Широков назначен первым заместителем министра культурного наследия Псковской области",
+   "summary": "Первым заместителем министра культурного наследия Псковской области назначен участник федеральной кадровой программы «Время героев» Герой России Константин Широков. Об этом сообщил губернатор Псковской области Михаил Ведерников в своём канале на платформе MAX. \n\n \n\n Константин Широков – дважды кавалер ордена Мужества. Ранее он проходил стажировку в правительстве региона и проявил интерес к работе ",
+   "link": "https://informpskov.ru/news/523894.html",
    "date": "2026-11-25",
-   "source": "Псковская лента новостей",
-   "source_id": "pln",
+   "source": "ПАИ",
+   "source_id": "informpskov",
    "rank": 3,
-   "person": "Оксана Иванова",
-   "orgs": []
-  },
-  {
-   "type": "title",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "🎖 Путин присвоил почётное звание председателю горсовета Апатитов Светлане Кательниковой",
-   "summary": "🎖 Путин присвоил почётное звание председателю горсовета Апатитов Светлане Кательниковой\n\nПрезидент России Владимир Путин подписал указ о присвоении почётного звания «Заслуженный работник местного самоуправления Российской Федерации» председателю Совета депутатов Апатитов Светлане Кательниковой. Награду присудили за заслуги в развитии местного самоуправления и многолетнюю добросовестную работу.\n\nДо",
-   "link": "https://t.me/bportcom/87233",
-   "date": "2026-11-25",
-   "source": "Б-порт (Telegram)",
-   "source_id": "bport_tg",
-   "rank": 3,
-   "person": "Апатитов Светлане",
+   "person": "Константин Широков",
    "orgs": []
   },
   {
    "type": "launch",
    "level": "head",
    "org_class": "gov",
-   "region": "Санкт-Петербург",
-   "title": "Петербург увеличил промышленное производство и открыл 13 новых предприятий",
-   "summary": "Промышленность остается одним из ключевых факторов устойчивости экономики Петербурга. За январь — сентябрь индекс промышленного производства в городе достиг 102,2%, тогда как в среднем по России он составил 100,2%. Об этом во время прямой линии рассказал губернатор Петербурга Александр Беглов.",
-   "link": "https://abnews.ru/szfo/news/spb/2026/11/25/peterburg-uvelichil-promyshlennoe-proizvodstvo-i-otkryl-13-novyh-predpriyatij",
+   "region": "Псковская область",
+   "title": "Три гостиничных проекта в Пскове: когда ждать открытия",
+   "summary": "Строительство трёхзвёздочной гостиницы «Космос» в этом году не завершится, рассказала руководитель комитета по туризму и межмуниципальному взаимодействию администрации Пскова Кристина Кобызь в программе «Среда обитания» на радио «Серебряный дождь» (88.3 FM) в Пскове сегодня, 25 ноября. \n\n \n\n Гостиница «ТЭЦ на Великой» летом строилась очень активно, но пока также не все работы там завершены. Гостев",
+   "link": "https://informpskov.ru/news/523885.html",
    "date": "2026-11-25",
-   "source": "АБН24",
-   "source_id": "abnews",
+   "source": "ПАИ",
+   "source_id": "informpskov",
    "rank": 3,
+   "person": "Кристина Кобызь",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Путин досрочно снял Андрея Чибиса с поста губернатора Мурманской области",
+   "summary": "Президент РФ Владимир Путин отправил в отставку арестованного губернатора Мурманской области Андрея Чибиса, следует из текста опубликованного указа. Указ вступает в силу с сегодняшнего дня. \"Досрочно прекратить полномочия губернатора Мурманской области Чибиса А.В.\", — говорится в тексте указа. Андрей Чибис возглавлял Мурманскую область с 2019 года. До назначения на пост губернатора он занимал руко",
+   "link": "https://www.dp.ru/a/2026/11/25/putin-dosrochno-snjal-andreja",
+   "date": "2026-11-25",
+   "source": "Деловой Петербург",
+   "source_id": "dp",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "launch",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Псковская область",
+   "title": "Завод «Титан-Полимер» заключил соглашение о сотрудничестве с региональным центром занятости",
+   "summary": "Завод «Титан-Полимер» заключил соглашение о взаимодействии с государственным учреждением Псковской области «Областной центр занятости населения». Документ направлен на развитие системного сотрудничества в сфере подготовки, привлечения и трудоустройства квалифицированных специалистов, в том числе студентов и выпускников образовательных учреждений региона. Об этом ПАИ сообщил в пресс-службе предприя",
+   "link": "https://informpskov.ru/news/523896.html",
+   "date": "2026-11-25",
+   "source": "ПАИ",
+   "source_id": "informpskov",
+   "rank": 3,
+   "person": "",
+   "orgs": [
+    "Титан-Полимер"
+   ]
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Псковская область",
+   "title": "В Псковской области в этом году начали работать 83 молодых врача",
+   "summary": "83 молодых врача приступили к работе в медицинских учреждениях в Псковской области в 2026 году. 63 из них обучались на целевых направлениях. Об этом губернатор Михаил Ведерников сообщил во время прямой линии на телеканале «Россия 24» сегодня, 25 ноября. \n\n \n\n Глава региона также рассказал о результатах в сфере образования. В этом году более четырёх тысяч молодых людей поступили в техникумы и колле",
+   "link": "https://informpskov.ru/news/523903.html",
+   "date": "2026-11-25",
+   "source": "ПАИ",
+   "source_id": "informpskov",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Республика Коми",
+   "title": "МТС возглавила рейтинга цифрового лидерства TelecomDaily",
+   "summary": "Информационно-аналитическое агентство TelecomDaily опубликовало \"Индекс цифрового лидерства операторов связи\". Максимальные оценки среди телекоммуникационных операторов за технологичность умных решений и их восприятие абонентами, 8,58 балла из 10, получила МТС. \n В исследовании TelecomDaily оценивались цифровые решения крупнейших российских мобильных операторов: их удобство, разнообразие и востреб",
+   "link": "https://komiinform.ru/news/303388",
+   "date": "2026-11-25",
+   "source": "Комиинформ",
+   "source_id": "komiinform",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Путин отправил в отставку губернатора Мурманской области Чибиса: чиновника задержали по делу о растрате миллиарда рублей",
+   "summary": "Президент подписал указ",
+   "link": "https://29.ru/text/politics/2026/11/25/76790672/",
+   "date": "2026-11-25",
+   "source": "29.ru",
+   "source_id": "29ru",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Республика Коми",
+   "title": "Глава Коми назначил шесть членов избирательной комиссии республики",
+   "summary": "",
+   "link": "https://www.bnkomi.ru/data/news/206209/",
+   "date": "2026-11-25",
+   "source": "БНК",
+   "source_id": "bnkomi",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "deputy",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Замглавы Мурманской области Надежда Аксенова временно возглавила регион после ареста губернатора Чибиса",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiQ0FVX3lxTE53bmtfb2FJTGhFNFVCYXNBT3U3dC12TWZwTGw0QTNrbHlGRFRVVExUZy1RVGlTeEpXWm9BbExKQnhSaFHSAUNBVV95cUxOd25rX29hSUxoRTRVQmFzQU91N3Qtdk1mcExsNEEza2x5RkRUVVRMVGctUVRpU3hKV1pvQWxMSkJ4UmhR?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "Надежда Аксенова",
+   "orgs": []
+  },
+  {
+   "type": "title",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Санкт-Петербург",
+   "title": "Ханой: звание Почетного гражданина столицы присвоено губернатору Санкт-Петербурга.",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOWlVOV0g1c012c0JFTmVDckJEZ2h4cE5qNThQNFlIeTU4TnVFVTdtQVdEUm1JX1hxRndCNFJWZ09YX1U4YUplX20xX0w0T1VEOGpwYTB1aTV1VVVnT2lMN3dhemJoWEVNbUx0Z2JHMTFwX0x1RHQ3ZTU1R3AtczRnVXZGclRzSEFNZ0J4RU9HUE12TFg0ZWp4d005X2FnUjdBNW56RFozQUE2c3ZFU1lIMGRhUWFHb2sw?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Санкт-Петербург",
+   "source_id": "gnews_spb",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Назначена врио главы Мурманской области",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE00Q2lOZHBPNnVyXzF6NWhoRXpwY2ZYd19CUGtCQXVqcHZsZGlreFk2S3p5akdOeERGNHczN3BEMmU5OFhvMU03SmFIYkxoOUhXWlk4V3hQaw?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Санкт-Петербург",
+   "source_id": "gnews_spb",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "deputy",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Врио главы Мурманской области назначена заместитель губернатора",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE14eE1qYi1KR19uSm1sd0ZPVU83T3YtY3p0c09MbUlkYklYYVFnZ185WnBWMW93SEZYT09GaENFYXVUR2RfdHpRQnl6TFJZaDhzMlBIS09rRjRNbTZDRHlhMmpSQQ?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Санкт-Петербург",
+   "source_id": "gnews_spb",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Мурманскую область временно возглавила глава аппарата правительства региона Аксенова",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1UeXpEUUxpNGk4YUluQkRDNUc2ekNELTV2LXlpRndaTWJHUXN3LTcyRkFJeWk0cFhNUjZvTm5sX3pGT09YZ0tDandzSdIBS0FVX3lxTE1UeXpEUUxpNGk4YUluQkRDNUc2ekNELTV2LXlpRndaTWJHUXN3LTcyRkFJeWk0cFhNUjZvTm5sX3pGT09YZ0tDandzSQ?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Врио главы Мурманской области станет один из замов Чибиса БИЗНЕС Online",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1RaTFjZzNsekVjRzVBYXBoU1VwalU1bnFGbUcteE4waGpoVEdyT3ZlUVA0TTREenltY0w5STJDX3RDNlNOUWI1dHZqSHJRTEFUN0pF0gFTQVVfeXFMTVFpMWNnM2x6RWNHNUFhcGhTVXBqVTVucUZtRy14TjBoamhUR3JPdmVRUDRNNER6eW1jTDlJMkNfdEM2U05RYjV0dmpIclFMQVQ3SkU?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Замгубернатора Мурманской области Аксенова стала врио главы региона",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOOFd3V0FJUkJDbEZYbnVVeVhLR2NfOGVhT2x3WmMtT0puZ3NjYVliRFdUcGQ1RVlMOVpYWXV0T0RRdkI2Z0ZYcW9RWFdBNE9ySDhOLVJMZE9oYnRFYkZkeGFpM1c2Z0dzVTFxQTU4clFSSjJxWjVvY3lmelZFTDJMbS1vLTdKZ2EwR3ZOdFZxMl8xZ0p2YUVabDJnYlhydHgzekZuTHo3UWhvVVo3cHc?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Врио главы региона назначили в Мурманской области",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE5yOTZsN2trYjlYREJCeTFjanl4aVZGaEgtb1Q5OFhreVE4Nzk4SzBOTWpMWGtXbFFYMlJmNUp3MDB4eWlxLWVHN3lR?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "deputy",
+   "org_class": "gov",
+   "region": "Псковская область",
+   "title": "В Псковской области назначили нового вице-губернатора",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTE9lazlPVlExMUdXMnM1am0wRlFpa0pNWU1MaklxaVZZZDV4VmpMU2lKbGl6WF9OdHEwQjY2TUpkVkFkdw?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Псковская область",
+   "source_id": "gnews_psk",
+   "rank": 4,
    "person": "",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3212,
-  "items_fresh": 2855,
-  "detected": 45,
-  "relevance_accepted": 30,
-  "relevance_rejected": 15,
+  "items_received": 3564,
+  "items_fresh": 3301,
+  "detected": 89,
+  "relevance_accepted": 63,
+  "relevance_rejected": 26,
   "region_rejected": 1,
-  "candidates": 29,
+  "candidates": 62,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 11,
-   "foreign_event_geography_overrides_org_dictionary": 3,
-   "minor_local_utility_without_regional_scale": 1
+   "missing_regional_event_anchor": 17,
+   "foreign_event_geography_overrides_org_dictionary": 7,
+   "proceeding_without_explicit_region": 2
   },
   "rejected_examples": [
    {
@@ -84,9 +327,24 @@
     "source": "Кремль. Новости (Telegram)"
    },
    {
+    "reason": "missing_regional_event_anchor",
+    "title": "В Георгиевском зале Большого Кремлёвского дворца состоялась церемония официальной встречи Султана Государства Бруней-Даруссалам Хассанала Болкиаха Президентом Российской Федерации",
+    "source": "Кремль. Новости (Telegram)"
+   },
+   {
     "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "\"Газпром\" запустил газотурбинную установку Южно-Якутской ТЭС",
-    "source": "ТАСС"
+    "title": "Преподавателям, студентам и аспирантам Московского физико-технического института (национального исследовательского университета)",
+    "source": "Правительство России"
+   },
+   {
+    "reason": "proceeding_without_explicit_region",
+    "title": "Суд арестовал губернатора Мурманской области Андрея Чибиса до 23 января",
+    "source": "Коммерсантъ Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Гендиректором «Глобал Портс» назначен Владимир Бычков",
+    "source": "Коммерсантъ Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -94,14 +352,34 @@
     "source": "Коммерсантъ Санкт-Петербург"
    },
    {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "«Газпром» ввел в эксплуатацию первую газотурбинную установку Южно-Якутской ТЭС",
+    "source": "Ведомости"
+   },
+   {
     "reason": "missing_regional_event_anchor",
     "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
     "source": "Ведомости"
    },
    {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Ставрополь вошел в топ городов России с самой развитой медициной",
+    "source": "АБН24"
+   },
+   {
     "reason": "missing_regional_event_anchor",
-    "title": "Генерал Нагуманов возглавил группу по прозрачности компаний ТЭКа с госучастием",
-    "source": "Ведомости"
+    "title": "Собянин объявил о запуске гостиничного комплекса «Россия» в «Зарядье»",
+    "source": "АБН24"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Кировский филиал МАУ подготовил более 16 тысяч специалистов",
+    "source": "АБН24"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Миллиардер Боэли подписал соглашение с \"Лукойлом\" о покупке зарубежных активов",
+    "source": "Деловой Петербург"
    },
    {
     "reason": "foreign_event_geography_overrides_org_dictionary",
@@ -109,54 +387,19 @@
     "source": "Деловой Петербург"
    },
    {
-    "reason": "minor_local_utility_without_regional_scale",
-    "title": "Новый газопровод ввели в эксплуатацию в Пыталово",
-    "source": "ПАИ"
-   },
-   {
     "reason": "missing_regional_event_anchor",
-    "title": "🇷🇺 Открытие 250 месторождений может укрепить сырьевую базу российской промышленности",
-    "source": "Б-порт (Telegram)"
+    "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
+    "source": "47news"
    },
    {
     "reason": "missing_regional_event_anchor",
     "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
     "source": "Первый Арктический (Telegram)"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Елена Левина из Архангельска возглавила департамент здравоохранения Ивановской области",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "В Миллерово назначили нового главу города",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Официально: Сергей Салмин возглавил «Оренбург Водоканал»",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
-    "source": "Google Новости · Псковская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Общественную палату Норильска возглавила директор культурного центра «Башня»",
-    "source": "Google Новости · Республика Коми"
    }
   ],
-  "not_detected": 2810,
-  "duplicates": 25,
-  "new_events": 4,
+  "not_detected": 3212,
+  "duplicates": 42,
+  "new_events": 20,
   "sources": [
    {
     "id": "kremlin",
@@ -180,8 +423,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 97",
-    "items": 97
+    "status": "rss 96",
+    "items": 96
    },
    {
     "id": "interfax",
@@ -190,8 +433,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 120",
-    "items": 120
+    "status": "rss 156",
+    "items": 156
    },
    {
     "id": "vedomosti",
@@ -205,13 +448,13 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 18",
-    "items": 18
+    "status": "telegram 19",
+    "items": 19
    },
    {
     "id": "genproc_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "mchs_tg",
@@ -230,8 +473,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 3",
+    "items": 3
    },
    {
     "id": "dp",
@@ -240,8 +483,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 54",
+    "items": 54
    },
    {
     "id": "genproc_78",
@@ -255,8 +498,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "lo_zaks",
@@ -265,13 +508,13 @@
    },
    {
     "id": "47news",
-    "status": "html 116",
-    "items": 116
+    "status": "html 118",
+    "items": 118
    },
    {
     "id": "online47",
-    "status": "error: ReadTimeout",
-    "items": 0
+    "status": "html 27",
+    "items": 27
    },
    {
     "id": "genproc_47",
@@ -285,18 +528,18 @@
    },
    {
     "id": "29ru",
-    "status": "rss 96",
-    "items": 96
+    "status": "rss 95",
+    "items": 95
    },
    {
     "id": "region29",
-    "status": "html 76",
-    "items": 76
+    "status": "html 75",
+    "items": 75
    },
    {
     "id": "news29",
-    "status": "html 25",
-    "items": 25
+    "status": "html 27",
+    "items": 27
    },
    {
     "id": "genproc_29",
@@ -305,13 +548,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "newsvo",
-    "status": "rss 43",
-    "items": 43
+    "status": "rss 40",
+    "items": 40
    },
    {
     "id": "krassever",
@@ -330,18 +573,18 @@
    },
    {
     "id": "klops",
-    "status": "html 29",
-    "items": 29
+    "status": "html 27",
+    "items": 27
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 97",
-    "items": 97
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "genproc_39",
-    "status": "html 47",
-    "items": 47
+    "status": "html 46",
+    "items": 46
    },
    {
     "id": "mur_gov",
@@ -355,8 +598,8 @@
    },
    {
     "id": "bport",
-    "status": "error: ReadTimeout",
-    "items": 0
+    "status": "html 32",
+    "items": 32
    },
    {
     "id": "severpost",
@@ -365,8 +608,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "genproc_51",
@@ -380,8 +623,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 21",
-    "items": 21
+    "status": "html 52",
+    "items": 52
    },
    {
     "id": "genproc_10",
@@ -390,8 +633,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 17",
-    "items": 17
+    "status": "rss 89",
+    "items": 89
    },
    {
     "id": "informpskov",
@@ -400,8 +643,8 @@
    },
    {
     "id": "pskovkp_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 13",
+    "items": 13
    },
    {
     "id": "genproc_60",
@@ -410,8 +653,8 @@
    },
    {
     "id": "bnkomi",
-    "status": "html 21",
-    "items": 21
+    "status": "rss 20",
+    "items": 20
    },
    {
     "id": "bnkomi_tg",
@@ -430,8 +673,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "nov_official_tg",
@@ -440,8 +683,8 @@
    },
    {
     "id": "53news",
-    "status": "html 42",
-    "items": 42
+    "status": "html 41",
+    "items": 41
    },
    {
     "id": "novgorod_ru",
@@ -455,18 +698,18 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "bport_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "first_arctic_tg",
@@ -475,13 +718,13 @@
    },
    {
     "id": "dp_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "online47_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "lentv24_tg",
@@ -495,8 +738,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "komiinform_tg",
@@ -510,8 +753,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "mchs_10_tg",
@@ -530,13 +773,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 22",
-    "items": 22
+    "status": "rss 59",
+    "items": 59
    },
    {
     "id": "gnews_lo",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 19",
+    "items": 19
    },
    {
     "id": "gnews_arh",
@@ -545,38 +788,38 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 45",
+    "items": 45
    },
    {
     "id": "gnews_klg",
-    "status": "rss 61",
-    "items": 61
-   },
-   {
-    "id": "gnews_mur",
-    "status": "rss 58",
-    "items": 58
-   },
-   {
-    "id": "gnews_kar",
-    "status": "rss 40",
-    "items": 40
-   },
-   {
-    "id": "gnews_psk",
     "status": "rss 30",
     "items": 30
    },
    {
+    "id": "gnews_mur",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 38",
+    "items": 38
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 24",
+    "items": 24
+   },
+   {
     "id": "gnews_komi",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 38",
+    "items": 38
    },
    {
     "id": "gnews_nov",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "rosbalt",
@@ -587,27 +830,6 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 4,
- "failed": [
-  {
-   "id": "spbdnevnik",
-   "name": "Петербургский дневник",
-   "status": "error: ConnectionError"
-  },
-  {
-   "id": "online47",
-   "name": "Online47",
-   "status": "error: ReadTimeout"
-  },
-  {
-   "id": "bport",
-   "name": "Б-порт",
-   "status": "error: ReadTimeout"
-  },
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectionError"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

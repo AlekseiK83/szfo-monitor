@@ -1,17 +1,48 @@
 {
  "date": "2026-11-25",
- "new": [],
+ "new": [
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Путин отправил в отставку обвиняемого в растрате и взятке главу Мурманской области",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOdWNuMm50bFVQN1JyOG1oWlV0VlRKQ3RYWGRwZFNocDVNQ1FxdF9nbk94WkxwaVBPQTh3V3dQdHRia291OEVkTkwzVzl0WVVEV1E2RXhoSW42WDQ2TkVZZUo0NndWVnoxQVkzeXBybUkweWpSZWhmTWd6V1pXVWEzV0ZjOTZUT0tDMVN1UW4zSHR0S1RnVU9TMzd2T3ZPMTVIamNKMDdhUTZaRmRYVFloUjBlZDU?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Мурманская область",
+   "title": "Путин отправил в отставку губернатора Мурманской области на фоне дела о коррупции",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQNVF2emlTUWxES2FYVWtrdmZiam8yWDE5ZHZCbEd4dVJ2VXI4NkJuU2lqWVczUFE4MVZiMUdmSHM5SEZkSlVhZjlIZTRhN1J0dkwtSzdydURCTVBkclFBdmxYRzQ0SGpEcnBfOVA5Q3JkSm95MDVvQnB5a0RpSG5zS0dxaDV3QUJXeEUxZUpHaWRJbWRlcDlWVXFncWIxWWpZTGZpODFRQVR6U2UyQXJEOG9mbEtnZzlCLUE?oc=5",
+   "date": "2026-11-25",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 3594,
-  "items_fresh": 3314,
-  "detected": 90,
-  "relevance_accepted": 63,
-  "relevance_rejected": 27,
+  "items_received": 3499,
+  "items_fresh": 3265,
+  "detected": 83,
+  "relevance_accepted": 60,
+  "relevance_rejected": 23,
   "region_rejected": 1,
-  "candidates": 62,
+  "candidates": 59,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 18,
-   "foreign_event_geography_overrides_org_dictionary": 7,
+   "missing_regional_event_anchor": 15,
+   "foreign_event_geography_overrides_org_dictionary": 6,
    "proceeding_without_explicit_region": 2
   },
   "rejected_examples": [
@@ -91,9 +122,9 @@
     "source": "Первый Арктический (Telegram)"
    }
   ],
-  "not_detected": 3224,
-  "duplicates": 62,
-  "new_events": 0,
+  "not_detected": 3182,
+  "duplicates": 57,
+  "new_events": 2,
   "sources": [
    {
     "id": "kremlin",
@@ -117,8 +148,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 96",
-    "items": 96
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "interfax",
@@ -127,8 +158,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 156",
-    "items": 156
+    "status": "rss 157",
+    "items": 157
    },
    {
     "id": "vedomosti",
@@ -177,8 +208,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 55",
-    "items": 55
+    "status": "html 54",
+    "items": 54
    },
    {
     "id": "genproc_78",
@@ -202,8 +233,8 @@
    },
    {
     "id": "47news",
-    "status": "html 117",
-    "items": 117
+    "status": "html 118",
+    "items": 118
    },
    {
     "id": "online47",
@@ -272,8 +303,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 90",
+    "items": 90
    },
    {
     "id": "genproc_39",
@@ -467,8 +498,8 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 58",
-    "items": 58
+    "status": "rss 23",
+    "items": 23
    },
    {
     "id": "gnews_lo",
@@ -477,8 +508,8 @@
    },
    {
     "id": "gnews_arh",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "gnews_vol",
@@ -492,28 +523,28 @@
    },
    {
     "id": "gnews_mur",
-    "status": "rss 85",
-    "items": 85
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "gnews_kar",
-    "status": "rss 17",
-    "items": 17
+    "status": "rss 18",
+    "items": 18
    },
    {
     "id": "gnews_psk",
-    "status": "rss 52",
-    "items": 52
+    "status": "rss 24",
+    "items": 24
    },
    {
     "id": "gnews_komi",
-    "status": "rss 38",
-    "items": 38
+    "status": "rss 14",
+    "items": 14
    },
    {
     "id": "gnews_nov",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "rosbalt",

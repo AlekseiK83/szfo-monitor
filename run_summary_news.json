@@ -1,49 +1,19 @@
 {
  "date": "2026-11-25",
- "new": [
-  {
-   "type": "leave",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "Путин отправил в отставку обвиняемого в растрате и взятке главу Мурманской области",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOdWNuMm50bFVQN1JyOG1oWlV0VlRKQ3RYWGRwZFNocDVNQ1FxdF9nbk94WkxwaVBPQTh3V3dQdHRia291OEVkTkwzVzl0WVVEV1E2RXhoSW42WDQ2TkVZZUo0NndWVnoxQVkzeXBybUkweWpSZWhmTWd6V1pXVWEzV0ZjOTZUT0tDMVN1UW4zSHR0S1RnVU9TMzd2T3ZPMTVIamNKMDdhUTZaRmRYVFloUjBlZDU?oc=5",
-   "date": "2026-11-25",
-   "source": "Google Новости · Мурманская область",
-   "source_id": "gnews_mur",
-   "rank": 4,
-   "person": "",
-   "orgs": []
-  },
-  {
-   "type": "leave",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "Путин отправил в отставку губернатора Мурманской области на фоне дела о коррупции",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQNVF2emlTUWxES2FYVWtrdmZiam8yWDE5ZHZCbEd4dVJ2VXI4NkJuU2lqWVczUFE4MVZiMUdmSHM5SEZkSlVhZjlIZTRhN1J0dkwtSzdydURCTVBkclFBdmxYRzQ0SGpEcnBfOVA5Q3JkSm95MDVvQnB5a0RpSG5zS0dxaDV3QUJXeEUxZUpHaWRJbWRlcDlWVXFncWIxWWpZTGZpODFRQVR6U2UyQXJEOG9mbEtnZzlCLUE?oc=5",
-   "date": "2026-11-25",
-   "source": "Google Новости · Мурманская область",
-   "source_id": "gnews_mur",
-   "rank": 4,
-   "person": "",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3499,
-  "items_fresh": 3265,
-  "detected": 83,
-  "relevance_accepted": 60,
-  "relevance_rejected": 23,
+  "items_received": 3510,
+  "items_fresh": 3246,
+  "detected": 90,
+  "relevance_accepted": 63,
+  "relevance_rejected": 27,
   "region_rejected": 1,
-  "candidates": 59,
+  "candidates": 62,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 15,
+   "missing_regional_event_anchor": 18,
    "foreign_event_geography_overrides_org_dictionary": 6,
-   "proceeding_without_explicit_region": 2
+   "proceeding_without_explicit_region": 2,
+   "hotel_project_not_opened": 1
   },
   "rejected_examples": [
    {
@@ -117,14 +87,14 @@
     "source": "47news"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
-    "source": "Первый Арктический (Telegram)"
+    "reason": "hotel_project_not_opened",
+    "title": "Три гостиничных проекта в Пскове: когда ждать открытия",
+    "source": "ПАИ"
    }
   ],
-  "not_detected": 3182,
-  "duplicates": 57,
-  "new_events": 2,
+  "not_detected": 3156,
+  "duplicates": 62,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -148,8 +118,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 97",
-    "items": 97
+    "status": "rss 98",
+    "items": 98
    },
    {
     "id": "interfax",
@@ -378,8 +348,8 @@
    },
    {
     "id": "bnkomi",
-    "status": "rss 20",
-    "items": 20
+    "status": "html 47",
+    "items": 47
    },
    {
     "id": "bnkomi_tg",
@@ -398,8 +368,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "html 77",
-    "items": 77
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "nov_official_tg",
@@ -503,13 +473,13 @@
    },
    {
     "id": "gnews_lo",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "gnews_arh",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "gnews_vol",
@@ -523,8 +493,8 @@
    },
    {
     "id": "gnews_mur",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 88",
+    "items": 88
    },
    {
     "id": "gnews_kar",
@@ -533,13 +503,13 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "gnews_komi",
-    "status": "rss 14",
-    "items": 14
+    "status": "rss 38",
+    "items": 38
    },
    {
     "id": "gnews_nov",
@@ -550,11 +520,22 @@
     "id": "rosbalt",
     "status": "rosbalt via Google News 20 (direct: error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0)",
     "items": 20
+   },
+   {
+    "id": "herzen_official",
+    "status": "herzen 0",
+    "items": 0
    }
   ],
   "trace_file": "data/news/last_run_trace.json"
  },
- "sources_total": 85,
- "sources_failed": 0,
- "failed": []
+ "sources_total": 86,
+ "sources_failed": 1,
+ "failed": [
+  {
+   "id": "nov_gov",
+   "name": "Правительство Новгородской области",
+   "status": "error: ConnectionError"
+  }
+ ]
 }

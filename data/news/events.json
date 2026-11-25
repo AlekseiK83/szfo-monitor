@@ -60,21 +60,6 @@
   "orgs": []
  },
  {
-  "type": "launch",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Псковская область",
-  "title": "Три гостиничных проекта в Пскове: когда ждать открытия",
-  "summary": "Строительство трёхзвёздочной гостиницы «Космос» в этом году не завершится, рассказала руководитель комитета по туризму и межмуниципальному взаимодействию администрации Пскова Кристина Кобызь в программе «Среда обитания» на радио «Серебряный дождь» (88.3 FM) в Пскове сегодня, 25 ноября. \n\n \n\n Гостиница «ТЭЦ на Великой» летом строилась очень активно, но пока также не все работы там завершены. Гостев",
-  "link": "https://informpskov.ru/news/523885.html",
-  "date": "2026-11-25",
-  "source": "ПАИ",
-  "source_id": "informpskov",
-  "rank": 3,
-  "person": "Кристина Кобызь",
-  "orgs": []
- },
- {
   "type": "appointment",
   "level": "deputy",
   "org_class": "gov",
@@ -197,36 +182,6 @@
   "person": "Андрея Чибиса",
   "orgs": [],
   "procedure_stage": "arrest"
- },
- {
-  "type": "leave",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Мурманская область",
-  "title": "Путин отправил в отставку обвиняемого в растрате и взятке главу Мурманской области",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxOdWNuMm50bFVQN1JyOG1oWlV0VlRKQ3RYWGRwZFNocDVNQ1FxdF9nbk94WkxwaVBPQTh3V3dQdHRia291OEVkTkwzVzl0WVVEV1E2RXhoSW42WDQ2TkVZZUo0NndWVnoxQVkzeXBybUkweWpSZWhmTWd6V1pXVWEzV0ZjOTZUT0tDMVN1UW4zSHR0S1RnVU9TMzd2T3ZPMTVIamNKMDdhUTZaRmRYVFloUjBlZDU?oc=5",
-  "date": "2026-11-25",
-  "source": "Google Новости · Мурманская область",
-  "source_id": "gnews_mur",
-  "rank": 4,
-  "person": "",
-  "orgs": []
- },
- {
-  "type": "leave",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Мурманская область",
-  "title": "Путин отправил в отставку губернатора Мурманской области на фоне дела о коррупции",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQNVF2emlTUWxES2FYVWtrdmZiam8yWDE5ZHZCbEd4dVJ2VXI4NkJuU2lqWVczUFE4MVZiMUdmSHM5SEZkSlVhZjlIZTRhN1J0dkwtSzdydURCTVBkclFBdmxYRzQ0SGpEcnBfOVA5Q3JkSm95MDVvQnB5a0RpSG5zS0dxaDV3QUJXeEUxZUpHaWRJbWRlcDlWVXFncWIxWWpZTGZpODFRQVR6U2UyQXJEOG9mbEtnZzlCLUE?oc=5",
-  "date": "2026-11-25",
-  "source": "Google Новости · Мурманская область",
-  "source_id": "gnews_mur",
-  "rank": 4,
-  "person": "",
-  "orgs": []
  },
  {
   "type": "leave",

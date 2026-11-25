@@ -1,32 +1,16 @@
 {
  "date": "2026-11-25",
- "new": [
-  {
-   "type": "status",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Мурманская область",
-   "title": "Мурманский курсант вошёл в число сильнейших на всероссийском чемпионате пилотирования дронов",
-   "summary": "Курсант мурманского филиала Центра «ВОИН» Алексей Энис вошёл в число лучших пилотов России, сообщило региональное министерство образования и науки.\nВ дисциплине «Гонка дронов....",
-   "link": "https://severpost.ru/read/216506",
-   "date": "2026-11-24",
-   "source": "СеверПост",
-   "source_id": "severpost",
-   "rank": 3,
-   "person": "Алексей Энис",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3458,
-  "items_fresh": 3077,
-  "detected": 35,
-  "relevance_accepted": 24,
-  "relevance_rejected": 11,
+  "items_received": 2992,
+  "items_fresh": 2626,
+  "detected": 31,
+  "relevance_accepted": 21,
+  "relevance_rejected": 10,
   "region_rejected": 1,
-  "candidates": 23,
+  "candidates": 20,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 9,
+   "missing_regional_event_anchor": 8,
    "minor_local_utility_without_regional_scale": 1,
    "foreign_event_geography_overrides_org_dictionary": 1
   },
@@ -35,11 +19,6 @@
     "reason": "missing_regional_event_anchor",
     "title": "Владимир Путин провёл заседание Комиссии по вопросам стратегии развития ТЭК",
     "source": "Кремль. Новости (Telegram)"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Два сербских министра подали в отставку",
-    "source": "РИА Новости"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -78,18 +57,18 @@
    },
    {
     "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Экс-мэр Сергей Салмин возглавит «Оренбург Водоканал» зарплату в ЗС он получать больше не будет",
+    "title": "Официально: Сергей Салмин возглавил «Оренбург Водоканал»",
     "source": "Google Новости · Архангельская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Министр социальных дел Эстонии ушла в отставку из-за нарушения закона",
-    "source": "Google Новости · Псковская область"
+    "title": "Общественную палату Норильска возглавила директор культурного центра «Башня»",
+    "source": "Google Новости · Республика Коми"
    }
   ],
-  "not_detected": 3042,
-  "duplicates": 22,
-  "new_events": 1,
+  "not_detected": 2595,
+  "duplicates": 20,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -113,8 +92,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 96",
-    "items": 96
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "interfax",
@@ -123,8 +102,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 106",
-    "items": 106
+    "status": "rss 109",
+    "items": 109
    },
    {
     "id": "vedomosti",
@@ -173,8 +152,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 68",
-    "items": 68
+    "status": "html 62",
+    "items": 62
    },
    {
     "id": "genproc_78",
@@ -218,8 +197,8 @@
    },
    {
     "id": "29ru",
-    "status": "rss 97",
-    "items": 97
+    "status": "rss 96",
+    "items": 96
    },
    {
     "id": "region29",
@@ -258,8 +237,8 @@
    },
    {
     "id": "genproc_35",
-    "status": "html 49",
-    "items": 49
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "klops",
@@ -273,8 +252,8 @@
    },
    {
     "id": "genproc_39",
-    "status": "html 47",
-    "items": 47
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "mur_gov",
@@ -303,8 +282,8 @@
    },
    {
     "id": "genproc_51",
-    "status": "html 49",
-    "items": 49
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "kar_tg",
@@ -313,18 +292,18 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 1",
-    "items": 1
+    "status": "html 6",
+    "items": 6
    },
    {
     "id": "genproc_10",
-    "status": "html 44",
-    "items": 44
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "pln",
-    "status": "html 90",
-    "items": 90
+    "status": "rss 2",
+    "items": 2
    },
    {
     "id": "informpskov",
@@ -338,8 +317,8 @@
    },
    {
     "id": "genproc_60",
-    "status": "html 50",
-    "items": 50
+    "status": "error: HTTP 502",
+    "items": 0
    },
    {
     "id": "bnkomi",
@@ -358,8 +337,8 @@
    },
    {
     "id": "genproc_11",
-    "status": "html 49",
-    "items": 49
+    "status": "error: HTTP 502",
+    "items": 0
    },
    {
     "id": "nov_gov",
@@ -383,13 +362,13 @@
    },
    {
     "id": "genproc_53",
-    "status": "html 46",
-    "items": 46
+    "status": "error: HTTP 502",
+    "items": 0
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "bport_tg",
@@ -398,8 +377,8 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "first_arctic_tg",
@@ -463,18 +442,18 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 58",
+    "items": 58
    },
    {
     "id": "gnews_lo",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 31",
+    "items": 31
    },
    {
     "id": "gnews_arh",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "gnews_vol",
@@ -488,28 +467,28 @@
    },
    {
     "id": "gnews_mur",
-    "status": "rss 60",
-    "items": 60
+    "status": "rss 56",
+    "items": 56
    },
    {
     "id": "gnews_kar",
-    "status": "rss 20",
-    "items": 20
+    "status": "rss 43",
+    "items": 43
    },
    {
     "id": "gnews_psk",
-    "status": "rss 61",
-    "items": 61
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_komi",
-    "status": "rss 36",
-    "items": 36
+    "status": "rss 38",
+    "items": 38
    },
    {
     "id": "gnews_nov",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "rosbalt",
@@ -520,6 +499,47 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 85,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 8,
+ "failed": [
+  {
+   "id": "genproc_35",
+   "name": "Прокуратура Вологодской области",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "genproc_39",
+   "name": "Прокуратура Калининградской области",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "genproc_51",
+   "name": "Прокуратура Мурманской области",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "genproc_10",
+   "name": "Прокуратура Республики Карелия",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "genproc_60",
+   "name": "Прокуратура Псковской области",
+   "status": "error: HTTP 502"
+  },
+  {
+   "id": "genproc_11",
+   "name": "Прокуратура Республики Коми",
+   "status": "error: HTTP 502"
+  },
+  {
+   "id": "genproc_53",
+   "name": "Прокуратура Новгородской области",
+   "status": "error: HTTP 502"
+  },
+  {
+   "id": "gnews_psk",
+   "name": "Google Новости · Псковская область",
+   "status": "error: HTTP 429"
+  }
+ ]
 }

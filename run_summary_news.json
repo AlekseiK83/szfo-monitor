@@ -2,17 +2,18 @@
  "date": "2026-11-26",
  "new": [],
  "diagnostics": {
-  "items_received": 3364,
-  "items_fresh": 3094,
-  "detected": 82,
-  "relevance_accepted": 58,
-  "relevance_rejected": 24,
+  "items_received": 3188,
+  "items_fresh": 2905,
+  "detected": 72,
+  "relevance_accepted": 45,
+  "relevance_rejected": 27,
   "region_rejected": 1,
-  "candidates": 57,
+  "candidates": 44,
   "rejection_reasons": {
    "missing_regional_event_anchor": 14,
    "foreign_event_geography_overrides_org_dictionary": 8,
-   "proceeding_without_explicit_region": 2
+   "proceeding_without_explicit_region": 2,
+   "regional_deputy_appointee_not_identified": 3
   },
   "rejected_examples": [
    {
@@ -34,11 +35,6 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Преподавателям, студентам и аспирантам Московского физико-технического института (национального исследовательского университета)",
     "source": "Правительство России"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Оппозиция в Японии внесла проект резолюции об отставке одного из министров",
-    "source": "ТАСС"
    },
    {
     "reason": "proceeding_without_explicit_region",
@@ -89,10 +85,15 @@
     "reason": "missing_regional_event_anchor",
     "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
     "source": "47news"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
+    "source": "Первый Арктический (Telegram)"
    }
   ],
-  "not_detected": 3012,
-  "duplicates": 57,
+  "not_detected": 2833,
+  "duplicates": 44,
   "new_events": 0,
   "sources": [
    {
@@ -117,8 +118,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "interfax",
@@ -127,8 +128,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 118",
-    "items": 118
+    "status": "rss 124",
+    "items": 124
    },
    {
     "id": "vedomosti",
@@ -177,8 +178,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 76",
-    "items": 76
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "genproc_78",
@@ -222,8 +223,8 @@
    },
    {
     "id": "29ru",
-    "status": "rss 95",
-    "items": 95
+    "status": "rss 96",
+    "items": 96
    },
    {
     "id": "region29",
@@ -317,8 +318,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 2",
-    "items": 2
+    "status": "html 6",
+    "items": 6
    },
    {
     "id": "genproc_10",
@@ -327,8 +328,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 30",
-    "items": 30
+    "status": "rss 2",
+    "items": 2
    },
    {
     "id": "informpskov",
@@ -367,8 +368,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "html 77",
-    "items": 77
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "nov_official_tg",
@@ -467,28 +468,28 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 23",
-    "items": 23
+    "status": "rss 56",
+    "items": 56
    },
    {
     "id": "gnews_lo",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "gnews_arh",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "gnews_vol",
-    "status": "rss 17",
-    "items": 17
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_klg",
-    "status": "rss 30",
-    "items": 30
+    "status": "rss 59",
+    "items": 59
    },
    {
     "id": "gnews_mur",
@@ -502,13 +503,13 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 25",
-    "items": 25
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_komi",
-    "status": "rss 13",
-    "items": 13
+    "status": "rss 14",
+    "items": 14
    },
    {
     "id": "gnews_nov",
@@ -529,6 +530,27 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 4,
+ "failed": [
+  {
+   "id": "spbdnevnik",
+   "name": "Петербургский дневник",
+   "status": "error: ConnectionError"
+  },
+  {
+   "id": "nov_gov",
+   "name": "Правительство Новгородской области",
+   "status": "error: ConnectionError"
+  },
+  {
+   "id": "gnews_vol",
+   "name": "Google Новости · Вологодская область",
+   "status": "error: HTTP 429"
+  },
+  {
+   "id": "gnews_psk",
+   "name": "Google Новости · Псковская область",
+   "status": "error: HTTP 429"
+  }
+ ]
 }

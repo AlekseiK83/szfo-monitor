@@ -108,21 +108,6 @@
  },
  {
   "type": "appointment",
-  "level": "deputy",
-  "org_class": "gov",
-  "region": "Псковская область",
-  "title": "В Псковской области назначили нового вице-губернатора",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTE9lazlPVlExMUdXMnM1am0wRlFpa0pNWU1MaklxaVZZZDV4VmpMU2lKbGl6WF9OdHEwQjY2TUpkVkFkdw?oc=5",
-  "date": "2026-11-25",
-  "source": "Google Новости · Псковская область",
-  "source_id": "gnews_psk",
-  "rank": 4,
-  "person": "",
-  "orgs": []
- },
- {
-  "type": "appointment",
   "level": "head",
   "org_class": "gov",
   "region": "Псковская область",

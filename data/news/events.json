@@ -32,6 +32,21 @@
  {
   "type": "appointment",
   "level": "head",
+  "org_class": "force",
+  "region": "Мурманская область",
+  "title": "Путин назначил председателя Арбитражного суда Заполярья",
+  "summary": "Президент России Владимир Путин подписал указ о назначении на должность председателя Арбитражного суда Мурманской области Алексея Смирникова.\nУказ президента №873 от 26 ноября 2026 года опубликован...",
+  "link": "https://severpost.ru/read/216625",
+  "date": "2026-11-26",
+  "source": "СеверПост",
+  "source_id": "severpost",
+  "rank": 3,
+  "person": "Алексея Смирникова",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
   "org_class": "gov",
   "region": "Мурманская область",
   "title": "Глава мурманского минздрава стал и. о. губернатора после ареста Чибиса",
@@ -41,21 +56,6 @@
   "source": "Ведомости",
   "source_id": "vedomosti",
   "rank": 2,
-  "person": "",
-  "orgs": []
- },
- {
-  "type": "title",
-  "level": "head",
-  "org_class": "gov",
-  "region": "Санкт-Петербург",
-  "title": "Ханой: звание Почетного гражданина столицы присвоено губернатору Санкт-Петербурга.",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOWlVOV0g1c012c0JFTmVDckJEZ2h4cE5qNThQNFlIeTU4TnVFVTdtQVdEUm1JX1hxRndCNFJWZ09YX1U4YUplX20xX0w0T1VEOGpwYTB1aTV1VVVnT2lMN3dhemJoWEVNbUx0Z2JHMTFwX0x1RHQ3ZTU1R3AtczRnVXZGclRzSEFNZ0J4RU9HUE12TFg0ZWp4d005X2FnUjdBNW56RFozQUE2c3ZFU1lIMGRhUWFHb2sw?oc=5",
-  "date": "2026-11-25",
-  "source": "Google Новости · Санкт-Петербург",
-  "source_id": "gnews_spb",
-  "rank": 4,
   "person": "",
   "orgs": []
  },

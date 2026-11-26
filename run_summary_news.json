@@ -1,29 +1,40 @@
 {
  "date": "2026-11-26",
- "new": [],
+ "new": [
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "force",
+   "region": "Мурманская область",
+   "title": "Путин назначил председателя Арбитражного суда Заполярья",
+   "summary": "Президент России Владимир Путин подписал указ о назначении на должность председателя Арбитражного суда Мурманской области Алексея Смирникова.\nУказ президента №873 от 26 ноября 2026 года опубликован...",
+   "link": "https://severpost.ru/read/216625",
+   "date": "2026-11-26",
+   "source": "СеверПост",
+   "source_id": "severpost",
+   "rank": 3,
+   "person": "Алексея Смирникова",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 3374,
-  "items_fresh": 3200,
-  "detected": 63,
-  "relevance_accepted": 40,
-  "relevance_rejected": 23,
-  "region_rejected": 2,
-  "candidates": 38,
+  "items_received": 3495,
+  "items_fresh": 3291,
+  "detected": 100,
+  "relevance_accepted": 75,
+  "relevance_rejected": 25,
+  "region_rejected": 1,
+  "candidates": 74,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 14,
-   "foreign_event_geography_overrides_org_dictionary": 3,
-   "proceeding_without_explicit_region": 1,
-   "neighbouring_region_not_subject_region": 2,
-   "routine_amenity_below_significance_threshold": 1,
+   "missing_regional_event_anchor": 12,
+   "foreign_event_geography_overrides_org_dictionary": 4,
+   "proceeding_without_explicit_region": 2,
+   "neighbouring_region_not_subject_region": 3,
    "metaphorical_new_chapter_not_appointment": 1,
-   "regional_deputy_appointee_not_identified": 1
+   "regional_deputy_appointee_not_identified": 2,
+   "election_date_is_not_governor_departure": 1
   },
   "rejected_examples": [
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Владимир Путин провёл заседание Комиссии по вопросам стратегии развития ТЭК",
-    "source": "Кремль. Новости (Telegram)"
-   },
    {
     "reason": "missing_regional_event_anchor",
     "title": "В Георгиевском зале Большого Кремлёвского дворца состоялась церемония официальной встречи Султана Государства Бруней-Даруссалам Хассанала Болкиаха Президентом Российской Федерации",
@@ -38,11 +49,6 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Шейнбаум назвала вмешательством открытие США горячей линии по картелям в Мексике",
     "source": "ТАСС"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Экс-глава Банка Испании возглавил ЕЦБ",
-    "source": "РИА Новости"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -80,24 +86,34 @@
     "source": "news29.ru"
    },
    {
-    "reason": "routine_amenity_below_significance_threshold",
-    "title": "В лор-отделении мурманской больницы открылась игровая комната",
-    "source": "СеверПост"
-   },
-   {
     "reason": "metaphorical_new_chapter_not_appointment",
     "title": "Петровская слобода: новая глава в жизни города",
     "source": "Столица на Onego"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Александр Беглов стал почетным гражданином Ханоя.",
-    "source": "Фонтанка (Telegram)"
+    "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
+    "source": "Первый Арктический (Telegram)"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Президент Владимир Путин присвоил звание «Мать-героиня» тамбовчанке Наталии Кулешовой",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "regional_deputy_appointee_not_identified",
+    "title": "Врио главы Мурманской области назначена заместитель губернатора",
+    "source": "Google Новости · Санкт-Петербург"
    }
   ],
-  "not_detected": 3137,
-  "duplicates": 38,
-  "new_events": 0,
+  "not_detected": 3191,
+  "duplicates": 73,
+  "new_events": 1,
   "sources": [
    {
     "id": "kremlin",
@@ -106,8 +122,8 @@
    },
    {
     "id": "kremlin_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "government",
@@ -116,13 +132,13 @@
    },
    {
     "id": "tass",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "ria",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 99",
+    "items": 99
    },
    {
     "id": "interfax",
@@ -181,8 +197,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 77",
-    "items": 77
+    "status": "html 73",
+    "items": 73
    },
    {
     "id": "genproc_78",
@@ -206,8 +222,8 @@
    },
    {
     "id": "47news",
-    "status": "html 117",
-    "items": 117
+    "status": "html 118",
+    "items": 118
    },
    {
     "id": "online47",
@@ -231,8 +247,8 @@
    },
    {
     "id": "region29",
-    "status": "html 75",
-    "items": 75
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "news29",
@@ -251,8 +267,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 44",
-    "items": 44
+    "status": "rss 45",
+    "items": 45
    },
    {
     "id": "krassever",
@@ -271,13 +287,13 @@
    },
    {
     "id": "klops",
-    "status": "html 25",
-    "items": 25
+    "status": "html 27",
+    "items": 27
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 93",
-    "items": 93
+    "status": "rss 91",
+    "items": 91
    },
    {
     "id": "genproc_39",
@@ -286,8 +302,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "html 58",
-    "items": 58
+    "status": "error: ReadTimeout",
+    "items": 0
    },
    {
     "id": "mur_gub_tg",
@@ -321,8 +337,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 48",
-    "items": 48
+    "status": "html 51",
+    "items": 51
    },
    {
     "id": "genproc_10",
@@ -331,8 +347,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 65",
-    "items": 65
+    "status": "rss 71",
+    "items": 71
    },
    {
     "id": "informpskov",
@@ -371,8 +387,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "html 75",
-    "items": 75
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "nov_official_tg",
@@ -396,8 +412,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "bport_tg",
@@ -411,18 +427,18 @@
    },
    {
     "id": "first_arctic_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "dp_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "online47_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lentv24_tg",
@@ -436,8 +452,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "komiinform_tg",
@@ -471,13 +487,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 55",
+    "items": 55
    },
    {
     "id": "gnews_lo",
-    "status": "rss 13",
-    "items": 13
+    "status": "rss 43",
+    "items": 43
    },
    {
     "id": "gnews_arh",
@@ -486,18 +502,18 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 17",
-    "items": 17
+    "status": "rss 30",
+    "items": 30
    },
    {
     "id": "gnews_klg",
-    "status": "rss 31",
-    "items": 31
+    "status": "rss 60",
+    "items": 60
    },
    {
     "id": "gnews_mur",
-    "status": "error: HTTP 429",
-    "items": 0
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "gnews_kar",
@@ -506,18 +522,18 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 25",
-    "items": 25
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "gnews_komi",
-    "status": "rss 33",
-    "items": 33
+    "status": "rss 9",
+    "items": 9
    },
    {
     "id": "gnews_nov",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "rosbalt",
@@ -536,9 +552,9 @@
  "sources_failed": 1,
  "failed": [
   {
-   "id": "gnews_mur",
-   "name": "Google Новости · Мурманская область",
-   "status": "error: HTTP 429"
+   "id": "mur_gov",
+   "name": "Правительство Мурманской области",
+   "status": "error: ReadTimeout"
   }
  ]
 }

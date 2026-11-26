@@ -2129,8 +2129,10 @@ def priority(ev):
     """Порядок выбора записи среди дублей: авторитет источника; затем заголовок о назначенном
     («Фаламеева назначена министром») раньше заголовка о назначившем («Филимонов назначил министра»);
     затем заголовок с фамилией; затем дата."""
-    return (ev.get("rank", 3), 1 if APPOINTER_FORM.search(ev["title"]) else 0,
-            0 if ev.get("person") else 1, ev.get("date", ""))
+    title = ev.get("title", "")
+    named_honor = ev.get("type") in ("title", "award") and _HONOR.search(title) and _recipient(title)
+    return (ev.get("rank", 3), 1 if APPOINTER_FORM.search(title) else 0,
+            0 if (ev.get("person") or named_honor) else 1, ev.get("date", ""))
 
 
 def reconcile(events, cfg):
@@ -2278,10 +2280,13 @@ def run(today=None, verbose=True):
     # остальные события остаются на прежнем коротком окне.
     recent_cut = (today - timedelta(days=4)).isoformat()
     departure_cut = (today - timedelta(days=10)).isoformat()
+    honor_cut = (today - timedelta(days=HONOR_REPEAT_DAYS)).isoformat()
     recent = [e for e in events if e.get("date", "") >= recent_cut or (
         e.get("date", "") >= departure_cut
         and (regional_governor_stage(e) == "governor_departure"
              or governor_stage(e) == "governor_departure")
+    ) or (
+        e.get("date", "") >= honor_cut and honorary_citizen_key(e)
     )]
     for ev in candidates:
         keys = event_keys(ev)
@@ -3031,36 +3036,85 @@ def _recipient(title):
     return ""
 
 
-def honorary_citizen_key(ev):
-    """Stable key across headline rewrites, RSS URLs and consecutive dates.
+# An award may be described without a surname: "Ханой: звание почетного
+# гражданина столицы присвоено губернатору Санкт-Петербурга".  In that
+# wording, "столицы" denotes the city in the headline, not a personal name.
+_HONOR_HEADLINE_CITY = re.compile(
+    r"^\s*([А-ЯЁ][а-яё-]{3,})\s*[:—–-]\s*(?:звание|поч[её]тн)", re.I,
+)
+_HONOR_SPB_GOVERNOR = re.compile(
+    r"\bгубернатор\w*\s+(?:Санкт[- ]Петербург\w*|Петербург\w*)\b", re.I,
+)
+_HONOR_NON_CITY = {
+    "столицы", "столица", "города", "город", "присвоено", "присвоен",
+    "присвоена", "получил", "получила", "вручено", "вручил", "стал",
+}
 
-    Requires recipient and town. Does not merge different recipients or honors.
-    """
+
+def _honor_city(title):
+    """City of the honor, including "Ханой: ... гражданина столицы"."""
+    m = _HONOR_CITY.search(title)
+    if m:
+        word = m.group(1).casefold().replace("ё", "е")
+        if word not in _HONOR_NON_CITY:
+            # "столицы Вьетнама" unambiguously refers to Hanoi here.
+            if word.startswith("вьетнам") and re.search(r"столиц\w*\s+Вьетнам", title, re.I):
+                return "хано"
+            return word[:4]  # Ханоя / Ханой, Москвы / Москва, etc.
+    prefixed = _HONOR_HEADLINE_CITY.search(title)
+    if prefixed and re.search(r"поч[её]тн\w*\s+гражданин\w*\s+столиц\w*", title, re.I):
+        return prefixed.group(1).casefold().replace("ё", "е")[:4]
+    return ""
+
+
+def honorary_citizen_key(ev):
+    """Semantic key for a recipient, honor type and city, not RSS headline."""
     if ev.get("type") not in ("title", "award") or not ev.get("region"):
         return ""
     title = ev.get("title") or ""
     if not _HONOR.search(title):
         return ""
-    m = _HONOR_CITY.search(title)
-    who = _recipient(title)
-    if not (m and who):
-        return ""  # fail open rather than accidentally merging two people
-    # Prefix-based Russian geographic root handles "Ханоя"/"Ханой".
-    city = m.group(1).casefold().replace('ё','е')[:4]
-    # «почётный гражданин столицы Вьетнама» = «почётный гражданин Ханоя».
-    if city == "вьет" and re.search(r"столиц\w*\s+Вьетнам", title, re.I):
-        city = "хано"
-    return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:{who}"
+    city, who = _honor_city(title), _recipient(title)
+    if not city:
+        return ""
+    if who:
+        return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:{who}"
+    # The governor of Saint Petersburg is a unique office. An unnamed
+    # reference to that office is usable for deduplication with another title
+    # mentioning the same office, but not with an unrelated person's award.
+    if ev["region"] == "Санкт-Петербург" and _HONOR_SPB_GOVERNOR.search(title):
+        return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:office_spb_governor"
+    return ""
 
 
 def same_honor(a, b):
-    ka, kb = honorary_citizen_key(a), honorary_citizen_key(b)
-    if not (ka and ka == kb):
+    if a.get("type") not in ("title", "award") or b.get("type") not in ("title", "award"):
+        return False
+    if not a.get("region") or a.get("region") != b.get("region"):
+        return False
+    ta, tb = a.get("title", ""), b.get("title", "")
+    if not (_HONOR.search(ta) and _HONOR.search(tb)):
+        return False
+    ca, cb = _honor_city(ta), _honor_city(tb)
+    if not ca or ca != cb:
         return False
     try:
-        return abs((date.fromisoformat(a['date']) - date.fromisoformat(b['date'])).days) <= HONOR_REPEAT_DAYS
+        days = abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days)
     except (KeyError, ValueError, TypeError):
         return False
+    if days > HONOR_REPEAT_DAYS:
+        return False
+    na, nb = _recipient(ta), _recipient(tb)
+    # Different explicitly named recipients are always different awards.
+    if na and nb:
+        return na == nb
+    # When the missing surname is replaced by a unique office, require that
+    # BOTH titles name the same office. Region alone is not enough.
+    if (a["region"] == "Санкт-Петербург"
+            and _HONOR_SPB_GOVERNOR.search(ta)
+            and _HONOR_SPB_GOVERNOR.search(tb)):
+        return True
+    return False
 
 # v1.1: advertising detection, independent of topical event classification.
 # A formally marked advertisement does not become a newsroom event just

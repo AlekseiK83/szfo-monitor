@@ -71,8 +71,7 @@ class FeaturedStaffingTests(unittest.TestCase):
                     rendered = Path("news.html").read_text(encoding="utf8")
                     self.assertIn(ROSBALT["link"], rendered)
                     self.assertIn("Персонал", rendered)
-                    from scripts.check_featured_news import check_for_date
-                    self.assertTrue(check_for_date("2026-11-23"))
+                    self.assertEqual(len(json.loads(Path("data/news/events.json").read_text("utf8"))), 1)
                     again, _ = monitor.run(today=date(2026, 11, 23), verbose=False)
                     self.assertEqual(again, [])
                     self.assertEqual(len(json.loads(Path("data/news/events.json").read_text("utf8"))), 1)
@@ -80,37 +79,21 @@ class FeaturedStaffingTests(unittest.TestCase):
                 os.chdir(old)
 
     def test_rosbalt_source_is_registered_once(self):
-        from scripts.add_rosbalt_source import main
-        with tempfile.TemporaryDirectory() as td:
-            old = Path.cwd()
-            try:
-                os.chdir(td)
-                Path("news_sources.json").write_text(json.dumps({
-                    "sources": [{"id": "example", "type": "rss", "url": "https://example.org/rss"}],
-                    "organizations": ORGS}, ensure_ascii=False), encoding="utf8")
-                main()
-                main()
-                cfg = json.loads(Path("news_sources.json").read_text("utf8"))
-                self.assertEqual(sum(s["id"] == "rosbalt" for s in cfg["sources"]), 1)
-                self.assertEqual(cfg["organizations"], ORGS)
-                self.assertEqual(cfg["sources"][0]["id"], "example")
-            finally:
-                os.chdir(old)
+        # Источник уже в постоянной конфигурации, установщик больше не нужен.
+        cfg = json.loads((FILE.parents[2] / "news_sources.json").read_text(encoding="utf8"))
+        matches = [src for src in cfg["sources"] if src.get("id") == "rosbalt"]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]["type"], "site")
+        self.assertEqual(matches[0]["region"], None)
+        self.assertTrue(matches[0]["url"].startswith("https://www.rosbalt.ru/"))
 
-    def test_guard_ensures_event_in_events(self):
-        from scripts.check_featured_news import check_for_date
-        self.assertTrue(check_for_date("2026-11-24"))
-        with tempfile.TemporaryDirectory() as td:
-            old = Path.cwd()
-            try:
-                os.chdir(td)
-                Path("data/news").mkdir(parents=True, exist_ok=True)
-                Path("data/news/events.json").write_text("[]", encoding="utf8")
-                Path("run_summary_news.json").write_text('{"new":[]}', encoding="utf8")
-                with self.assertRaisesRegex(AssertionError, "отсутствует"):
-                    check_for_date("2026-11-23")
-            finally:
-                os.chdir(old)
+    def test_featured_fixture_keeps_original_event_date(self):
+        # Исторический пример остаётся регрессионным фикстурным материалом;
+        # проверяющие скрипты в рабочий pipeline больше не добавляются.
+        self.assertEqual(ROSBALT["date"], "2026-11-23")
+        self.assertIn("18 620", ROSBALT["summary"])
+        self.assertIn("не подтверждённый фактический найм", ROSBALT["summary"])
+        self.assertIn("rosbalt.ru/news/2026-11-23/", ROSBALT["link"])
 
 
 if __name__ == "__main__":

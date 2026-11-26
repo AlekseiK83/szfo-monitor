@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -621,7 +622,10 @@ class TestRunUpgrade(unittest.TestCase):
                 nm.DATA_DIR.mkdir()
                 nm.save_json(nm.SOURCES_FILE, cfg)
                 nm.save_json(nm.EVENTS_FILE, [gnews_ev])
-                new, _ = nm.run(today=today, verbose=False)
+                # Trace.write читает глобальную константу news_diagnostics.TRACE_FILE.
+                # Изолируем её, иначе тест перезаписывает рабочий журнал прогонов.
+                with patch("news_diagnostics.TRACE_FILE", tmp / "d" / "last_run_trace.json"):
+                    new, _ = nm.run(today=today, verbose=False)
                 events = json.loads(nm.EVENTS_FILE.read_text(encoding="utf-8"))
             finally:
                 (nm.SOURCES_FILE, nm.DATA_DIR, nm.EVENTS_FILE, nm.SEEN_FILE, nm.FEEDS_CACHE, nm.RUN_SUMMARY, nm.PAGE_FILE, nm.fetch_source) = saved

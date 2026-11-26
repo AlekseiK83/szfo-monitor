@@ -914,6 +914,14 @@ def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
     if detection["type"] == "appointment" and followup_appointment_commentary(title, summary):
         return False, "secondary_commentary_not_new_appointment"
+    # Заместителей губернатора несколько; карточка без имени назначенного
+    # не подтверждает, что это новое, а не уже учтённое назначение.
+    # В отличие от главы региона, общий ключ должности использовать нельзя.
+    if detection["type"] == "appointment":
+        deputy_probe = {"type": "appointment", "title": title, "summary": summary}
+        if (is_regional_deputy_appointment(deputy_probe)
+                and not regional_deputy_appointees(deputy_probe)):
+            return False, "regional_deputy_appointee_not_identified"
     if detection["type"] in ("appointment", "ownership") and historical_appointment_backstory(title, summary):
         return False, "historical_appointment_not_new_event"
     if detection["type"] == "launch" and uncompleted_hospitality_launch(title, summary):
@@ -1847,35 +1855,122 @@ REGIONAL_DEPUTY_GOV = re.compile(
     r"замгубернатор\w*)\b", re.I,
 )
 
+# Отдельный ключ нужен потому, что «заместитель губернатора» — не одна
+# уникальная должность: у губернатора может быть несколько заместителей.
+_DEPUTY_PATRONYMIC = re.compile(r"(?:вич|вна|ична|оглы|кызы)[а-яё]*$", re.I)
+_DEPUTY_PERSON_TRIPLE = re.compile(
+    r"\b([А-ЯЁ][а-яё-]{2,})\s+([А-ЯЁ][а-яё-]{4,})\s+([А-ЯЁ][а-яё-]{3,})\b"
+)
+_DEPUTY_SURNAME_WITH_ROLE = re.compile(
+    r"\b([А-ЯЁ][а-яё-]{3,})\s+(?:стал[аи]?|назначен[аы]?|"
+    r"утвержден[аы]?|утверждён[аы]?)\s+"
+    r"(?:новым?\s+|новой\s+)?(?:вице[- ]?губернатор\w*|"
+    r"заместител\w*\s+губернатор\w*)\b", re.I
+)
+
+
+def is_regional_deputy_appointment(ev):
+    """Подтверждаем тип решения и должность, но НЕ полагаемся на level.
+
+    Старые карточки могут иметь ошибочный level='head'; должность от этого
+    не становится другой. Проверяем только саму позицию в новости.
+    """
+    if ev.get("type") != "appointment":
+        return False
+    title = ev.get("title", "")
+    lead = first_sentence(ev.get("summary", ""), limit=300)
+    role_in_title = REGIONAL_DEPUTY_GOV.search(title)
+    if role_in_title:
+        # «Вице-губернатор Иванова назначила директора» — она назначает,
+        # а не становится новым вице-губернатором.
+        after = title[role_in_title.end():]
+        if (re.search(r"\bназначил[аи]\b", after[:95], re.I)
+                and re.search(r"\b(?:директор|министр|начальник|ректор|руководител)",
+                              after, re.I)
+                and not re.search(r"\b(?:назначен[аы]?|стал[аи]?|утвержден[аы]?|утверждён[аы]?)\b",
+                                  title, re.I)):
+            return False
+        return True
+    # Роль, упомянутая ТОЛЬКО в биографии в лиде, не определяет, на какой
+    # пост назначили сейчас. Требуем новое назначение непосредственно в лиде.
+    if not REGIONAL_DEPUTY_GOV.search(lead):
+        return False
+    if re.search(r"\b(?:ранее|прежде|бывш\w*|до этого)\b.{0,95}?"
+                 r"(?:вице[- ]?губернатор|заместител\w*\s+губернатор)", lead, re.I):
+        return False
+    return bool(re.search(r"\b(?:назначен[аоы]?|назначили|стал[аи]?|"
+                          r"утвержден[аы]?|утверждён[аы]?)\b", lead, re.I))
+
+
+def _deputy_full_names(text):
+    """Пары (первые три буквы имени, основа фамилии), исключая отчество.
+
+    Стандартный name_pairs не умеет надёжно разбирать «Оксана Игоревна
+    Иванова»: он может принять отчество за фамилию. Не используем также
+    лицо, которое НАЗНАЧАЕТ (губернатора, президента).
+    """
+    text = normalize(text)
+    names = set()
+    triples = []
+    for m in _DEPUTY_PERSON_TRIPLE.finditer(text):
+        first, middle, last = m.groups()
+        if not _DEPUTY_PATRONYMIC.search(middle):
+            continue
+        if first.lower() in NAME_STOP or last.lower() in NAME_STOP:
+            continue
+        if name_stem(last) in APPOINTERS or name_stem(first) in APPOINTERS:
+            continue
+        names.add((first.lower().replace("ё", "е")[:3], name_stem(last)))
+        triples.append(m.span())
+    for m in re.finditer(r"\b([А-ЯЁ][а-яё-]{2,})\s+([А-ЯЁ][а-яё-]{3,})\b", text):
+        first, last = m.groups()
+        if any(start <= m.start() and m.end() <= stop for start, stop in triples):
+            continue
+        if (_DEPUTY_PATRONYMIC.search(first) or _DEPUTY_PATRONYMIC.search(last)
+                or first.lower() in NAME_STOP or last.lower() in NAME_STOP):
+            continue
+        if name_stem(first) in APPOINTERS or name_stem(last) in APPOINTERS:
+            continue
+        names.add((first.lower().replace("ё", "е")[:3], name_stem(last)))
+    return names
+
 
 def regional_deputy_appointees(ev):
-    """Имена кандидатов в заголовке, а если их нет — в первом предложении.
+    """Надёжно определённое имя назначенного из заголовка или лида.
 
-    Не склеиваем новости про двух заместителей лишь из-за общего губернатора
-    или совпадения ключа должности: заместителей в регионе несколько.
+    Не используем сохранённое поле `person`: в старых карточках там может
+    оказаться отчество, назначающий губернатор или герой комментария.
     """
     title = ev.get("title", "")
-    explicit = name_pairs(title)
-    if explicit:
-        # Имя может входить в комментарий, не относящийся к назначенному;
-        # в таких случаях не рискуем использовать имя другого комментатора.
-        if re.search(r"\b(?:рассказал|оценила?|поздравил|поделил\w*)\s+о\b", title, re.I):
-            return set()
-        return explicit
-    lead = first_sentence(ev.get("summary", ""), limit=290)
-    names = name_pairs(lead)
-    return names if len(names) == 1 else set()
+    if followup_appointment_commentary(title, ev.get("summary", "")):
+        return set()
+    headline = _deputy_full_names(title)
+    if headline:
+        return headline
+    lead = first_sentence(ev.get("summary", ""), limit=320)
+    found = _deputy_full_names(lead)
+    return found if len(found) == 1 else set()
+
+
+def regional_deputy_identity(ev):
+    """Однозначный ключ назначения, не общий ключ «заместитель»."""
+    if not is_regional_deputy_appointment(ev):
+        return ""
+    actors = regional_deputy_appointees(ev)
+    if len(actors) != 1:
+        return ""
+    first, last = next(iter(actors))
+    return f"deputy_appt:{ev.get('region', '')}:{first}:{last}"
 
 
 def same_regional_deputy_appointment(a, b, days_apart):
-    if days_apart > 3 or a.get("type") != b.get("type") or a.get("type") != "appointment":
+    if days_apart > 3 or a.get("region") != b.get("region"):
         return False
-    if a.get("region") != b.get("region") or a.get("level") != b.get("level") != "deputy":
-        return False
-    if not (REGIONAL_DEPUTY_GOV.search(a.get("title", "") + " " + a.get("summary", "")[:140])
-            and REGIONAL_DEPUTY_GOV.search(b.get("title", "") + " " + b.get("summary", "")[:140])):
+    if not (is_regional_deputy_appointment(a) and is_regional_deputy_appointment(b)):
         return False
     pa, pb = regional_deputy_appointees(a), regional_deputy_appointees(b)
+    # Должность не уникальна: без подтверждения одного и того же человека
+    # автоматически объединять новости нельзя.
     return bool(pa and pb and pa & pb)
 
 
@@ -1899,8 +1994,14 @@ def similar(a, b):
         return same_regional_governor_decision(a, b, days_apart)
     # «вице-губернатор» = «заместитель губернатора», но только когда
     # установлен один и тот же человек (несколько заместителей — разные посты).
-    if same_regional_deputy_appointment(a, b, days_apart):
-        return True
+    deputy_a = is_regional_deputy_appointment(a)
+    deputy_b = is_regional_deputy_appointment(b)
+    if deputy_a or deputy_b:
+        # Смена должности того же человека (например, директор → заместитель
+        # губернатора) — самостоятельное кадровое событие. Не отдаём его в
+        # общий fuzzy-match, который склеивает по одному ФИО.
+        return bool(deputy_a and deputy_b
+                    and same_regional_deputy_appointment(a, b, days_apart))
     if a["type"] == b["type"] == "appointment" and days_apart <= 10:
         if same_unique_regional_force_office(a, b):
             return True
@@ -1942,7 +2043,16 @@ def blocked_by_seen(keys, seen, today):
 
 
 def event_keys(ev):
+    deputy = regional_deputy_identity(ev)
+    if deputy:
+        # Имеющие подтверждённое имя региональные заместители не должны
+        # блокировать друг друга по общему ключу должности или одной фамилии.
+        return [deputy]
     keys = [event_key(ev)]
+    if is_regional_deputy_appointment(ev):
+        # Без имени нельзя создавать общий `pos:`, блокирующий другие
+        # независимые назначения в правительстве того же региона.
+        return keys
     # Каждая стадия процессуального дела самостоятельна; ключ должности
     # не должен блокировать арест после задержания или предъявление обвинения.
     if ev["type"] in ("workforce", "proceeding"):

@@ -5,34 +5,49 @@
    "type": "appointment",
    "level": "head",
    "org_class": "force",
-   "region": "Мурманская область",
-   "title": "Путин назначил председателя Арбитражного суда Заполярья",
-   "summary": "Президент России Владимир Путин подписал указ о назначении на должность председателя Арбитражного суда Мурманской области Алексея Смирникова.\nУказ президента №873 от 26 ноября 2026 года опубликован...",
-   "link": "https://severpost.ru/read/216625",
+   "region": "Калининградская область",
+   "title": "Евгений Быков переназначен председателем Калининградского областного суда",
+   "summary": "Указом президента он получил второй шестилетний срок. Об этом сообщила пресс-служба суда.",
+   "link": "https://www.newkaliningrad.ru/news/briefs/politics/24171228-evgeniy-bykov-perenaznachen-predsedatelem-kaliningradskogo-oblastnogo-suda.html",
    "date": "2026-11-26",
-   "source": "СеверПост",
-   "source_id": "severpost",
+   "source": "Новый Калининград",
+   "source_id": "newkaliningrad",
    "rank": 3,
-   "person": "Алексея Смирникова",
+   "person": "Евгений Быков",
+   "orgs": []
+  },
+  {
+   "type": "status",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Ленинградская область",
+   "title": "👏 Опыт Ленобласти по поддержке семей с детьми признали лучшей социальной практикой в России",
+   "summary": "👏 Опыт Ленобласти по поддержке семей с детьми признали лучшей социальной практикой в России\n\nКомитет по социальной защите населения Ленинградской области признан лучшим органом исполнительной власти по внедрению инноваций в социальной сфере и демографии. Награждение победителей всероссийского конкурса управленческих инноваций среди органов власти всех уровней состоялось в Финансовом университете п",
+   "link": "https://t.me/online47news/98718",
+   "date": "2026-11-26",
+   "source": "Online47 (Telegram)",
+   "source_id": "online47_tg",
+   "rank": 3,
+   "person": "Опыт Ленобласти",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3495,
-  "items_fresh": 3291,
-  "detected": 100,
-  "relevance_accepted": 75,
-  "relevance_rejected": 25,
+  "items_received": 3484,
+  "items_fresh": 3311,
+  "detected": 94,
+  "relevance_accepted": 73,
+  "relevance_rejected": 21,
   "region_rejected": 1,
-  "candidates": 74,
+  "candidates": 72,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 12,
-   "foreign_event_geography_overrides_org_dictionary": 4,
+   "missing_regional_event_anchor": 11,
+   "foreign_event_geography_overrides_org_dictionary": 2,
    "proceeding_without_explicit_region": 2,
    "neighbouring_region_not_subject_region": 3,
    "metaphorical_new_chapter_not_appointment": 1,
-   "regional_deputy_appointee_not_identified": 2,
-   "election_date_is_not_governor_departure": 1
+   "election_date_is_not_governor_departure": 1,
+   "regional_deputy_appointee_not_identified": 1
   },
   "rejected_examples": [
    {
@@ -44,11 +59,6 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Владимир Путин провёл встречу с Президентом Казахстана Касым-Жомартом Токаевым, который прибыл в Москву с рабочим визитом",
     "source": "Кремль. Новости (Telegram)"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Шейнбаум назвала вмешательством открытие США горячей линии по картелям в Мексике",
-    "source": "ТАСС"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -96,24 +106,29 @@
     "source": "Первый Арктический (Telegram)"
    },
    {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Президент Владимир Путин присвоил звание «Мать-героиня» тамбовчанке Наталии Кулешовой",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
     "reason": "missing_regional_event_anchor",
     "title": "Александр Беглов стал почетным гражданином Ханоя",
     "source": "Google Новости · Санкт-Петербург"
    },
    {
-    "reason": "regional_deputy_appointee_not_identified",
-    "title": "Врио главы Мурманской области назначена заместитель губернатора",
-    "source": "Google Новости · Санкт-Петербург"
+    "reason": "neighbouring_region_not_subject_region",
+    "title": "Президент отправил в отставку арестованного губернатора соседней с Поморьем области",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Агентство государственной противопожарной службы возглавил Андрей Варюхин",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "source": "Google Новости · Архангельская область"
    }
   ],
-  "not_detected": 3191,
-  "duplicates": 73,
-  "new_events": 1,
+  "not_detected": 3217,
+  "duplicates": 70,
+  "new_events": 2,
   "sources": [
    {
     "id": "kremlin",
@@ -132,8 +147,8 @@
    },
    {
     "id": "tass",
-    "status": "rss 97",
-    "items": 97
+    "status": "rss 98",
+    "items": 98
    },
    {
     "id": "ria",
@@ -147,8 +162,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 161",
-    "items": 161
+    "status": "rss 162",
+    "items": 162
    },
    {
     "id": "vedomosti",
@@ -167,8 +182,8 @@
    },
    {
     "id": "genproc_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "mchs_tg",
@@ -187,8 +202,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 3",
-    "items": 3
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "dp",
@@ -197,8 +212,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 73",
-    "items": 73
+    "status": "html 74",
+    "items": 74
    },
    {
     "id": "genproc_78",
@@ -212,8 +227,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "lo_zaks",
@@ -247,8 +262,8 @@
    },
    {
     "id": "region29",
-    "status": "html 77",
-    "items": 77
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "news29",
@@ -262,13 +277,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "newsvo",
-    "status": "rss 45",
-    "items": 45
+    "status": "rss 46",
+    "items": 46
    },
    {
     "id": "krassever",
@@ -292,8 +307,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 91",
-    "items": 91
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "genproc_39",
@@ -302,8 +317,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "error: ReadTimeout",
-    "items": 0
+    "status": "html 58",
+    "items": 58
    },
    {
     "id": "mur_gub_tg",
@@ -337,8 +352,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 51",
-    "items": 51
+    "status": "html 54",
+    "items": 54
    },
    {
     "id": "genproc_10",
@@ -347,8 +362,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 71",
-    "items": 71
+    "status": "rss 73",
+    "items": 73
    },
    {
     "id": "informpskov",
@@ -437,8 +452,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "lentv24_tg",
@@ -467,8 +482,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 13",
-    "items": 13
+    "status": "telegram 14",
+    "items": 14
    },
    {
     "id": "mchs_10_tg",
@@ -487,28 +502,28 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 55",
-    "items": 55
+    "status": "rss 24",
+    "items": 24
    },
    {
     "id": "gnews_lo",
-    "status": "rss 43",
-    "items": 43
+    "status": "rss 12",
+    "items": 12
    },
    {
     "id": "gnews_arh",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "gnews_vol",
-    "status": "rss 30",
-    "items": 30
+    "status": "rss 9",
+    "items": 9
    },
    {
     "id": "gnews_klg",
-    "status": "rss 60",
-    "items": 60
+    "status": "rss 31",
+    "items": 31
    },
    {
     "id": "gnews_mur",
@@ -517,8 +532,8 @@
    },
    {
     "id": "gnews_kar",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 40",
+    "items": 40
    },
    {
     "id": "gnews_psk",
@@ -532,8 +547,8 @@
    },
    {
     "id": "gnews_nov",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "rosbalt",
@@ -549,12 +564,6 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 1,
- "failed": [
-  {
-   "id": "mur_gov",
-   "name": "Правительство Мурманской области",
-   "status": "error: ReadTimeout"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

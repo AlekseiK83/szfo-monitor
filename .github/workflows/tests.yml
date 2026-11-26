@@ -4,7 +4,13 @@ on:
   push:
     paths:
       - 'generate.py'
+      - 'news_monitor.py'
+      - 'news_*.py'
+      - 'news_sources.json'
+      - 'notify_telegram.py'
       - 'tests/**'
+      - 'data/news/featured_staffing_2026-11-23.json'
+      - '.github/workflows/*.yml'
       - 'requirements.txt'
   workflow_dispatch:
 

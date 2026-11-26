@@ -39,11 +39,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          # Только артефакты наградного потока, не data/news второго потока.
+          git add -A -- reports/ regions/ index.html
           if git diff --cached --quiet; then
             echo "Изменений нет"
           else
             git commit -m "Rebuild: переприменены паттерны регионов $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git pull --rebase --autostash -q || true
+            git pull --rebase --autostash -q
             git push
           fi

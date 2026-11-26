@@ -30,7 +30,7 @@ import time
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import parse_qsl, urljoin, urlparse, urlsplit
 
 import requests
 
@@ -912,6 +912,9 @@ def followup_appointment_commentary(title, summary=""):
 
 def event_relevance(title, summary, detection, source, organizations):
     """Квоты/штат: место работы в СЗФО; остальные события: прежний фильтр."""
+    extra_reason = extra_quality_rejection(title, summary, detection)
+    if extra_reason:
+        return False, extra_reason
     if detection["type"] == "appointment" and followup_appointment_commentary(title, summary):
         return False, "secondary_commentary_not_new_appointment"
     # Заместителей губернатора несколько; карточка без имени назначенного
@@ -1470,7 +1473,7 @@ NEWS_REGION_EXTRA = {
 _NEWS_REGION_COMPILED = [(name, [re.compile(p, re.I) for p in pats]) for name, pats in NEWS_REGION_EXTRA.items()]
 
 
-REGION_INSTITUTION = re.compile(r"(?:правительств\w*|администраци\w*|губернатор\w*|глав[аыеу]|министерств\w*|министр\w*|"
+REGION_INSTITUTION = re.compile(r"\b(?:правительств\w*|администраци\w*|губернатор\w*|глав[аыеу]|министерств\w*|министр\w*|"
                                 r"заксобрани\w*|законодательн\w+\s+собрани\w*|парламент\w*|прокуратур\w*|управлени\w*|"
                                 r"\bУ?МВД|\bУФСБ|\bУФСИН|\bСУ\s+СК|МЧС|Росгварди\w*|суд\w*|университет\w*|больниц\w*|"
                                 r"театр\w*|компани\w*|завод\w*|комбинат\w*|пресс-службы|по)\s+(?:по\s+)?\S*\s*$", re.I)
@@ -1976,6 +1979,10 @@ def same_regional_deputy_appointment(a, b, days_apart):
 
 def similar(a, b):
     """Дедупликация с учётом сущности и стадии, а не идентичности заголовков."""
+    if honorary_citizen_key(a) or honorary_citizen_key(b):
+        return same_honor(a, b)
+    if governor_stage(a) or governor_stage(b):
+        return same_governor_event(a, b)
     if a["type"] == "proceeding" or b["type"] == "proceeding":
         return same_proceeding(a, b)
     family = {"appointment", "leave"}
@@ -2032,6 +2039,22 @@ def blocked_by_seen(keys, seen, today):
     for k in keys:
         if k not in seen:
             continue
+        if k.startswith("honorary_citizen:"):
+            try:
+                if abs((today - date.fromisoformat(seen[k])).days) <= HONOR_REPEAT_DAYS:
+                    return True
+            except (ValueError, TypeError):
+                return True
+            continue
+        if k.startswith("govdecision:"):
+            # A later, genuinely new appointment of the same person is possible.
+            window = 10 if ":governor_departure:" in k else 3
+            try:
+                if abs((today - date.fromisoformat(seen[k])).days) <= window:
+                    return True
+            except (ValueError, TypeError):
+                return True
+            continue
         if not k.startswith("pos:"):
             return True
         try:
@@ -2043,6 +2066,13 @@ def blocked_by_seen(keys, seen, today):
 
 
 def event_keys(ev):
+    honor_id = honorary_citizen_key(ev)
+    if honor_id:
+        return [honor_id]
+    governor_id = governor_key(ev)
+    if governor_id:
+        # Do not append the generic position key, which can merge two governors.
+        return [governor_id]
     deputy = regional_deputy_identity(ev)
     if deputy:
         # Имеющие подтверждённое имя региональные заместители не должны
@@ -2064,6 +2094,12 @@ def event_keys(ev):
 
 
 def event_key(ev):
+    honor_id = honorary_citizen_key(ev)
+    if honor_id:
+        return honor_id
+    governor_id = governor_key(ev)
+    if governor_id:
+        return governor_id
     if ev["type"] == "proceeding":
         # Повтор одной стадии по нескольким источникам объединяем; новые
         # процессуальные решения по тому же лицу не склеиваем.
@@ -2118,6 +2154,8 @@ def reconcile(events, cfg):
         ev["rank"] = ranks.get(ev.get("source_id"), ev.get("rank", 3))
         ev["person"] = ev.get("person") or extract_person(ev["title"])
     for ev in sorted(events, key=priority):
+        if promotional_material_reason(ev.get("link", ""), ev.get("title", ""), ev.get("summary", "")):
+            continue
         det = detect_all(ev["title"], ev.get("summary", ""), organizations)
         if not det:
             continue
@@ -2189,6 +2227,12 @@ def run(today=None, verbose=True):
                 trace.update(trace_index, "old", "outside_freshness_window")
                 continue
             diagnostics["items_fresh"] += 1
+            promo_reason = promotional_material_reason(it.get("link", ""), it.get("title", ""), it.get("summary", ""))
+            if promo_reason:
+                trace.update(trace_index, "relevance_rejected", promo_reason)
+                diagnostics["relevance_rejected"] += 1
+                diagnostics["rejection_reasons"][promo_reason] = diagnostics["rejection_reasons"].get(promo_reason, 0) + 1
+                continue
             det = detect_all(it["title"], it.get("summary", ""), organizations)
             if not det:
                 diagnostics["not_detected"] += 1
@@ -2236,7 +2280,8 @@ def run(today=None, verbose=True):
     departure_cut = (today - timedelta(days=10)).isoformat()
     recent = [e for e in events if e.get("date", "") >= recent_cut or (
         e.get("date", "") >= departure_cut
-        and regional_governor_stage(e) == "governor_departure"
+        and (regional_governor_stage(e) == "governor_departure"
+             or governor_stage(e) == "governor_departure")
     )]
     for ev in candidates:
         keys = event_keys(ev)
@@ -2342,8 +2387,11 @@ def audit_url(url, title_override=None, summary_override=""):
             result["analysis"] = {"status": "unreadable", "reason": "article_title_unavailable"}
         else:
             title, summary = item["title"], item.get("summary", "")
-            det = detect_all(title, summary, cfg.get("organizations", {}))
-            if not det:
+            promo_reason = promotional_material_reason(url, title, summary)
+            det = None if promo_reason else detect_all(title, summary, cfg.get("organizations", {}))
+            if promo_reason:
+                result["analysis"] = {"status": "rejected", "reason": promo_reason, "title": title}
+            elif not det:
                 result["analysis"] = {"status": "not_detected", "title": title}
             else:
                 src = matched or {"id": "audit_only", "region": None}
@@ -2662,6 +2710,387 @@ def notify():
         nt.send(token, chat_ids, m.strip(), report)
     nt.print_report(report)
     return 0
+
+
+
+# SZFO_ONE_FILE_QUALITY_FIX_20261126
+# Простые правила второго потока, без дополнительных модулей.
+# Сопоставление одного кадрового решения по смыслу (не по URL или тексту
+# заголовка). Отставка, назначение врио и смена другого человека — разные поводы.
+
+ACTING = re.compile(
+    r"\b(?:врио|в\.?\s*р\.?\s*и\.?\s*о\.?|и\.?\s*о\.?)\s+"
+    r"(?:(?:глав[ыа]|губернатор\w*|руководител\w*)\s+)?"
+    r"(?:губернатор\w*|глав[ыа]\s+(?:региона|области|республики|края|Карелии|Коми)|"
+    r"губернатор\w*\s+(?:[А-ЯЁ][а-яё-]+\s+)?области)\b|"
+    r"\b(?:исполняющ\w*|исполняет|исполнять)\s+обязанност\w*\s+(?:глав[ыа]\s+)?губернатор\w*\b|"
+    r"\bвременн\w*\s+(?:исполня\w*\s+обязанност\w*|возглав\w*)\s+"
+    r"(?:губернатор\w*|глав[ыа]|регион\w*|област\w*|республик\w*)",
+    re.I,
+)
+# Some reports omit "temporary" altogether while describing the very same
+# handover: "Мурманскую область возглавил выпускник ПетрГУ".
+HEAD_REGION = re.compile(
+    r"\b(?:регион\w*|област\w*|республик\w*)\s+возглавил[аи]?\b|"
+    r"\bвозглавил[аи]?\s+(?:регион\w*|област\w*|республик\w*)\b|"
+    r"\bстал[аи]?\s+(?:нов\w*\s+)?(?:губернатор\w*|главой\s+региона)\b",
+    re.I,
+)
+GOVERNOR = re.compile(
+    r"\bгубернатор\w*\b|\bглав[ыуа]\s+(?:(?:[А-ЯЁ][а-яё-]+)\s+)?"
+    r"(?:области|республики|региона|края|Заполярья)\b",
+    re.I,
+)
+DEPARTURE = re.compile(
+    r"\b(?:отставк\w*|отправлен\w*|увол\w*|освобод\w*\s+от\s+должност\w*|"
+    r"покинул\w*\s+пост|прекращ\w*\s+полномочия)\b",
+    re.I,
+)
+DEPARTURE_TARGET = re.compile(
+    r"\b(?:губернатор\w*|глав[ыуа]\s+(?:(?:[А-ЯЁ][а-яё-]+)\s+)?"
+    r"(?:области|республики|региона|края))\b.{0,90}?"
+    r"\b(?:уш[её]л|ушла|уходит|подал[аи]?\s+в\s+отставку|"
+    r"отправлен\w*|освобожден\w*|освобождён\w*|покинул\w*)\b|"
+    r"\b(?:отправил[аи]?\s+в\s+отставку|освободил[аи]?\s+от\s+должности|"
+    r"уволил[аи]?)\b.{0,90}?\b(?:губернатор\w*|глав[уа]\s+"
+    r"(?:(?:[А-ЯЁ][а-яё-]+)\s+)?(?:области|республики|региона|края))\b|"
+    r"\b(?:отправлен[аы]?\s+в\s+отставку|уволен[аы]?|освобожден[аы]?|"
+    r"освобождён[аы]?)\b.{0,95}?\b(?:с\s+поста\s+)?губернатор\w*\b",
+    re.I,
+)
+ELECTION_SCHEDULE = re.compile(
+    r"\b(?:выбор\w*|голосовани\w*)\b.{0,95}"
+    r"\b(?:дат\w*|назначен\w*|назначил\w*|перенес\w*|перенос\w*)\b|"
+    r"\b(?:дат\w*|назначен\w*|назначил\w*|перенес\w*|перенос\w*)\b.{0,95}"
+    r"\b(?:выбор\w*|голосовани\w*)\b",
+    re.I,
+)
+MUNICIPAL = re.compile(
+    r"\b(?:глав[ыа]\s+(?:города|района|муниципал)|мэр\w*|"
+    r"городск\w*\s+администрац\w*)\b", re.I,
+)
+FULL_NAME = re.compile(r"\b([А-ЯЁ][а-яё]{2,})\s+([А-ЯЁ][а-яё-]{3,})\b")
+BEFORE_VERB_SURNAME = re.compile(
+    r"\b([А-ЯЁ][а-яё]{3,})\s+(?:стал[аи]?|назначен[аы]?|возглавил[аи]?)\s+"
+    r"(?:нов\w*\s+)?(?:врио|и\.?\s*о\.?|губернатор\w*|регион\w*|област\w*)",
+)
+# Names of officeholders announcing/authorising appointments are not names
+# of the person appointed. Never use event["person"] from the generic detector.
+NOT_ACTORS = {
+    "путин", "мишустин", "медведев", "президент", "губернатор",
+    "правительство", "мурманской", "архангельской", "ленинградской",
+    "псковской", "вологодской", "калининградской", "новгородской",
+    "республики", "карелии", "области", "регион", "областной",
+    "министр", "министерство", "выпускник", "петргу", "заполярья",
+}
+NOT_FIRST_NAMES = {
+    "глава", "главу", "президент", "правительство", "министр", "министерство",
+    "выпускник", "губернатор", "области", "республики", "регион", "новый",
+    "врио", "временный", "исполняющий", "первый", "заместитель",
+}
+
+
+def stage(ev):
+    """Recognize the actual decision, not an incidental mention of a governor."""
+    title = ev.get("title", "")
+    typ = ev.get("type", "")
+    if not ev.get("region") or typ not in ("appointment", "leave"):
+        return ""
+    # Election date in a story about a resignation is NOT another resignation.
+    if ELECTION_SCHEDULE.search(title) and GOVERNOR.search(title):
+        return "governor_election_schedule"
+    if typ == "appointment":
+        if MUNICIPAL.search(title) and not re.search(r"\bгубернатор\w*\b", title, re.I):
+            return ""
+        if ACTING.search(title) or HEAD_REGION.search(title):
+            return "acting_governor"
+    if typ == "leave" and GOVERNOR.search(title) and DEPARTURE.search(title):
+        # A *deputy governor* stepping down is not the regional governor.
+        without_deputies = re.sub(r"\b(?:вице[- ]?|зам)\s*губернатор\w*\b|"
+                                  r"\bзаместител\w*\s+губернатор\w*\b", "", title, flags=re.I)
+        if not GOVERNOR.search(without_deputies):
+            return ""
+        if not DEPARTURE_TARGET.search(without_deputies):
+            return ""
+        if re.search(r"\b(?:заместител\w*|вице[- ]?губернатор\w*|замгубернатор\w*)\s+"
+                     r"(?:[А-ЯЁ][а-яё-]+\s+)?губернатор\w*", title, re.I):
+            return ""
+        return "governor_departure"
+    return ""
+
+
+def _stem(word):
+    word = word.casefold().replace("ё", "е").strip("-.")
+    # Common instrumental/genitive/dative endings in surnames; compare short,
+    # stable prefixes only after removing the ending.
+    for suffix in ("овым", "евым", "иной", "овой", "ого", "ему", "ому", "ой", "ым", "им", "у", "а", "я"):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 5:
+            word = word[:-len(suffix)]
+            break
+    return word[:6]
+
+
+def _names(text):
+    names = set()
+    for match in FULL_NAME.finditer(text):
+        first, last = match.groups()
+        if first.casefold() in NOT_FIRST_NAMES or last.casefold() in NOT_ACTORS:
+            continue
+        if last.casefold().replace("ё", "е") in NOT_ACTORS:
+            continue
+        # Sentence/title-start words are not enough to prove a person.
+        if first.casefold() in NOT_ACTORS:
+            continue
+        names.add(first.casefold().replace("ё", "е")[:3] + ":" + _stem(last))
+    return names
+
+
+def actor(ev, event_stage=None):
+    """Extract the actor being appointed/removed, ignoring the predecessor.
+
+    Empty means uncertain; never guess from the generic `person` field.
+    """
+    s = event_stage or stage(ev)
+    if not s or s == "governor_election_schedule":
+        return ""
+    title = ev.get("title", "")
+    if s == "acting_governor":
+        title = re.split(r"\bпосле\s+(?:ареста|задержания|отставки|увольнения)",
+                         title, maxsplit=1, flags=re.I)[0]
+    # Do not extract "Владимир Путин" as the person who departed.
+    names = _names(title)
+    if len(names) == 1:
+        return next(iter(names))
+    surname = BEFORE_VERB_SURNAME.search(title)
+    if surname and surname.group(1).casefold() not in NOT_ACTORS:
+        return ":" + _stem(surname.group(1))
+    if names:
+        return ""  # several people mentioned in title: ambiguous
+    # Only one unambiguous person in the first sentence of the lead.
+    summary = (ev.get("summary", "") or "").split(".", 1)[0][:350]
+    if s == "acting_governor":
+        summary = re.split(r"\bпосле\s+(?:ареста|задержания|отставки|увольнения)",
+                           summary, maxsplit=1, flags=re.I)[0]
+    names = _names(summary)
+    return next(iter(names)) if len(names) == 1 else ""
+
+
+def key(ev):
+    s = stage(ev)
+    if not s:
+        return ""
+    region = (ev.get("region") or "").casefold().strip()
+    # Do not include the name here: unnamed headlines and named ones must be
+    # matched semantically, while explicitly different people stay separate.
+    a = actor(ev, s)
+    return f"govdecision:{region}:{s}:{a or 'unknown'}"
+
+
+def same_event(a, b):
+    sa, sb = stage(a), stage(b)
+    if not sa or sa != sb or a.get("region") != b.get("region"):
+        return False
+    try:
+        gap = abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days)
+    except (KeyError, ValueError, TypeError):
+        return False
+    if gap > (10 if sa == "governor_departure" else 3):
+        return False
+    pa, pb = actor(a, sa), actor(b, sb)
+    # Surname-only and full-name identifications may overlap.
+    if pa and pb and pa != pb:
+        if pa.startswith(":") and pb.endswith(pa):
+            return True
+        if pb.startswith(":") and pa.endswith(pb):
+            return True
+        return False
+    return True
+governor_stage = stage
+governor_key = key
+same_governor_event = same_event
+
+# Проверка новостной значимости и ключа фактически одного награждения.
+# Не блокируем сюжеты без однозначных признаков ошибки.
+
+HONOR_REPEAT_DAYS = 21
+
+# The governor's jurisdiction is described only as neighbouring a named SZFO
+# locality. A source in Arkhangelsk is NOT evidence that the governor governs
+# Arkhangelsk. Do not reject a legitimately identified SZFO region merely
+# because it is mentioned alongside a neighbour.
+_NEIGHBOR_GOVERNOR = re.compile(
+    r"\b(?:губернатор\w*|глав[ыау])\s+соседн\w*\s+(?:с\s+\S+\s+)?"
+    r"(?:област\w*|регион\w*|республик\w*|кра\w*)\b|"
+    r"\bв\s+соседн\w*\s+(?:с\s+\S+\s+)?"
+    r"(?:област\w*|регион\w*|республик\w*|кра\w*)\b.{0,85}"
+    r"\bгубернатор\w*\b",
+    re.I,
+)
+
+# A metaphor about a new chapter of a place is not a new leader. In contrast,
+# "Новая глава города назначена" and "Глава города назначена" are real roles.
+_METAPHORICAL_CHAPTER = re.compile(
+    r"\bнов\w*\s+глав[ауы]\s+"
+    r"(?:в\s+(?:жизн\w*|истори\w*|развити\w*)|"
+    r"для\s+(?:город\w*|регион\w*|компани\w*|проект\w*))\b",
+    re.I,
+)
+
+_ROOM = r"(?:игров\w*\s+комнат\w*|комнат\w*\s+для\s+игр)"
+_ROUTINE_ROOM_AFTER = re.compile(
+    r"\b(?:откры(?:л[аи]?|лась|лся|лось|лись|т[аоы]?)|"
+    r"заработал[аои]?)\s+(?:нов\w*\s+|детск\w*\s+)?"
+    + _ROOM + r"\b", re.I,
+)
+_ROUTINE_ROOM_BEFORE = re.compile(
+    r"\b" + _ROOM +
+    r"\s+(?:открылась|открылось|открыли|открыта|заработала|заработает)\b", re.I,
+)
+
+_HONOR = re.compile(r"\bпоч[её]тн\w*\s+гражданин\w*\b", re.I)
+_HONOR_CITY = re.compile(
+    r"\bпоч[её]тн\w*\s+гражданин\w*\s+(?:города\s+|столицы\s+)?"
+    r"([А-ЯЁ][а-яё-]{3,})\b", re.I,
+)
+_PERSON_PAIR = re.compile(r"\b([А-ЯЁ][а-яё-]{2,})\s+([А-ЯЁ][а-яё-]{3,})\b")
+_SURNAME_ACTION = re.compile(
+    r"\b([А-ЯЁ][а-яё-]{3,})\s+(?:стал[аи]?|получил[аи]?|"
+    r"удостоен[аы]?|награжд[её]н[аы]?|присвоил[аи]?)\b",
+)
+_STOP_FIRST = {
+    "губернатор", "президент", "председатель", "глава", "главу", "мэр", "мэра",
+    "почетным", "почётным", "почетного", "почётного", "почетный", "почётный",
+    "гражданином", "гражданина", "город", "города", "петербурга", "санкт",
+    "министр", "главный", "депутат", "россии",
+    "путин", "ханоя", "ханой", "звание", "звания", "руководитель",
+}
+_STOP_LAST = {
+    "петербурга", "петербург", "области", "область", "региона", "республики",
+    "ханоя", "ханой", "губернатор", "гражданин", "гражданином", "гражданина",
+}
+
+
+def reject_reason(title, summary="", detection=None):
+    """Return a stable reason for a CONFIRMED false positive; else empty."""
+    t = title or ""
+    # Дата будущих выборов не является повторной отставкой действующего главы.
+    # Текущий детектор иногда реагирует на слово «отставка» в таком заголовке.
+    if ((detection or {}).get("type") in ("appointment", "leave")
+            and re.search(r"\b(?:назвал[аи]?|объявил[аи]?|сообщил[аи]?|"
+                          r"определил[аи]?|назначил[аи]?)\s+(?:точную\s+|новую\s+)?"
+                          r"дату\s+выборов?[^.!?]{0,100}\bгубернатор\w*", t, re.I)):
+        return "election_date_is_not_governor_departure"
+    if _NEIGHBOR_GOVERNOR.search(t):
+        return "neighbouring_region_not_subject_region"
+    if _METAPHORICAL_CHAPTER.search(t):
+        return "metaphorical_new_chapter_not_appointment"
+    kind = (detection or {}).get("type")
+    # A room within an existing hospital is not a commissioning of a major
+    # institution. Match the object directly after/before the opening verb;
+    # "Открылся новый больничный корпус с игровой комнатой" stays eligible.
+    if kind == "launch" and (
+        _ROUTINE_ROOM_AFTER.search(t) or _ROUTINE_ROOM_BEFORE.search(t)
+    ):
+        return "routine_amenity_below_significance_threshold"
+    return ""
+
+
+def _recipient(title):
+    """Find the actual recipient only if an unambiguous person is in title."""
+    pairs = set()
+    for m in _PERSON_PAIR.finditer(title):
+        f, last = m.groups()
+        if f.casefold().replace('ё','е') in _STOP_FIRST or last.casefold().replace('ё','е') in _STOP_LAST:
+            continue
+        pairs.add(last.casefold().replace('ё','е')[:6])
+    if len(pairs) == 1:
+        return next(iter(pairs))
+    if len(pairs) > 1:
+        return ""
+    candidates = {m.group(1).casefold().replace('ё','е')[:6]
+                  for m in _SURNAME_ACTION.finditer(title)
+                  if m.group(1).casefold().replace('ё','е') not in _STOP_FIRST}
+    if len(candidates) == 1:
+        return next(iter(candidates))
+    if candidates:
+        return ""
+    # A named official may be referred to by surname only in a follow-up:
+    # "Беглов — почётный гражданин Ханоя", or "... стал Беглов".
+    before_title = re.search(
+        r"\b([А-ЯЁ][а-яё-]{3,})\s*[—–-]\s*поч[её]тн\w*\s+гражданин\w*",
+        title,
+    )
+    after_title = re.search(
+        r"\bпоч[её]тн\w*\s+гражданин\w*\s+(?:города\s+|столицы\s+)?"
+        r"[А-ЯЁ][а-яё-]{3,}\s+стал[аи]?\s+([А-ЯЁ][а-яё-]{3,})\b",
+        title, re.I,
+    )
+    for match in (before_title, after_title):
+        if match and match.group(1).casefold().replace('ё','е') not in _STOP_FIRST:
+            return match.group(1).casefold().replace('ё','е')[:6]
+    return ""
+
+
+def honorary_citizen_key(ev):
+    """Stable key across headline rewrites, RSS URLs and consecutive dates.
+
+    Requires recipient and town. Does not merge different recipients or honors.
+    """
+    if ev.get("type") not in ("title", "award") or not ev.get("region"):
+        return ""
+    title = ev.get("title") or ""
+    if not _HONOR.search(title):
+        return ""
+    m = _HONOR_CITY.search(title)
+    who = _recipient(title)
+    if not (m and who):
+        return ""  # fail open rather than accidentally merging two people
+    # Prefix-based Russian geographic root handles "Ханоя"/"Ханой".
+    city = m.group(1).casefold().replace('ё','е')[:4]
+    # «почётный гражданин столицы Вьетнама» = «почётный гражданин Ханоя».
+    if city == "вьет" and re.search(r"столиц\w*\s+Вьетнам", title, re.I):
+        city = "хано"
+    return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:{who}"
+
+
+def same_honor(a, b):
+    ka, kb = honorary_citizen_key(a), honorary_citizen_key(b)
+    if not (ka and ka == kb):
+        return False
+    try:
+        return abs((date.fromisoformat(a['date']) - date.fromisoformat(b['date'])).days) <= HONOR_REPEAT_DAYS
+    except (KeyError, ValueError, TypeError):
+        return False
+
+# v1.1: advertising detection, independent of topical event classification.
+# A formally marked advertisement does not become a newsroom event just
+# because it contains the words «глава», «открытие» or a company name.
+_EXPLICIT_ADVERTISEMENT = re.compile(
+    r"\b(?:на\s+правах\s+рекламы|рекламн(?:ый|ая|ое|ые|ого|ому)\s+материал\w*|"
+    r"материал\s+на\s+правах\s+рекламы|рекламодатель\s*[:—-]|"
+    r"спонсорск\w*\s+материал\w*|реклама\s*[:.]\s*(?:ооо|ао|пао|заказчик))\b",
+    re.I,
+)
+
+
+def promotional_material_reason(link="", title="", summary=""):
+    """Exclude only explicitly identifiable advertisements; otherwise abstain.
+
+    ERID is an online advertising identification label, not a news topic or a
+    random alphanumeric fragment. Check the exact *query parameter name*.
+    Ordinary utm_* campaigns on editorial news are not sufficient evidence.
+    """
+    try:
+        if any(k.casefold() == "erid" and v.strip() for k, v in
+               parse_qsl(urlsplit(link or "").query, keep_blank_values=False)):
+            return "advertisement_erid_url"
+    except (TypeError, ValueError):
+        pass
+    text = " ".join((title or "", summary or ""))
+    if _EXPLICIT_ADVERTISEMENT.search(text):
+        return "advertisement_disclosure"
+    return ""
+extra_quality_rejection = reject_reason
 
 
 def main():

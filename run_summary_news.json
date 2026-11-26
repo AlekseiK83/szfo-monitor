@@ -1,19 +1,18 @@
 {
- "date": "2026-11-25",
+ "date": "2026-11-26",
  "new": [],
  "diagnostics": {
-  "items_received": 3510,
-  "items_fresh": 3246,
-  "detected": 90,
-  "relevance_accepted": 63,
-  "relevance_rejected": 27,
+  "items_received": 3364,
+  "items_fresh": 3094,
+  "detected": 82,
+  "relevance_accepted": 58,
+  "relevance_rejected": 24,
   "region_rejected": 1,
-  "candidates": 62,
+  "candidates": 57,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 18,
-   "foreign_event_geography_overrides_org_dictionary": 6,
-   "proceeding_without_explicit_region": 2,
-   "hotel_project_not_opened": 1
+   "missing_regional_event_anchor": 14,
+   "foreign_event_geography_overrides_org_dictionary": 8,
+   "proceeding_without_explicit_region": 2
   },
   "rejected_examples": [
    {
@@ -28,8 +27,18 @@
    },
    {
     "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Владимир Путин провёл встречу с Президентом Казахстана Касым-Жомартом Токаевым, который прибыл в Москву с рабочим визитом",
+    "source": "Кремль. Новости (Telegram)"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Преподавателям, студентам и аспирантам Московского физико-технического института (национального исследовательского университета)",
     "source": "Правительство России"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Оппозиция в Японии внесла проект резолюции об отставке одного из министров",
+    "source": "ТАСС"
    },
    {
     "reason": "proceeding_without_explicit_region",
@@ -39,11 +48,6 @@
    {
     "reason": "missing_regional_event_anchor",
     "title": "Гендиректором «Глобал Портс» назначен Владимир Бычков",
-    "source": "Коммерсантъ Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "От формального к Большому // Режиссеру Андрею Могучему исполняется 65 лет",
     "source": "Коммерсантъ Санкт-Петербург"
    },
    {
@@ -85,15 +89,10 @@
     "reason": "missing_regional_event_anchor",
     "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
     "source": "47news"
-   },
-   {
-    "reason": "hotel_project_not_opened",
-    "title": "Три гостиничных проекта в Пскове: когда ждать открытия",
-    "source": "ПАИ"
    }
   ],
-  "not_detected": 3156,
-  "duplicates": 62,
+  "not_detected": 3012,
+  "duplicates": 57,
   "new_events": 0,
   "sources": [
    {
@@ -118,8 +117,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "interfax",
@@ -128,8 +127,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 157",
-    "items": 157
+    "status": "rss 118",
+    "items": 118
    },
    {
     "id": "vedomosti",
@@ -178,8 +177,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 54",
-    "items": 54
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "genproc_78",
@@ -233,8 +232,8 @@
    },
    {
     "id": "news29",
-    "status": "html 27",
-    "items": 27
+    "status": "html 24",
+    "items": 24
    },
    {
     "id": "genproc_29",
@@ -243,13 +242,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "newsvo",
-    "status": "rss 40",
-    "items": 40
+    "status": "rss 39",
+    "items": 39
    },
    {
     "id": "krassever",
@@ -268,8 +267,8 @@
    },
    {
     "id": "klops",
-    "status": "html 27",
-    "items": 27
+    "status": "html 29",
+    "items": 29
    },
    {
     "id": "newkaliningrad",
@@ -318,8 +317,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 52",
-    "items": 52
+    "status": "html 2",
+    "items": 2
    },
    {
     "id": "genproc_10",
@@ -328,8 +327,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 30",
+    "items": 30
    },
    {
     "id": "informpskov",
@@ -348,8 +347,8 @@
    },
    {
     "id": "bnkomi",
-    "status": "html 47",
-    "items": 47
+    "status": "rss 20",
+    "items": 20
    },
    {
     "id": "bnkomi_tg",
@@ -368,8 +367,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "nov_official_tg",
@@ -393,8 +392,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "bport_tg",
@@ -478,43 +477,43 @@
    },
    {
     "id": "gnews_arh",
-    "status": "rss 50",
-    "items": 50
-   },
-   {
-    "id": "gnews_vol",
-    "status": "rss 45",
-    "items": 45
-   },
-   {
-    "id": "gnews_klg",
-    "status": "rss 59",
-    "items": 59
-   },
-   {
-    "id": "gnews_mur",
-    "status": "rss 88",
-    "items": 88
-   },
-   {
-    "id": "gnews_kar",
-    "status": "rss 18",
-    "items": 18
-   },
-   {
-    "id": "gnews_psk",
     "status": "rss 49",
     "items": 49
    },
    {
+    "id": "gnews_vol",
+    "status": "rss 17",
+    "items": 17
+   },
+   {
+    "id": "gnews_klg",
+    "status": "rss 30",
+    "items": 30
+   },
+   {
+    "id": "gnews_mur",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 19",
+    "items": 19
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 25",
+    "items": 25
+   },
+   {
     "id": "gnews_komi",
-    "status": "rss 38",
-    "items": 38
+    "status": "rss 13",
+    "items": 13
    },
    {
     "id": "gnews_nov",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "rosbalt",
@@ -530,12 +529,6 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 1,
- "failed": [
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectionError"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

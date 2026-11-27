@@ -731,3 +731,176 @@ class TestPostTitle(unittest.TestCase):
         self.assertEqual(nm.RUBRICS.sub("", "Новым министром назначен Иван Петров"), "Новым министром назначен Иван Петров")
         self.assertIsNone(nm.detect_all("В Коми отмечается 85 лет со дня создания оленно-транспортных батальонов", "", orgs))
         self.assertEqual(nm.detect_all("Архангельская областная клиническая больница отмечает 80-летие", "", orgs)["type"], "anniversary")
+
+
+class TestProactiveEventQualityRelease(unittest.TestCase):
+    """Ten regression scenarios: distinct actions, precise identities, Telegram."""
+
+    @staticmethod
+    def record(title, *, kind, day="2026-11-26", region="Мурманская область",
+               person="", organizations=None, stage="", summary="", source="test"):
+        result = {
+            "title": title, "type": kind, "date": day, "region": region,
+            "person": person, "summary": summary, "orgs": organizations or [],
+            "level": "head", "org_class": "gov", "source": source,
+            "source_id": source, "link": f"https://example.invalid/{source}", "rank": 3,
+        }
+        if stage:
+            result["procedure_stage"] = stage
+        return result
+
+    def test_three_reports_of_one_governor_arrest_collapse_to_one_record(self):
+        titles = (
+            "Суд арестовал губернатора Мурманской области Андрея Чибиса",
+            "Суд подтвердил арест губернатора Мурманской области",
+            "Следственный комитет сообщил об аресте губернатора Мурманской области",
+        )
+        records = []
+        for i, title in enumerate(titles):
+            d = nm.detect_all(title, "", ORGS)
+            self.assertIsNotNone(d, title)
+            self.assertEqual((d["type"], d["stage"]), ("proceeding", "arrest"))
+            ev = self.record(title, kind="proceeding", stage="arrest", person=d.get("subject", ""),
+                             source=f"paper{i}")
+            records.append(ev)
+        for i, first in enumerate(records):
+            for other in records[i+1:]:
+                self.assertTrue(nm.similar(first, other))
+        cfg = {"sources": [{"id": f"paper{i}", "region": "Мурманская область", "rank": 3}
+                            for i in range(3)], "organizations": ORGS}
+        merged, _ = nm.reconcile(records, cfg)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]["procedure_stage"], "arrest")
+
+    def test_detention_arrest_and_charge_stay_separate(self):
+        titles = (
+            ("Губернатор Мурманской области задержан, сообщили в СК", "detention"),
+            ("Суд арестовал губернатора Мурманской области Андрея Чибиса", "arrest"),
+            ("В Мурманской области СК предъявил обвинение губернатору Андрею Чибису", "charge"),
+        )
+        records = []
+        for title, expected_stage in titles:
+            d = nm.detect_all(title, "", ORGS)
+            self.assertEqual(d["stage"], expected_stage)
+            records.append(self.record(title, kind="proceeding", stage=expected_stage,
+                                       person=d.get("subject", "")))
+        for i, a in enumerate(records):
+            for b in records[i+1:]:
+                self.assertFalse(nm.similar(a, b))
+                self.assertNotEqual(nm.event_key(a), nm.event_key(b))
+
+    def test_removed_from_office_and_sent_into_resignation_are_same_event(self):
+        first = "Путин досрочно снял Андрея Чибиса с поста губернатора Мурманской области"
+        second = "Владимир Путин отправил в отставку губернатора Мурманской области Андрея Чибиса"
+        for title in (first, second):
+            d = nm.detect_all(title, "", ORGS)
+            self.assertIsNotNone(d, title)
+            self.assertEqual(d["type"], "leave")
+        a = self.record(first, kind="leave")
+        b = self.record(second, kind="leave", day="2026-11-27")
+        self.assertEqual(nm.governor_stage(a), "governor_departure")
+        self.assertEqual(nm.governor_stage(b), "governor_departure")
+        self.assertTrue(nm.similar(a, b))
+        self.assertNotEqual(nm.governor_stage(self.record("Назвали дату выборов губернатора Мурманской области после отставки", kind="leave")), "governor_departure")
+
+    def test_one_person_appointed_to_two_different_offices(self):
+        a = self.record("Иван Петров назначен директором завода в Петербурге",
+                        kind="appointment", person="Иван Петров", region="Санкт-Петербург")
+        b = self.record("Иван Петров назначен министром промышленности Петербурга",
+                        kind="appointment", person="Иван Петров", region="Санкт-Петербург")
+        self.assertFalse(nm.similar(a, b))
+        self.assertFalse(set(nm.event_keys(a)) & set(nm.event_keys(b)))
+        self.assertNotEqual(nm.event_key(a), nm.event_key(b))
+        self.assertTrue(nm.similar(a, {**a, "title": "Иван Петров назначен новым директором завода Петербурга"}))
+
+    def test_one_company_opens_two_different_facilities(self):
+        a = self.record("Балтийский завод открыл новую производственную линию",
+                        kind="launch", organizations=["Балтийский завод"], region="Санкт-Петербург")
+        b = self.record("Балтийский завод открыл логистический терминал",
+                        kind="launch", organizations=["Балтийский завод"], region="Санкт-Петербург")
+        self.assertEqual(nm.launch_object(a), "production_line")
+        self.assertEqual(nm.launch_object(b), "terminal")
+        self.assertFalse(nm.similar(a, b))
+        self.assertFalse(set(nm.event_keys(a)) & set(nm.event_keys(b)))
+        self.assertEqual(nm.detect_all(a["title"], "", ORGS)["type"], "launch")
+        self.assertEqual(nm.detect_all(b["title"], "", ORGS)["type"], "launch")
+        line_one = {**a, "title": "Балтийский завод открыл производственную линию №1"}
+        line_two = {**a, "title": "Балтийский завод открыл производственную линию №2"}
+        self.assertFalse(nm.similar(line_one, line_two))
+        self.assertFalse(set(nm.event_keys(line_one)) & set(nm.event_keys(line_two)))
+
+    def test_rank_leader_is_not_personnel_appointment(self):
+        text = "МТС возглавила рейтинг цифрового лидерства"
+        result = nm.detect_all(text, "Компания представила рейтинг в Петербурге.", ORGS)
+        self.assertNotEqual((result or {}).get("type"), "appointment")
+        self.assertIsNone(nm.detect(text, "", ORGS))
+        self.assertEqual(nm.detect_all("Елена Иванова назначена министром в Карелии", "", ORGS)["type"], "appointment")
+
+    def test_83_doctors_are_assessed_by_staffing_rules_not_appointment(self):
+        title = "В Псковской области начали работать 83 молодых врача"
+        summary = "Губернатор сообщил о назначении директора больницы в других новостях."
+        self.assertIsNone(nm.detect_all(title, summary, ORGS))
+        self.assertIsNone(nm.detect_staffing(title, summary, ORGS, nm.find_org_names))
+        # A confirmed material increase still qualifies in the workforce stream.
+        major = "В Псковской области создали 120 новых рабочих мест"
+        self.assertEqual(nm.detect_all(major, "", ORGS)["type"], "workforce")
+
+    def test_cooperation_agreement_is_not_infrastructure_launch(self):
+        title = "Титан-Полимер заключил соглашение о сотрудничестве с центром занятости"
+        lead = "На промышленном комплексе запланированы крупные инвестиции и производство."
+        self.assertIsNone(nm.detect_all(title, lead, ORGS))
+        real = "Титан-Полимер заключил контракт на строительство нового завода"
+        self.assertEqual(nm.detect_all(real, "", ORGS)["type"], "launch")
+
+    def test_different_awardees_same_surname_are_distinct(self):
+        a = self.record("Михаил Иванов стал почетным гражданином Ханоя",
+                        kind="title", region="Санкт-Петербург")
+        b = self.record("Андрей Иванов стал почетным гражданином Ханоя",
+                        kind="title", region="Санкт-Петербург")
+        self.assertNotEqual(nm.event_key(a), nm.event_key(b))
+        self.assertFalse(nm.similar(a, b))
+        self.assertTrue(nm.similar(a, {**a, "title": "Михаил Иванов удостоен звания почётного гражданина Ханоя"}))
+
+    def test_repeat_telegram_notify_skips_completed_recipients_and_retries_failure(self):
+        import tempfile
+        import types
+        from unittest.mock import patch
+
+        ev = self.record("Назначен новый министр правительства Мурманской области", kind="appointment")
+        fake = types.ModuleType("notify_telegram")
+        fake.TG_LIMIT = 4096
+        fake.site_url = lambda: "https://example.invalid/"
+        fake.plural = lambda number, one, few, many: one if number == 1 else many
+        deliveries = []
+        attempts = []
+        failures = ["22"]
+
+        def fake_send(token, chats, message, report):
+            chat = chats[0]
+            attempts.append(chat)
+            if chat in failures:
+                failures.remove(chat)
+                report[chat] = (False, "test failure")
+                return False
+            deliveries.append(chat)
+            report[chat] = (True, {})
+            return True
+
+        fake.send = fake_send
+        fake.print_report = lambda report: None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "run_summary_news.json"
+            path.write_text(json.dumps({"new": [ev]}, ensure_ascii=False), encoding="utf-8")
+            with patch.dict(sys.modules, {"notify_telegram": fake}), \
+                 patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "fake-token", "TELEGRAM_CHAT_ID": "11,22"}), \
+                 patch.object(nm, "RUN_SUMMARY", path):
+                self.assertEqual(nm.notify(), 1)  # first chat sent; second failed
+                self.assertEqual(deliveries, ["11"])
+                self.assertEqual(nm.notify(), 0)  # retries only 22
+                self.assertEqual(deliveries, ["11", "22"])
+                self.assertEqual(nm.notify(), 0)  # full repeat: no new send
+            self.assertEqual(attempts, ["11", "22", "22"])
+            stored = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(len(stored["notify_delivery"]["completed"]), 2)
+            self.assertNotIn('"11"', json.dumps(stored["notify_delivery"]))
+            self.assertNotIn('"22"', json.dumps(stored["notify_delivery"]))

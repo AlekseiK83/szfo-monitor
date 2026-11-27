@@ -1,19 +1,66 @@
 {
  "date": "2026-11-27",
- "new": [],
+ "new": [
+  {
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Ленинградская область",
+   "title": "#прямосейчас губернатор Ленинградской области Александр Дрозденко подписывает второй блок соглашений с партнерами общественных проектов к 100-летию региона.",
+   "summary": "#прямосейчас губернатор Ленинградской области Александр Дрозденко подписывает второй блок соглашений с партнерами общественных проектов к 100-летию региона. Церемония проходит в пресс-центре ТАСС.\n\nСреди участников юбилейной программы — ТАСС, «Комсомольская правда», бренд 5КУЛЬТ, «Горбилет», «Аргументы и факты на Неве», производственное объединение «Баррикада», крупнейший российский радиохолдинг «",
+   "link": "https://t.me/lenobladminka/30600",
+   "date": "2026-11-27",
+   "source": "Ленобласть (Telegram)",
+   "source_id": "lo_tg",
+   "rank": 1,
+   "person": "",
+   "orgs": []
+  },
+  {
+   "type": "leave",
+   "level": "head",
+   "org_class": "gov",
+   "region": "Архангельская область",
+   "title": "Игорь Раченков покинул пост главы противопожарной службы Поморья",
+   "summary": "",
+   "link": "https://region29.ru/2026/11/27/6b0974ac2bdf18e0be073987.html",
+   "date": "2026-11-27",
+   "source": "Регион 29",
+   "source_id": "region29",
+   "rank": 3,
+   "person": "Игорь Раченков",
+   "orgs": []
+  },
+  {
+   "type": "appointment",
+   "level": "head",
+   "org_class": "force",
+   "region": "Мурманская область",
+   "title": "⚖️ Путин назначил председателей двух судов Мурманской области",
+   "summary": "⚖️ Путин назначил председателей двух судов Мурманской области\n\n Президент РФ Владимир Путин подписал указ о назначении председателей двух судов на территории Мурманской области. Об этом сообщили в объединённой пресс-службе судов региона.\n\nПредседателем Арбитражного суда Мурманской области стал Алексей Смирников. Председателем Печенгского районного суда назначена Екатерина Воронова.\n\nТакже сообщает",
+   "link": "https://t.me/bportcom/87283",
+   "date": "2026-11-27",
+   "source": "Б-порт (Telegram)",
+   "source_id": "bport_tg",
+   "rank": 3,
+   "person": "",
+   "orgs": []
+  }
+ ],
  "diagnostics": {
-  "items_received": 2761,
-  "items_fresh": 2639,
-  "detected": 25,
-  "relevance_accepted": 15,
-  "relevance_rejected": 10,
-  "region_rejected": 1,
-  "candidates": 14,
+  "items_received": 3410,
+  "items_fresh": 3255,
+  "detected": 60,
+  "relevance_accepted": 42,
+  "relevance_rejected": 18,
+  "region_rejected": 0,
+  "candidates": 42,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 7,
-   "foreign_event_geography_overrides_org_dictionary": 1,
+   "missing_regional_event_anchor": 9,
+   "foreign_event_geography_overrides_org_dictionary": 5,
    "proceeding_without_explicit_region": 1,
-   "neighbouring_region_not_subject_region": 1
+   "neighbouring_region_not_subject_region": 1,
+   "regional_deputy_appointee_not_identified": 2
   },
   "rejected_examples": [
    {
@@ -25,6 +72,21 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Владимир Путин провёл встречу с Президентом Казахстана Касым-Жомартом Токаевым, который прибыл в Москву с рабочим визитом",
     "source": "Кремль. Новости (Telegram)"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "В Адыгее инвестор направит 700 млн рублей на запуск птицебафрики",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Интерес к прямой линии Путина и визит Пашиняна в РФ. Заявления Пескова",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "В Казани избрали домашний арест начальнику угрозыска отдела полиции",
+    "source": "ТАСС"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -43,12 +105,12 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "«Ozon банк» открыл доступ к инвестиционным счетам розничным клиентам",
-    "source": "Ведомости"
+    "title": "Военнослужащие Уральского округа Росгвардии удостоены государственных наград",
+    "source": "Росгвардия"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "Миллиардер Боэли подписал соглашение с \"Лукойлом\" о покупке зарубежных активов",
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Один человек погиб при атаках БПЛА на Брянскую область",
     "source": "Деловой Петербург"
    },
    {
@@ -63,13 +125,23 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
-    "source": "Первый Арктический (Telegram)"
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "regional_deputy_appointee_not_identified",
+    "title": "Врио главы Мурманской области назначена заместитель губернатора",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Санкт-Петербург"
    }
   ],
-  "not_detected": 2614,
-  "duplicates": 14,
-  "new_events": 0,
+  "not_detected": 3195,
+  "duplicates": 39,
+  "new_events": 3,
   "sources": [
    {
     "id": "kremlin",
@@ -93,8 +165,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 93",
+    "items": 93
    },
    {
     "id": "interfax",
@@ -103,8 +175,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 116",
-    "items": 116
+    "status": "rss 139",
+    "items": 139
    },
    {
     "id": "vedomosti",
@@ -118,8 +190,8 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "genproc_tg",
@@ -128,8 +200,8 @@
    },
    {
     "id": "mchs_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 3",
+    "items": 3
    },
    {
     "id": "rosguard",
@@ -143,8 +215,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "dp",
@@ -153,8 +225,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 73",
+    "items": 73
    },
    {
     "id": "genproc_78",
@@ -168,8 +240,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "lo_zaks",
@@ -178,13 +250,13 @@
    },
    {
     "id": "47news",
-    "status": "html 116",
-    "items": 116
+    "status": "html 115",
+    "items": 115
    },
    {
     "id": "online47",
-    "status": "html 29",
-    "items": 29
+    "status": "html 30",
+    "items": 30
    },
    {
     "id": "genproc_47",
@@ -193,13 +265,13 @@
    },
    {
     "id": "arh_gub_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "29ru",
-    "status": "rss 94",
-    "items": 94
+    "status": "rss 91",
+    "items": 91
    },
    {
     "id": "region29",
@@ -208,8 +280,8 @@
    },
    {
     "id": "news29",
-    "status": "html 24",
-    "items": 24
+    "status": "html 29",
+    "items": 29
    },
    {
     "id": "genproc_29",
@@ -218,13 +290,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "newsvo",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "krassever",
@@ -243,8 +315,8 @@
    },
    {
     "id": "klops",
-    "status": "html 29",
-    "items": 29
+    "status": "html 30",
+    "items": 30
    },
    {
     "id": "newkaliningrad",
@@ -253,8 +325,8 @@
    },
    {
     "id": "genproc_39",
-    "status": "html 44",
-    "items": 44
+    "status": "html 45",
+    "items": 45
    },
    {
     "id": "mur_gov",
@@ -268,8 +340,8 @@
    },
    {
     "id": "bport",
-    "status": "error: ReadTimeout",
-    "items": 0
+    "status": "html 37",
+    "items": 37
    },
    {
     "id": "severpost",
@@ -278,8 +350,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 13",
-    "items": 13
+    "status": "telegram 14",
+    "items": 14
    },
    {
     "id": "genproc_51",
@@ -293,8 +365,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 7",
-    "items": 7
+    "status": "html 44",
+    "items": 44
    },
    {
     "id": "genproc_10",
@@ -303,8 +375,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 5",
-    "items": 5
+    "status": "rss 58",
+    "items": 58
    },
    {
     "id": "informpskov",
@@ -313,8 +385,8 @@
    },
    {
     "id": "pskovkp_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 13",
+    "items": 13
    },
    {
     "id": "genproc_60",
@@ -343,8 +415,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "error: ConnectionError",
-    "items": 0
+    "status": "html 77",
+    "items": 77
    },
    {
     "id": "nov_official_tg",
@@ -368,18 +440,18 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "bport_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 20",
+    "items": 20
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "first_arctic_tg",
@@ -388,18 +460,18 @@
    },
    {
     "id": "dp_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 17",
+    "items": 17
    },
    {
     "id": "online47_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 19",
-    "items": 19
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "stolicaonego_tg",
@@ -408,8 +480,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "komiinform_tg",
@@ -423,8 +495,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "mchs_10_tg",
@@ -443,58 +515,58 @@
    },
    {
     "id": "gnews_spb",
-    "status": "error: HTTP 503",
-    "items": 0
+    "status": "rss 53",
+    "items": 53
    },
    {
     "id": "gnews_lo",
-    "status": "error: HTTP 503",
-    "items": 0
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "gnews_arh",
-    "status": "error: HTTP 503",
-    "items": 0
-   },
-   {
-    "id": "gnews_vol",
-    "status": "error: HTTP 503",
-    "items": 0
-   },
-   {
-    "id": "gnews_klg",
-    "status": "error: HTTP 503",
-    "items": 0
-   },
-   {
-    "id": "gnews_mur",
-    "status": "error: HTTP 503",
-    "items": 0
-   },
-   {
-    "id": "gnews_kar",
-    "status": "error: HTTP 503",
-    "items": 0
-   },
-   {
-    "id": "gnews_psk",
     "status": "error: HTTP 429",
     "items": 0
    },
    {
-    "id": "gnews_komi",
-    "status": "error: HTTP 503",
+    "id": "gnews_vol",
+    "status": "rss 14",
+    "items": 14
+   },
+   {
+    "id": "gnews_klg",
+    "status": "rss 59",
+    "items": 59
+   },
+   {
+    "id": "gnews_mur",
+    "status": "error: HTTP 429",
     "items": 0
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 27",
+    "items": 27
+   },
+   {
+    "id": "gnews_psk",
+    "status": "rss 51",
+    "items": 51
+   },
+   {
+    "id": "gnews_komi",
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_nov",
-    "status": "error: HTTP 503",
-    "items": 0
+    "status": "rss 42",
+    "items": 42
    },
    {
     "id": "rosbalt",
-    "status": "error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0; google_news: HTTPError",
-    "items": 0
+    "status": "rosbalt via Google News 20 (direct: error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0)",
+    "items": 20
    },
    {
     "id": "herzen_official",
@@ -505,77 +577,17 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 14,
+ "sources_failed": 2,
  "failed": [
-  {
-   "id": "spbdnevnik",
-   "name": "Петербургский дневник",
-   "status": "error: ConnectionError"
-  },
-  {
-   "id": "bport",
-   "name": "Б-порт",
-   "status": "error: ReadTimeout"
-  },
-  {
-   "id": "nov_gov",
-   "name": "Правительство Новгородской области",
-   "status": "error: ConnectionError"
-  },
-  {
-   "id": "gnews_spb",
-   "name": "Google Новости · Санкт-Петербург",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_lo",
-   "name": "Google Новости · Ленинградская область",
-   "status": "error: HTTP 503"
-  },
   {
    "id": "gnews_arh",
    "name": "Google Новости · Архангельская область",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_vol",
-   "name": "Google Новости · Вологодская область",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_klg",
-   "name": "Google Новости · Калининградская область",
-   "status": "error: HTTP 503"
+   "status": "error: HTTP 429"
   },
   {
    "id": "gnews_mur",
    "name": "Google Новости · Мурманская область",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_kar",
-   "name": "Google Новости · Республика Карелия",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_psk",
-   "name": "Google Новости · Псковская область",
    "status": "error: HTTP 429"
-  },
-  {
-   "id": "gnews_komi",
-   "name": "Google Новости · Республика Коми",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "gnews_nov",
-   "name": "Google Новости · Новгородская область",
-   "status": "error: HTTP 503"
-  },
-  {
-   "id": "rosbalt",
-   "name": "Росбалт",
-   "status": "error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0; google_news: HTTPError"
   }
  ]
 }

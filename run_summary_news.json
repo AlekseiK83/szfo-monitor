@@ -1,37 +1,19 @@
 {
  "date": "2026-11-27",
- "new": [
-  {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "force",
-   "region": "Республика Карелия",
-   "title": "Президент назначил председателей Арбитражного суда Карелии и суда Кеми Фактор",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxONHY2ckdwc2k1NThPRy1GSWthODQxWm04anFPYXFORm5seWhQeGlvTTZ0TWtGdkZMTmRjUEFEcDBWQW9zYnl2UEVKWXRWcVpXZC0yb2pYOWtJY3o4R1BuMzc1U0FBLVZSZ2FRNmMtc3lrd3lzRHVlY1ZheTJmakFPWUtsX1pvRXR3N1YzZ3U0emlOMFFzYXdYQTQzOEJiUjdmaXc?oc=5",
-   "date": "2026-11-27",
-   "source": "Google Новости · Республика Карелия",
-   "source_id": "gnews_kar",
-   "rank": 4,
-   "person": "Кеми Фактор",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3353,
-  "items_fresh": 3176,
-  "detected": 105,
-  "relevance_accepted": 83,
-  "relevance_rejected": 22,
+  "items_received": 2761,
+  "items_fresh": 2639,
+  "detected": 25,
+  "relevance_accepted": 15,
+  "relevance_rejected": 10,
   "region_rejected": 1,
-  "candidates": 82,
+  "candidates": 14,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 14,
-   "foreign_event_geography_overrides_org_dictionary": 2,
-   "proceeding_without_explicit_region": 2,
-   "neighbouring_region_not_subject_region": 1,
-   "regional_deputy_appointee_not_identified": 2,
-   "election_date_is_not_governor_departure": 1
+   "missing_regional_event_anchor": 7,
+   "foreign_event_geography_overrides_org_dictionary": 1,
+   "proceeding_without_explicit_region": 1,
+   "neighbouring_region_not_subject_region": 1
   },
   "rejected_examples": [
    {
@@ -83,36 +65,11 @@
     "reason": "missing_regional_event_anchor",
     "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
     "source": "Первый Арктический (Telegram)"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Александр Беглов стал почетным гражданином Ханоя",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "regional_deputy_appointee_not_identified",
-    "title": "Врио главы Мурманской области назначена заместитель губернатора",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Александр Беглов стал почетным гражданином Ханоя",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Агентство государственной противопожарной службы возглавил Андрей Варюхин",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
-    "source": "Google Новости · Архангельская область"
    }
   ],
-  "not_detected": 3071,
-  "duplicates": 81,
-  "new_events": 1,
+  "not_detected": 2614,
+  "duplicates": 14,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -136,8 +93,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 93",
-    "items": 93
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "interfax",
@@ -146,8 +103,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 115",
-    "items": 115
+    "status": "rss 116",
+    "items": 116
    },
    {
     "id": "vedomosti",
@@ -196,8 +153,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 76",
-    "items": 76
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "genproc_78",
@@ -261,8 +218,8 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "newsvo",
@@ -311,8 +268,8 @@
    },
    {
     "id": "bport",
-    "status": "html 33",
-    "items": 33
+    "status": "error: ReadTimeout",
+    "items": 0
    },
    {
     "id": "severpost",
@@ -336,8 +293,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 6",
-    "items": 6
+    "status": "html 7",
+    "items": 7
    },
    {
     "id": "genproc_10",
@@ -346,8 +303,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 4",
-    "items": 4
+    "status": "rss 5",
+    "items": 5
    },
    {
     "id": "informpskov",
@@ -386,8 +343,8 @@
    },
    {
     "id": "nov_gov",
-    "status": "html 76",
-    "items": 76
+    "status": "error: ConnectionError",
+    "items": 0
    },
    {
     "id": "nov_official_tg",
@@ -486,58 +443,58 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 27",
-    "items": 27
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_lo",
-    "status": "rss 19",
-    "items": 19
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_arh",
-    "status": "rss 28",
-    "items": 28
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_vol",
-    "status": "rss 21",
-    "items": 21
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_klg",
-    "status": "rss 29",
-    "items": 29
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_mur",
-    "status": "rss 100",
-    "items": 100
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_kar",
-    "status": "rss 25",
-    "items": 25
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_psk",
-    "status": "rss 55",
-    "items": 55
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_komi",
-    "status": "rss 35",
-    "items": 35
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "gnews_nov",
-    "status": "rss 47",
-    "items": 47
+    "status": "error: HTTP 503",
+    "items": 0
    },
    {
     "id": "rosbalt",
-    "status": "rosbalt via Google News 20 (direct: error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0)",
-    "items": 20
+    "status": "error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0; google_news: HTTPError",
+    "items": 0
    },
    {
     "id": "herzen_official",
@@ -548,6 +505,77 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 14,
+ "failed": [
+  {
+   "id": "spbdnevnik",
+   "name": "Петербургский дневник",
+   "status": "error: ConnectionError"
+  },
+  {
+   "id": "bport",
+   "name": "Б-порт",
+   "status": "error: ReadTimeout"
+  },
+  {
+   "id": "nov_gov",
+   "name": "Правительство Новгородской области",
+   "status": "error: ConnectionError"
+  },
+  {
+   "id": "gnews_spb",
+   "name": "Google Новости · Санкт-Петербург",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_lo",
+   "name": "Google Новости · Ленинградская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_arh",
+   "name": "Google Новости · Архангельская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_vol",
+   "name": "Google Новости · Вологодская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_klg",
+   "name": "Google Новости · Калининградская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_mur",
+   "name": "Google Новости · Мурманская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_kar",
+   "name": "Google Новости · Республика Карелия",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_psk",
+   "name": "Google Новости · Псковская область",
+   "status": "error: HTTP 429"
+  },
+  {
+   "id": "gnews_komi",
+   "name": "Google Новости · Республика Коми",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "gnews_nov",
+   "name": "Google Новости · Новгородская область",
+   "status": "error: HTTP 503"
+  },
+  {
+   "id": "rosbalt",
+   "name": "Росбалт",
+   "status": "error: rosbalt_no_articles: no_article_links; page_stats=/news:len=13602,links=0;/:len=13602,links=0; google_news: HTTPError"
+  }
+ ]
 }

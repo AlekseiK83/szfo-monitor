@@ -894,7 +894,7 @@ class TestProactiveEventQualityRelease(unittest.TestCase):
             with patch.dict(sys.modules, {"notify_telegram": fake}), \
                  patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "fake-token", "TELEGRAM_CHAT_ID": "11,22"}), \
                  patch.object(nm, "RUN_SUMMARY", path):
-                self.assertEqual(nm.notify(), 1)  # first chat sent; second failed
+                self.assertEqual(nm.notify(), 0)  # partial private-chat failure is a warning
                 self.assertEqual(deliveries, ["11"])
                 self.assertEqual(nm.notify(), 0)  # retries only 22
                 self.assertEqual(deliveries, ["11", "22"])
@@ -904,3 +904,78 @@ class TestProactiveEventQualityRelease(unittest.TestCase):
             self.assertEqual(len(stored["notify_delivery"]["completed"]), 2)
             self.assertNotIn('"11"', json.dumps(stored["notify_delivery"]))
             self.assertNotIn('"22"', json.dumps(stored["notify_delivery"]))
+
+    def test_telegram_partial_delivery_with_channel_keeps_job_green(self):
+        import tempfile
+        import types
+
+        ev = self.record("Назначен новый министр правительства Мурманской области", kind="appointment")
+        fake = types.ModuleType("notify_telegram")
+        fake.TG_LIMIT = 4096
+        fake.site_url = lambda: ""
+        fake.plural = lambda n, one, few, many: one if n == 1 else many
+        fake.send = lambda _token, chats, _msg, report: (
+            report.update({chats[0]: (chats[0].startswith("-"),
+                                      {} if chats[0].startswith("-") else "bot blocked")})
+            or chats[0].startswith("-")
+        )
+        fake.print_report = lambda report: None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "run_summary_news.json"
+            path.write_text(json.dumps({"new": [ev]}, ensure_ascii=False), encoding="utf-8")
+            with patch.dict(sys.modules, {"notify_telegram": fake}), \
+                 patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "fake-token",
+                                      "TELEGRAM_CHAT_ID": "11,22,-1001234567890"}), \
+                 patch.object(nm, "RUN_SUMMARY", path), \
+                 patch("builtins.print") as print_mock:
+                self.assertEqual(nm.notify(), 0)
+                self.assertTrue(any("::warning::Telegram:" in str(call)
+                                    for call in print_mock.call_args_list))
+            stored = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(len(stored["notify_delivery"]["completed"]), 1)
+
+    def test_telegram_total_failure_is_still_error(self):
+        import tempfile
+        import types
+
+        ev = self.record("Назначен новый министр правительства Мурманской области", kind="appointment")
+        fake = types.ModuleType("notify_telegram")
+        fake.TG_LIMIT = 4096
+        fake.site_url = lambda: ""
+        fake.plural = lambda n, one, few, many: one if n == 1 else many
+        fake.send = lambda _token, chats, _msg, report: (
+            report.update({chats[0]: (False, "bot blocked")}) or False
+        )
+        fake.print_report = lambda report: None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "run_summary_news.json"
+            path.write_text(json.dumps({"new": [ev]}, ensure_ascii=False), encoding="utf-8")
+            with patch.dict(sys.modules, {"notify_telegram": fake}), \
+                 patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "fake-token",
+                                      "TELEGRAM_CHAT_ID": "11,22"}), \
+                 patch.object(nm, "RUN_SUMMARY", path):
+                self.assertEqual(nm.notify(), 1)
+
+    def test_telegram_channel_failure_is_error_despite_private_success(self):
+        import tempfile
+        import types
+
+        ev = self.record("Назначен новый министр правительства Мурманской области", kind="appointment")
+        fake = types.ModuleType("notify_telegram")
+        fake.TG_LIMIT = 4096
+        fake.site_url = lambda: ""
+        fake.plural = lambda n, one, few, many: one if n == 1 else many
+        fake.send = lambda _token, chats, _msg, report: (
+            report.update({chats[0]: (not chats[0].startswith("-"),
+                                      {} if not chats[0].startswith("-") else "chat not found")})
+            or not chats[0].startswith("-")
+        )
+        fake.print_report = lambda report: None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "run_summary_news.json"
+            path.write_text(json.dumps({"new": [ev]}, ensure_ascii=False), encoding="utf-8")
+            with patch.dict(sys.modules, {"notify_telegram": fake}), \
+                 patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "fake-token",
+                                      "TELEGRAM_CHAT_ID": "11,-1001234567890"}), \
+                 patch.object(nm, "RUN_SUMMARY", path):
+                self.assertEqual(nm.notify(), 1)

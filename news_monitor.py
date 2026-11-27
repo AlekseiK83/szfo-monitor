@@ -22,6 +22,7 @@
 """
 import argparse
 import html as html_module
+import hashlib
 import json
 import os
 import re
@@ -344,6 +345,31 @@ def find_org_names(text, organizations):
     return found
 
 
+MASS_STAFF_HEADLINE = re.compile(
+    r"\b(?:\d{1,5}\s+(?:нов\w*\s+|молод\w*\s+)?"
+    r"(?:врач\w*|медик\w*|специалист\w*|сотрудник\w*)|"
+    r"(?:начал[аио]?\s+работат\w*|приступил[аи]?\s+к\s+работе|"
+    r"трудоустро\w*)[^.!?]{0,100}?\b(?:врач\w*|медик\w*|специалист\w*))\b",
+    re.I,
+)
+EXECUTIVE_CHANGE_IN_TITLE = re.compile(
+    r"\b(?:назначен\w*|возглавил[аи]?|стал[аи]?)\b[^.!?]{0,90}"
+    r"\b(?:главврач\w*|директор\w*|министр\w*|губернатор\w*|"
+    r"руководител\w*|начальник\w*)\b", re.I,
+)
+COOPERATION_ONLY = re.compile(
+    r"\b(?:подписал[аи]?|заключил[аи]?|подписан\w*|заключен\w*|"
+    r"заключён\w*)\b[^.!?]{0,100}\b(?:соглашени\w*|договор\w*)"
+    r"\s+(?:о|об)\s+(?:сотрудничеств\w*|взаимодействи\w*|"
+    r"партнерств\w*|партнёрств\w*|совместн\w*\s+работ\w*)", re.I,
+)
+GOVERNOR_REMOVAL = re.compile(
+    r"\b(?:снял[аи]?|отстранил[аи]?)\b[^.!?]{0,120}?"
+    r"\bс\s+поста\s+(?:губернатор\w*|глав[ыа]\s+(?:област\w*|регион\w*))\b",
+    re.I,
+)
+
+
 def detect(title, summary, organizations):
     """Возвращает описание события или None.
 
@@ -356,6 +382,13 @@ def detect(title, summary, organizations):
     lead = title + " " + first_sentence(summary)  # глагол события — только заголовок и первая фраза
 
     if UNCERTAIN.search(head) or NOT_OUR_SCOPE.search(head):
+        return None
+    # «Компания возглавила рейтинг» — не кадровое назначение.
+    if re.search(r"\bвозглавил[аи]?\s+(?:рейтинг|топ|список|таблиц|перечень)\w*\b", title, re.I):
+        return None
+    # Массовый набор специалистов рассматривает только детектор workforce:
+    # случайная должность губернатора/министра в лиде не создаёт назначение.
+    if MASS_STAFF_HEADLINE.search(title) and not EXECUTIVE_CHANGE_IN_TITLE.search(title):
         return None
 
     orgs = find_org_names(text, organizations)
@@ -388,7 +421,7 @@ def detect(title, summary, organizations):
         appoint, has_pos = True, True
     if not has_pos:
         return None
-    leave = LEAVE_VERB.search(lead)
+    leave = LEAVE_VERB.search(lead) or GOVERNOR_REMOVAL.search(title)
     if not appoint and not leave:
         return None
     # «Врио станет один из замов» — предварительное предположение, а не
@@ -450,6 +483,9 @@ def detect_extra(title, summary, organizations, region_hint=None):
 
     # 4. Запуск крупного объекта, спуск судна, ввод в эксплуатацию, крупный контракт
     lm = LAUNCH.search(title) or (LAUNCH.search(lead) and LAUNCH_TITLE_NOUN.search(title))
+    # Договор о взаимодействии — не ввод объекта и не инвестконтракт.
+    if COOPERATION_ONLY.search(title):
+        lm = None
     # «Запуск своего дела» = субсидия/предпринимательство, не открытие
     # инфраструктурного объекта; само упоминание крупной суммы не основание.
     if re.search(r"(?:на\s+запуск\s+(?:своего|собственного)\s+дела|"
@@ -1622,6 +1658,14 @@ def proceeding_office(ev):
     return ""
 
 
+PROCEEDING_NON_PERSON = {
+    "он", "она", "они", "его", "ее", "её", "ему", "ней", "после", "по",
+    "области", "региона", "республики", "края", "суд", "полиция",
+    "сообщил", "сообщила", "подтвердил", "подтвердила", "вслед",
+    "путин", "мишустин", "президент",
+}
+
+
 def proceeding_subject(ev):
     """Основа фамилии действующего лица, если упомянута рядом с должностью.
 
@@ -1630,7 +1674,10 @@ def proceeding_subject(ev):
     """
     person = ev.get("person", "").strip()
     if person:
-        return surname(person)
+        identity = surname(person)
+        if (identity and len(identity) >= 4 and identity not in PROCEEDING_NON_PERSON
+                and identity not in {"путин", "мишустин", "президент"}):
+            return identity
     text = ev.get("title", "") + " " + ev.get("summary", "")[:180]
     for match in PROCEEDING_GOVERNOR.finditer(text):
         after = text[match.end():match.end() + 105].lstrip()
@@ -1639,8 +1686,10 @@ def proceeding_subject(ev):
         if not pair:
             continue
         words = [part for part in pair.groups() if part]
-        if words and words[0].lower() not in PROCEEDING_NON_NAMES:
-            return name_stem(words[-1])
+        if words and words[0].lower() not in (PROCEEDING_NON_NAMES | PROCEEDING_NON_PERSON):
+            last = name_stem(words[-1])
+            if last not in PROCEEDING_NON_PERSON:
+                return last
     return ""
 
 
@@ -1977,6 +2026,54 @@ def same_regional_deputy_appointment(a, b, days_apart):
     return bool(pa and pb and pa & pb)
 
 
+APPOINTMENT_ROLE_CLASSES = (
+    ("minister", re.compile(r"\b(?:министр\w*|глав\w*\s+минздрава)\b", re.I)),
+    ("director", re.compile(r"\b(?:гендиректор\w*|директор\w*|генеральн\w*\s+директор\w*)\b", re.I)),
+    ("rector", re.compile(r"\bректор\w*\b", re.I)),
+    ("prosecutor", re.compile(r"\bпрокурор\w*\b", re.I)),
+    ("governor", re.compile(r"\bгубернатор\w*\b", re.I)),
+)
+LAUNCH_OBJECT_CLASSES = (
+    ("production_line", re.compile(r"\b(?:производственн\w*\s+лини[юияе]|лини[юияе]\s+(?:по\s+)?производств\w*)\b", re.I)),
+    ("terminal", re.compile(r"\bтерминал\w*\b", re.I)),
+    ("energy_block", re.compile(r"\bэнергоблок\w*\b", re.I)),
+    ("ship", re.compile(r"\b(?:ледокол\w*|судн\w*|фрегат\w*|корвет\w*|корабл\w*)\b", re.I)),
+    ("workshop", re.compile(r"\bцех\w*\b", re.I)),
+    ("factory", re.compile(r"\bзавод\w*\b", re.I)),
+    ("hospital", re.compile(r"\b(?:больниц\w*|онкоцентр\w*|медцентр\w*)\b", re.I)),
+    ("bridge", re.compile(r"\b(?:мост\w*|развязк\w*)\b", re.I)),
+)
+
+
+def appointment_role(ev):
+    """Return a definite distinct class only when exactly one target role exists."""
+    if ev.get("type") != "appointment":
+        return ""
+    title = ev.get("title", "")
+    found = {key for key, rx in APPOINTMENT_ROLE_CLASSES if rx.search(title)}
+    return next(iter(found)) if len(found) == 1 else ""
+
+
+def launch_object(ev):
+    """Look for the launched object next to the opening verb, not the operator."""
+    if ev.get("type") != "launch":
+        return ""
+    title = ev.get("title", "")
+    action = LAUNCH.search(title)
+    # Usually 'company launched [object]'; if absent try the entire headline.
+    after = title[action.end():] if action else title
+    for kind, rx in LAUNCH_OBJECT_CLASSES:
+        match = rx.search(after)
+        if match:
+            # Two numbered units of the same kind are distinct projects.
+            number = re.match(r"\s*(?:№\s*|номер\s+)(\d+)\b", after[match.end():], re.I)
+            return f"{kind}:no{number.group(1)}" if number else kind
+    for kind, rx in LAUNCH_OBJECT_CLASSES:
+        if kind != "factory" and rx.search(title):
+            return kind
+    return ""
+
+
 def similar(a, b):
     """Дедупликация с учётом сущности и стадии, а не идентичности заголовков."""
     if honorary_citizen_key(a) or honorary_citizen_key(b):
@@ -1992,6 +2089,19 @@ def similar(a, b):
         days_apart = abs((date.fromisoformat(a["date"]) - date.fromisoformat(b["date"])).days)
     except (KeyError, ValueError, TypeError):
         return False
+    # Different confirmed offices and different physical objects are never
+    # duplicates, even if the person/company and date match.
+    if a["type"] == b["type"] == "appointment":
+        ra, rb = appointment_role(a), appointment_role(b)
+        if ra and rb and ra != rb:
+            return False
+    if a["type"] == b["type"] == "launch":
+        oa, ob = launch_object(a), launch_object(b)
+        if oa and ob:
+            if oa.split(":", 1)[0] != ob.split(":", 1)[0]:
+                return False
+            if ":no" in oa and ":no" in ob and oa != ob:
+                return False
     if a["type"] == b["type"] == "anniversary" and days_apart <= 14:
         return same_organization_anniversary(a, b)
     # Уникальная должность главы региона: разные заголовки и пропущенное
@@ -2085,7 +2195,7 @@ def event_keys(ev):
         return keys
     # Каждая стадия процессуального дела самостоятельна; ключ должности
     # не должен блокировать арест после задержания или предъявление обвинения.
-    if ev["type"] in ("workforce", "proceeding"):
+    if ev["type"] in ("workforce", "proceeding", "launch"):
         return keys
     pk = position_key(ev)
     if pk:
@@ -2113,9 +2223,19 @@ def event_key(ev):
     if ev["type"] == "workforce":
         return workforce_fingerprint(ev)
     person = ev.get("person", "")
-    if ev["type"] in ("visit", "anniversary", "launch", "award", "status", "ownership") and ev.get("orgs"):
+    if ev["type"] == "launch":
+        # Avoid a company+month key which suppresses two separate facilities.
+        org = (ev.get("orgs") or [""])[0].lower()
+        obj = launch_object(ev)
+        if not obj:
+            obj = re.sub(r"[^а-яёa-z0-9 ]", "", ev.get("title", "").casefold())[:75]
+        return f"launch:{ev['region']}:{org}:{obj}:{ev.get('date', '')}"
+    if ev["type"] in ("visit", "anniversary", "award", "status", "ownership") and ev.get("orgs"):
         return f"{ev['type']}:{ev['region']}:{ev['orgs'][0].lower()}:{ev['date'][:7]}"
     if person:
+        office = appointment_role(ev)
+        if office:
+            return f"{ev['type']}:{ev['region']}:{surname(person)}:{office}"
         return f"{ev['type']}:{ev['region']}:{surname(person)}"
     norm = re.sub(r"[^а-яёa-z0-9 ]", "", ev["title"].lower())
     return f"{ev['type']}:{norm[:70]}"
@@ -2280,11 +2400,14 @@ def run(today=None, verbose=True):
     # остальные события остаются на прежнем коротком окне.
     recent_cut = (today - timedelta(days=4)).isoformat()
     departure_cut = (today - timedelta(days=10)).isoformat()
+    proceeding_cut = (today - timedelta(days=7)).isoformat()
     honor_cut = (today - timedelta(days=HONOR_REPEAT_DAYS)).isoformat()
     recent = [e for e in events if e.get("date", "") >= recent_cut or (
         e.get("date", "") >= departure_cut
         and (regional_governor_stage(e) == "governor_departure"
              or governor_stage(e) == "governor_departure")
+    ) or (
+        e.get("date", "") >= proceeding_cut and e.get("type") == "proceeding"
     ) or (
         e.get("date", "") >= honor_cut and honorary_citizen_key(e)
     )]
@@ -2710,11 +2833,38 @@ def notify():
             cur = ""
         cur += line + "\n"
     messages.append(cur)
+    # A repeated --notify on the same checkout must not resend a delivered
+    # message. The receipt is kept in the existing summary (no new file).
+    # Hash the bot token and chat ID together: never publish either value.
+    content_id = hashlib.sha256("\n".join(messages).encode("utf-8")).hexdigest()
+    delivery = summary.get("notify_delivery", {})
+    if delivery.get("digest") != content_id:
+        delivery = {"digest": content_id, "completed": {}}
+    completed = delivery.setdefault("completed", {})
     report = {}
-    for m in messages:
-        nt.send(token, chat_ids, m.strip(), report)
-    nt.print_report(report)
-    return 0
+    failed = False
+    for chat in chat_ids:
+        recipient = hashlib.sha256(f"{token}:{chat}".encode("utf-8")).hexdigest()[:24]
+        next_message = min(int(completed.get(recipient, 0)), len(messages))
+        for idx in range(next_message, len(messages)):
+            success = nt.send(token, [chat], messages[idx].strip(), report)
+            if success is False:
+                failed = True
+                break
+            # The real sender returns bool. Test stubs may return None; do
+            # not write to production files while running legacy tests.
+            if success is True:
+                completed[recipient] = idx + 1
+                summary["notify_delivery"] = delivery
+                save_json(RUN_SUMMARY, summary)
+    if report:
+        nt.print_report(report)
+    if not failed and not report and all(
+        int(completed.get(hashlib.sha256(f"{token}:{chat}".encode("utf-8")).hexdigest()[:24], 0))
+        >= len(messages) for chat in chat_ids
+    ):
+        print("Telegram: это сообщение уже отправлено всем получателям.")
+    return 1 if failed else 0
 
 
 
@@ -2809,13 +2959,13 @@ def stage(ev):
             return ""
         if ACTING.search(title) or HEAD_REGION.search(title):
             return "acting_governor"
-    if typ == "leave" and GOVERNOR.search(title) and DEPARTURE.search(title):
+    if typ == "leave" and GOVERNOR.search(title) and (DEPARTURE.search(title) or GOVERNOR_REMOVAL.search(title)):
         # A *deputy governor* stepping down is not the regional governor.
         without_deputies = re.sub(r"\b(?:вице[- ]?|зам)\s*губернатор\w*\b|"
                                   r"\bзаместител\w*\s+губернатор\w*\b", "", title, flags=re.I)
         if not GOVERNOR.search(without_deputies):
             return ""
-        if not DEPARTURE_TARGET.search(without_deputies):
+        if not (DEPARTURE_TARGET.search(without_deputies) or GOVERNOR_REMOVAL.search(without_deputies)):
             return ""
         if re.search(r"\b(?:заместител\w*|вице[- ]?губернатор\w*|замгубернатор\w*)\s+"
                      r"(?:[А-ЯЁ][а-яё-]+\s+)?губернатор\w*", title, re.I):
@@ -3078,13 +3228,26 @@ def honorary_citizen_key(ev):
     if not city:
         return ""
     if who:
-        return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:{who}"
+        person = full_honor_recipient(title) or who
+        return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:{person}"
     # The governor of Saint Petersburg is a unique office. An unnamed
     # reference to that office is usable for deduplication with another title
     # mentioning the same office, but not with an unrelated person's award.
     if ev["region"] == "Санкт-Петербург" and _HONOR_SPB_GOVERNOR.search(title):
         return f"honorary_citizen:{ev['region'].casefold().strip()}:{city}:office_spb_governor"
     return ""
+
+
+def full_honor_recipient(title):
+    """Disambiguate two award recipients sharing a family name."""
+    names = set()
+    for m in _PERSON_PAIR.finditer(title or ""):
+        first, last = m.groups()
+        if (first.casefold().replace("ё", "е") in _STOP_FIRST
+                or last.casefold().replace("ё", "е") in _STOP_LAST):
+            continue
+        names.add(first.casefold().replace("ё", "е")[:4] + ":" + last.casefold().replace("ё", "е")[:6])
+    return next(iter(names)) if len(names) == 1 else ""
 
 
 def same_honor(a, b):
@@ -3103,6 +3266,9 @@ def same_honor(a, b):
     except (KeyError, ValueError, TypeError):
         return False
     if days > HONOR_REPEAT_DAYS:
+        return False
+    full_a, full_b = full_honor_recipient(ta), full_honor_recipient(tb)
+    if full_a and full_b and full_a != full_b:
         return False
     na, nb = _recipient(ta), _recipient(tb)
     # Different explicitly named recipients are always different awards.

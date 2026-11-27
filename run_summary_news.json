@@ -1,72 +1,95 @@
 {
- "date": "2026-11-27",
+ "date": "2026-11-28",
  "new": [
   {
-   "type": "anniversary",
+   "type": "status",
    "level": "head",
    "org_class": "gov",
-   "region": "Ленинградская область",
-   "title": "#прямосейчас губернатор Ленинградской области Александр Дрозденко подписывает второй блок соглашений с партнерами общественных проектов к 100-летию региона.",
-   "summary": "#прямосейчас губернатор Ленинградской области Александр Дрозденко подписывает второй блок соглашений с партнерами общественных проектов к 100-летию региона. Церемония проходит в пресс-центре ТАСС.\n\nСреди участников юбилейной программы — ТАСС, «Комсомольская правда», бренд 5КУЛЬТ, «Горбилет», «Аргументы и факты на Неве», производственное объединение «Баррикада», крупнейший российский радиохолдинг «",
-   "link": "https://t.me/lenobladminka/30600",
+   "region": "Новгородская область",
+   "title": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»",
+   "summary": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»\n \n «Сегодня встретился с Михаилом и Натальей и лично поздравил их с победой во всероссийском конкурсе «Семья года». Они стали лучшими в номинации «Многодетная семья». Всего в семье воспитывают семерых детей.\n \nШемякины — хороший пример семьи, в которой берегут традиционные ценности. Рад, что",
+   "link": "https://t.me/novgorodinfo/11451",
    "date": "2026-11-27",
-   "source": "Ленобласть (Telegram)",
-   "source_id": "lo_tg",
+   "source": "Официально 53. Новгородская область (Telegram)",
+   "source_id": "nov_official_tg",
    "rank": 1,
    "person": "",
    "orgs": []
   },
   {
-   "type": "leave",
+   "type": "anniversary",
    "level": "head",
-   "org_class": "gov",
-   "region": "Архангельская область",
-   "title": "Игорь Раченков покинул пост главы противопожарной службы Поморья",
-   "summary": "",
-   "link": "https://region29.ru/2026/11/27/6b0974ac2bdf18e0be073987.html",
-   "date": "2026-11-27",
-   "source": "Регион 29",
-   "source_id": "region29",
-   "rank": 3,
-   "person": "Игорь Раченков",
+   "org_class": "force",
+   "region": "Ленинградская область",
+   "title": "Мировая юстиция Ленинградской области отмечает 25-летие со дня образования",
+   "summary": "Сегодня, 27 ноября 2026 года, в конференц-зале Ленинградского областного суда состоялось торжественное собрание, приуроченное к 25-летию мировой юстиции региона. 27 ноября 2026",
+   "link": "https://lenobl.ru/ru/dlya-smi/news/100532/",
+   "date": "2026-11-28",
+   "source": "Правительство Ленинградской области",
+   "source_id": "lo_gov",
+   "rank": 1,
+   "person": "",
    "orgs": []
   },
   {
-   "type": "appointment",
+   "type": "visit",
    "level": "head",
-   "org_class": "force",
-   "region": "Мурманская область",
-   "title": "⚖️ Путин назначил председателей двух судов Мурманской области",
-   "summary": "⚖️ Путин назначил председателей двух судов Мурманской области\n\n Президент РФ Владимир Путин подписал указ о назначении председателей двух судов на территории Мурманской области. Об этом сообщили в объединённой пресс-службе судов региона.\n\nПредседателем Арбитражного суда Мурманской области стал Алексей Смирников. Председателем Печенгского районного суда назначена Екатерина Воронова.\n\nТакже сообщает",
-   "link": "https://t.me/bportcom/87283",
+   "org_class": "company",
+   "region": "Архангельская область",
+   "title": "Путин приехал в Северодвинск для поднятия флага над подлодкой «Пермь»: объясняем, что это за корабль",
+   "summary": "Крейсер заложили на Севмаше 10 лет назад",
+   "link": "https://29.ru/text/politics/2026/11/27/76796693/",
    "date": "2026-11-27",
-   "source": "Б-порт (Telegram)",
-   "source_id": "bport_tg",
+   "source": "29.ru",
+   "source_id": "29ru",
+   "rank": 3,
+   "person": "",
+   "orgs": [
+    "Севмаш"
+   ]
+  },
+  {
+   "type": "anniversary",
+   "level": "head",
+   "org_class": "podved",
+   "region": "Калининградская область",
+   "title": "Калининградский музтеатр отметит 25-летие юбилейным балом",
+   "summary": "Праздничный бал пройдёт 18–20 декабря, на сцене выступит вся труппа театра.",
+   "link": "https://www.newkaliningrad.ru/afisha/theatre/news/24171352-kaliningradskiy-muzteatr-otmetit-25-letie-yubileynym-balom.html",
+   "date": "2026-11-27",
+   "source": "Новый Калининград",
+   "source_id": "newkaliningrad",
    "rank": 3,
    "person": "",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3410,
-  "items_fresh": 3255,
-  "detected": 60,
-  "relevance_accepted": 42,
-  "relevance_rejected": 18,
+  "items_received": 3407,
+  "items_fresh": 3222,
+  "detected": 95,
+  "relevance_accepted": 79,
+  "relevance_rejected": 16,
   "region_rejected": 0,
-  "candidates": 42,
+  "candidates": 79,
   "rejection_reasons": {
    "missing_regional_event_anchor": 9,
-   "foreign_event_geography_overrides_org_dictionary": 5,
-   "proceeding_without_explicit_region": 1,
+   "foreign_event_geography_overrides_org_dictionary": 3,
    "neighbouring_region_not_subject_region": 1,
-   "regional_deputy_appointee_not_identified": 2
+   "proceeding_without_explicit_region": 1,
+   "election_date_is_not_governor_departure": 1,
+   "regional_deputy_appointee_not_identified": 1
   },
   "rejected_examples": [
    {
     "reason": "missing_regional_event_anchor",
-    "title": "В Георгиевском зале Большого Кремлёвского дворца состоялась церемония официальной встречи Султана Государства Бруней-Даруссалам Хассанала Болкиаха Президентом Российской Федерации",
-    "source": "Кремль. Новости (Telegram)"
+    "title": "Совещание о развитии группировки многоцелевых АПЛ",
+    "source": "Президент России"
+   },
+   {
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Церемония подъёма флага на атомном подводном крейсере «Пермь»",
+    "source": "Президент России"
    },
    {
     "reason": "foreign_event_geography_overrides_org_dictionary",
@@ -74,33 +97,8 @@
     "source": "Кремль. Новости (Telegram)"
    },
    {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "В Адыгее инвестор направит 700 млн рублей на запуск птицебафрики",
-    "source": "ТАСС"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Интерес к прямой линии Путина и визит Пашиняна в РФ. Заявления Пескова",
-    "source": "ТАСС"
-   },
-   {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "В Казани избрали домашний арест начальнику угрозыска отдела полиции",
-    "source": "ТАСС"
-   },
-   {
     "reason": "missing_regional_event_anchor",
     "title": "Александр Беглов стал почетным гражданином Ханоя",
-    "source": "Коммерсантъ Санкт-Петербург"
-   },
-   {
-    "reason": "proceeding_without_explicit_region",
-    "title": "Суд арестовал губернатора Мурманской области Андрея Чибиса до 23 января",
-    "source": "Коммерсантъ Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Гендиректором «Глобал Портс» назначен Владимир Бычков",
     "source": "Коммерсантъ Санкт-Петербург"
    },
    {
@@ -115,8 +113,8 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
-    "source": "47news"
+    "title": "Построенный северодвинскими корабелами атомный подводный крейсер «Пермь» передан в боевой состав Военно-Морского Флота России.",
+    "source": "Александр Цыбульский (Telegram)"
    },
    {
     "reason": "neighbouring_region_not_subject_region",
@@ -129,19 +127,39 @@
     "source": "Google Новости · Санкт-Петербург"
    },
    {
-    "reason": "regional_deputy_appointee_not_identified",
-    "title": "Врио главы Мурманской области назначена заместитель губернатора",
-    "source": "Google Новости · Санкт-Петербург"
+    "reason": "missing_regional_event_anchor",
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Ленинградская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Александр Беглов стал почетным гражданином Ханоя",
-    "source": "Google Новости · Санкт-Петербург"
+    "title": "Агентство государственной противопожарной службы возглавил Андрей Варюхин",
+    "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Председатель областного суда переназначен на второй срок",
+    "source": "Google Новости · Калининградская область"
+   },
+   {
+    "reason": "proceeding_without_explicit_region",
+    "title": "Суд в Москве арестовал губернатора Мурманской области Андрея Чибиса",
+    "source": "Google Новости · Мурманская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
+    "source": "Google Новости · Мурманская область"
+   },
+   {
+    "reason": "election_date_is_not_governor_departure",
+    "title": "В Мурманской области назвали дату выборов нового губернатора после отставки Андрея Чибиса",
+    "source": "Google Новости · Мурманская область"
    }
   ],
-  "not_detected": 3195,
-  "duplicates": 39,
-  "new_events": 3,
+  "not_detected": 3127,
+  "duplicates": 75,
+  "new_events": 4,
   "sources": [
    {
     "id": "kremlin",
@@ -165,8 +183,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 93",
-    "items": 93
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "interfax",
@@ -175,8 +193,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 139",
-    "items": 139
+    "status": "rss 103",
+    "items": 103
    },
    {
     "id": "vedomosti",
@@ -190,8 +208,8 @@
    },
    {
     "id": "sledcom_tg",
-    "status": "telegram 20",
-    "items": 20
+    "status": "telegram 18",
+    "items": 18
    },
    {
     "id": "genproc_tg",
@@ -215,8 +233,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "dp",
@@ -225,8 +243,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 73",
-    "items": 73
+    "status": "html 72",
+    "items": 72
    },
    {
     "id": "genproc_78",
@@ -240,8 +258,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "lo_zaks",
@@ -255,8 +273,8 @@
    },
    {
     "id": "online47",
-    "status": "html 30",
-    "items": 30
+    "status": "html 29",
+    "items": 29
    },
    {
     "id": "genproc_47",
@@ -265,13 +283,13 @@
    },
    {
     "id": "arh_gub_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "29ru",
-    "status": "rss 91",
-    "items": 91
+    "status": "rss 90",
+    "items": 90
    },
    {
     "id": "region29",
@@ -280,8 +298,8 @@
    },
    {
     "id": "news29",
-    "status": "html 29",
-    "items": 29
+    "status": "html 24",
+    "items": 24
    },
    {
     "id": "genproc_29",
@@ -290,13 +308,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "newsvo",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "krassever",
@@ -315,13 +333,13 @@
    },
    {
     "id": "klops",
-    "status": "html 30",
-    "items": 30
+    "status": "html 31",
+    "items": 31
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 94",
-    "items": 94
+    "status": "rss 101",
+    "items": 101
    },
    {
     "id": "genproc_39",
@@ -340,8 +358,8 @@
    },
    {
     "id": "bport",
-    "status": "html 37",
-    "items": 37
+    "status": "html 38",
+    "items": 38
    },
    {
     "id": "severpost",
@@ -350,8 +368,8 @@
    },
    {
     "id": "tv21_tg",
-    "status": "telegram 14",
-    "items": 14
+    "status": "telegram 13",
+    "items": 13
    },
    {
     "id": "genproc_51",
@@ -365,8 +383,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 44",
-    "items": 44
+    "status": "html 1",
+    "items": 1
    },
    {
     "id": "genproc_10",
@@ -375,8 +393,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 58",
-    "items": 58
+    "status": "html 85",
+    "items": 85
    },
    {
     "id": "informpskov",
@@ -385,8 +403,8 @@
    },
    {
     "id": "pskovkp_tg",
-    "status": "telegram 13",
-    "items": 13
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "genproc_60",
@@ -440,8 +458,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "bport_tg",
@@ -450,8 +468,8 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "first_arctic_tg",
@@ -460,13 +478,13 @@
    },
    {
     "id": "dp_tg",
-    "status": "telegram 17",
-    "items": 17
+    "status": "telegram 19",
+    "items": 19
    },
    {
     "id": "online47_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 6",
+    "items": 6
    },
    {
     "id": "lentv24_tg",
@@ -480,8 +498,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 15",
+    "items": 15
    },
    {
     "id": "komiinform_tg",
@@ -495,8 +513,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "mchs_10_tg",
@@ -515,53 +533,53 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 53",
-    "items": 53
+    "status": "rss 19",
+    "items": 19
    },
    {
     "id": "gnews_lo",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "gnews_arh",
-    "status": "error: HTTP 429",
-    "items": 0
-   },
-   {
-    "id": "gnews_vol",
-    "status": "rss 14",
-    "items": 14
-   },
-   {
-    "id": "gnews_klg",
-    "status": "rss 59",
-    "items": 59
-   },
-   {
-    "id": "gnews_mur",
-    "status": "error: HTTP 429",
-    "items": 0
-   },
-   {
-    "id": "gnews_kar",
     "status": "rss 27",
     "items": 27
    },
    {
+    "id": "gnews_vol",
+    "status": "rss 23",
+    "items": 23
+   },
+   {
+    "id": "gnews_klg",
+    "status": "rss 30",
+    "items": 30
+   },
+   {
+    "id": "gnews_mur",
+    "status": "rss 100",
+    "items": 100
+   },
+   {
+    "id": "gnews_kar",
+    "status": "rss 50",
+    "items": 50
+   },
+   {
     "id": "gnews_psk",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "gnews_komi",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 16",
+    "items": 16
    },
    {
     "id": "gnews_nov",
-    "status": "rss 42",
-    "items": 42
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "rosbalt",
@@ -577,17 +595,6 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 2,
- "failed": [
-  {
-   "id": "gnews_arh",
-   "name": "Google Новости · Архангельская область",
-   "status": "error: HTTP 429"
-  },
-  {
-   "id": "gnews_mur",
-   "name": "Google Новости · Мурманская область",
-   "status": "error: HTTP 429"
-  }
- ]
+ "sources_failed": 0,
+ "failed": []
 }

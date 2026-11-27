@@ -1,16 +1,31 @@
 [
  {
-  "type": "appointment",
+  "type": "anniversary",
   "level": "head",
   "org_class": "force",
-  "region": "Республика Карелия",
-  "title": "Вологжанин назначен председателем Арбитражного суда Карелии согласно указу президента",
-  "summary": "",
-  "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPY0JobjgwSHJ5U016MERPanNKZmUxdGFPMUlqY1pEbnNtSGc2THQ3MkFFZHFjenpnX0xOM3dHekZXSTlEZlJFRWdHQWc4Q3YtMnFxdE5RV3VfcGxkZlA3bnNQdEMyaUwwZFRkdElMa3pWN3h1VS0za2x0NFk0UGE5MWlyTV9iVWpJMWt5SlBNTldaM1RHaVBONFhoVzZfY2ZwYzI3SHREWmt6azg5ZzRxMjY3a1VDaE02cDh5blVLb0hZamNF?oc=5",
+  "region": "Ленинградская область",
+  "title": "Мировая юстиция Ленинградской области отмечает 25-летие со дня образования",
+  "summary": "Сегодня, 27 ноября 2026 года, в конференц-зале Ленинградского областного суда состоялось торжественное собрание, приуроченное к 25-летию мировой юстиции региона. 27 ноября 2026",
+  "link": "https://lenobl.ru/ru/dlya-smi/news/100532/",
+  "date": "2026-11-28",
+  "source": "Правительство Ленинградской области",
+  "source_id": "lo_gov",
+  "rank": 1,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "status",
+  "level": "head",
+  "org_class": "gov",
+  "region": "Новгородская область",
+  "title": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»",
+  "summary": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»\n \n «Сегодня встретился с Михаилом и Натальей и лично поздравил их с победой во всероссийском конкурсе «Семья года». Они стали лучшими в номинации «Многодетная семья». Всего в семье воспитывают семерых детей.\n \nШемякины — хороший пример семьи, в которой берегут традиционные ценности. Рад, что",
+  "link": "https://t.me/novgorodinfo/11451",
   "date": "2026-11-27",
-  "source": "Google Новости · Вологодская область",
-  "source_id": "gnews_vol",
-  "rank": 4,
+  "source": "Официально 53. Новгородская область (Telegram)",
+  "source_id": "nov_official_tg",
+  "rank": 1,
   "person": "",
   "orgs": []
  },
@@ -43,6 +58,38 @@
   "rank": 1,
   "person": "",
   "orgs": []
+ },
+ {
+  "type": "anniversary",
+  "level": "head",
+  "org_class": "podved",
+  "region": "Калининградская область",
+  "title": "Калининградский музтеатр отметит 25-летие юбилейным балом",
+  "summary": "Праздничный бал пройдёт 18–20 декабря, на сцене выступит вся труппа театра.",
+  "link": "https://www.newkaliningrad.ru/afisha/theatre/news/24171352-kaliningradskiy-muzteatr-otmetit-25-letie-yubileynym-balom.html",
+  "date": "2026-11-27",
+  "source": "Новый Калининград",
+  "source_id": "newkaliningrad",
+  "rank": 3,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "visit",
+  "level": "head",
+  "org_class": "company",
+  "region": "Архангельская область",
+  "title": "Путин приехал в Северодвинск для поднятия флага над подлодкой «Пермь»: объясняем, что это за корабль",
+  "summary": "Крейсер заложили на Севмаше 10 лет назад",
+  "link": "https://29.ru/text/politics/2026/11/27/76796693/",
+  "date": "2026-11-27",
+  "source": "29.ru",
+  "source_id": "29ru",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Севмаш"
+  ]
  },
  {
   "type": "leave",

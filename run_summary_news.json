@@ -1,53 +1,52 @@
 {
- "date": "2026-11-26",
+ "date": "2026-11-27",
  "new": [
   {
    "type": "appointment",
    "level": "head",
    "org_class": "force",
-   "region": "Калининградская область",
-   "title": "Евгений Быков переназначен председателем Калининградского областного суда",
-   "summary": "Указом президента он получил второй шестилетний срок. Об этом сообщила пресс-служба суда.",
-   "link": "https://www.newkaliningrad.ru/news/briefs/politics/24171228-evgeniy-bykov-perenaznachen-predsedatelem-kaliningradskogo-oblastnogo-suda.html",
+   "region": "Мурманская область",
+   "title": "Смирников возглавил арбитражный суд Мурманской области по указу Путина",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1rNGNidEI5NW1aTDA1VDFfYk1qamNuSm0zNHkzTUtFOWpPRE1TaDRaVlZvNjlPaDBTZWp6NU5ScFZLYm93a3JwVEtoZjBQMmo5S3p1YmF1SjRMaGdNa3Y0WTloWDhERnNYS2JkeDJ1RQ?oc=5",
    "date": "2026-11-26",
-   "source": "Новый Калининград",
-   "source_id": "newkaliningrad",
-   "rank": 3,
-   "person": "Евгений Быков",
+   "source": "Google Новости · Мурманская область",
+   "source_id": "gnews_mur",
+   "rank": 4,
+   "person": "",
    "orgs": []
   },
   {
-   "type": "status",
+   "type": "appointment",
    "level": "head",
-   "org_class": "gov",
-   "region": "Ленинградская область",
-   "title": "👏 Опыт Ленобласти по поддержке семей с детьми признали лучшей социальной практикой в России",
-   "summary": "👏 Опыт Ленобласти по поддержке семей с детьми признали лучшей социальной практикой в России\n\nКомитет по социальной защите населения Ленинградской области признан лучшим органом исполнительной власти по внедрению инноваций в социальной сфере и демографии. Награждение победителей всероссийского конкурса управленческих инноваций среди органов власти всех уровней состоялось в Финансовом университете п",
-   "link": "https://t.me/online47news/98718",
+   "org_class": "force",
+   "region": "Республика Карелия",
+   "title": "Чапаев возглавил сегодня Арбитражный суд Карелии · EIA",
+   "summary": "",
+   "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNNWlyZngzT2l2RE9NTVhGTTFlaVl2VlFQQzZIS2RKZ1hJYzMyQ25uSC1kTkNiMXM2RWFkcTRLZ2trbklURF85anBDemtVUnpYR1JnR1pUWW1KX2JnR1Fick8wcGVuV2t0N2xnSEtoY1hvbjdmYUVhSDB5enFSNGRXeEhBemNBREpsR0xWWTFR?oc=5",
    "date": "2026-11-26",
-   "source": "Online47 (Telegram)",
-   "source_id": "online47_tg",
-   "rank": 3,
-   "person": "Опыт Ленобласти",
+   "source": "Google Новости · Республика Карелия",
+   "source_id": "gnews_kar",
+   "rank": 4,
+   "person": "",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3484,
-  "items_fresh": 3311,
-  "detected": 94,
-  "relevance_accepted": 73,
+  "items_received": 3401,
+  "items_fresh": 3214,
+  "detected": 101,
+  "relevance_accepted": 80,
   "relevance_rejected": 21,
   "region_rejected": 1,
-  "candidates": 72,
+  "candidates": 79,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 11,
+   "missing_regional_event_anchor": 13,
    "foreign_event_geography_overrides_org_dictionary": 2,
    "proceeding_without_explicit_region": 2,
-   "neighbouring_region_not_subject_region": 3,
-   "metaphorical_new_chapter_not_appointment": 1,
-   "election_date_is_not_governor_departure": 1,
-   "regional_deputy_appointee_not_identified": 1
+   "neighbouring_region_not_subject_region": 1,
+   "regional_deputy_appointee_not_identified": 2,
+   "election_date_is_not_governor_departure": 1
   },
   "rejected_examples": [
    {
@@ -96,11 +95,6 @@
     "source": "news29.ru"
    },
    {
-    "reason": "metaphorical_new_chapter_not_appointment",
-    "title": "Петровская слобода: новая глава в жизни города",
-    "source": "Столица на Onego"
-   },
-   {
     "reason": "missing_regional_event_anchor",
     "title": "Холдинг «СИБЕР» Ростеха и Ассоциация партнёров по координации использования Севморпути заключили соглашение о совместных испытаниях и продвижении отечественных технологий для защит",
     "source": "Первый Арктический (Telegram)"
@@ -111,8 +105,8 @@
     "source": "Google Новости · Санкт-Петербург"
    },
    {
-    "reason": "neighbouring_region_not_subject_region",
-    "title": "Президент отправил в отставку арестованного губернатора соседней с Поморьем области",
+    "reason": "missing_regional_event_anchor",
+    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
     "source": "Google Новости · Архангельская область"
    },
    {
@@ -121,13 +115,18 @@
     "source": "Google Новости · Архангельская область"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Официально: Сергей Салмин возглавил «Оренбург Водоканал»",
     "source": "Google Новости · Архангельская область"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Председатель областного суда переназначен на второй срок",
+    "source": "Google Новости · Калининградская область"
    }
   ],
-  "not_detected": 3217,
-  "duplicates": 70,
+  "not_detected": 3113,
+  "duplicates": 77,
   "new_events": 2,
   "sources": [
    {
@@ -147,13 +146,13 @@
    },
    {
     "id": "tass",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "ria",
-    "status": "rss 99",
-    "items": 99
+    "status": "rss 98",
+    "items": 98
    },
    {
     "id": "interfax",
@@ -162,8 +161,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 162",
-    "items": 162
+    "status": "rss 108",
+    "items": 108
    },
    {
     "id": "vedomosti",
@@ -187,8 +186,8 @@
    },
    {
     "id": "mchs_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "rosguard",
@@ -212,8 +211,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 74",
-    "items": 74
+    "status": "html 75",
+    "items": 75
    },
    {
     "id": "genproc_78",
@@ -237,8 +236,8 @@
    },
    {
     "id": "47news",
-    "status": "html 118",
-    "items": 118
+    "status": "html 117",
+    "items": 117
    },
    {
     "id": "online47",
@@ -257,8 +256,8 @@
    },
    {
     "id": "29ru",
-    "status": "rss 93",
-    "items": 93
+    "status": "rss 94",
+    "items": 94
    },
    {
     "id": "region29",
@@ -267,8 +266,8 @@
    },
    {
     "id": "news29",
-    "status": "html 26",
-    "items": 26
+    "status": "html 24",
+    "items": 24
    },
    {
     "id": "genproc_29",
@@ -282,8 +281,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 46",
-    "items": 46
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "krassever",
@@ -302,13 +301,13 @@
    },
    {
     "id": "klops",
-    "status": "html 27",
-    "items": 27
+    "status": "html 29",
+    "items": 29
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 94",
+    "items": 94
    },
    {
     "id": "genproc_39",
@@ -352,8 +351,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 54",
-    "items": 54
+    "status": "html 1",
+    "items": 1
    },
    {
     "id": "genproc_10",
@@ -362,8 +361,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 73",
-    "items": 73
+    "status": "html 85",
+    "items": 85
    },
    {
     "id": "informpskov",
@@ -427,8 +426,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 10",
-    "items": 10
+    "status": "telegram 11",
+    "items": 11
    },
    {
     "id": "bport_tg",
@@ -457,18 +456,18 @@
    },
    {
     "id": "lentv24_tg",
-    "status": "telegram 20",
-    "items": 20
+    "status": "telegram 19",
+    "items": 19
    },
    {
     "id": "stolicaonego_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 13",
+    "items": 13
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "komiinform_tg",
@@ -502,13 +501,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "gnews_lo",
-    "status": "rss 12",
-    "items": 12
+    "status": "rss 39",
+    "items": 39
    },
    {
     "id": "gnews_arh",
@@ -517,13 +516,13 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 9",
-    "items": 9
+    "status": "rss 10",
+    "items": 10
    },
    {
     "id": "gnews_klg",
-    "status": "rss 31",
-    "items": 31
+    "status": "rss 29",
+    "items": 29
    },
    {
     "id": "gnews_mur",
@@ -532,23 +531,23 @@
    },
    {
     "id": "gnews_kar",
-    "status": "rss 40",
-    "items": 40
+    "status": "rss 25",
+    "items": 25
    },
    {
     "id": "gnews_psk",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "gnews_komi",
-    "status": "rss 9",
-    "items": 9
+    "status": "rss 35",
+    "items": 35
    },
    {
     "id": "gnews_nov",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "rosbalt",

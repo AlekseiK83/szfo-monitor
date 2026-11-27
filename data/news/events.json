@@ -17,6 +17,21 @@
  {
   "type": "appointment",
   "level": "head",
+  "org_class": "force",
+  "region": "Республика Карелия",
+  "title": "Чапаев возглавил сегодня Арбитражный суд Карелии · EIA",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNNWlyZngzT2l2RE9NTVhGTTFlaVl2VlFQQzZIS2RKZ1hJYzMyQ25uSC1kTkNiMXM2RWFkcTRLZ2trbklURF85anBDemtVUnpYR1JnR1pUWW1KX2JnR1Fick8wcGVuV2t0N2xnSEtoY1hvbjdmYUVhSDB5enFSNGRXeEhBemNBREpsR0xWWTFR?oc=5",
+  "date": "2026-11-26",
+  "source": "Google Новости · Республика Карелия",
+  "source_id": "gnews_kar",
+  "rank": 4,
+  "person": "",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
   "org_class": "gov",
   "region": "Республика Карелия",
   "title": "Анжелика Гуденко возглавит комитет социального развития мэрии Петрозаводска Фактор",
@@ -27,6 +42,21 @@
   "source_id": "gnews_kar",
   "rank": 4,
   "person": "Анжелика Гуденко",
+  "orgs": []
+ },
+ {
+  "type": "appointment",
+  "level": "head",
+  "org_class": "force",
+  "region": "Мурманская область",
+  "title": "Смирников возглавил арбитражный суд Мурманской области по указу Путина",
+  "summary": "",
+  "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1rNGNidEI5NW1aTDA1VDFfYk1qamNuSm0zNHkzTUtFOWpPRE1TaDRaVlZvNjlPaDBTZWp6NU5ScFZLYm93a3JwVEtoZjBQMmo5S3p1YmF1SjRMaGdNa3Y0WTloWDhERnNYS2JkeDJ1RQ?oc=5",
+  "date": "2026-11-26",
+  "source": "Google Новости · Мурманская область",
+  "source_id": "gnews_mur",
+  "rank": 4,
+  "person": "",
   "orgs": []
  },
  {

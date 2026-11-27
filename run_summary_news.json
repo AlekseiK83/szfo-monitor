@@ -5,43 +5,28 @@
    "type": "appointment",
    "level": "head",
    "org_class": "force",
-   "region": "Мурманская область",
-   "title": "Смирников возглавил арбитражный суд Мурманской области по указу Путина",
-   "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1rNGNidEI5NW1aTDA1VDFfYk1qamNuSm0zNHkzTUtFOWpPRE1TaDRaVlZvNjlPaDBTZWp6NU5ScFZLYm93a3JwVEtoZjBQMmo5S3p1YmF1SjRMaGdNa3Y0WTloWDhERnNYS2JkeDJ1RQ?oc=5",
-   "date": "2026-11-26",
-   "source": "Google Новости · Мурманская область",
-   "source_id": "gnews_mur",
-   "rank": 4,
-   "person": "",
-   "orgs": []
-  },
-  {
-   "type": "appointment",
-   "level": "head",
-   "org_class": "force",
    "region": "Республика Карелия",
-   "title": "Чапаев возглавил сегодня Арбитражный суд Карелии · EIA",
+   "title": "Президент назначил председателей Арбитражного суда Карелии и суда Кеми Фактор",
    "summary": "",
-   "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNNWlyZngzT2l2RE9NTVhGTTFlaVl2VlFQQzZIS2RKZ1hJYzMyQ25uSC1kTkNiMXM2RWFkcTRLZ2trbklURF85anBDemtVUnpYR1JnR1pUWW1KX2JnR1Fick8wcGVuV2t0N2xnSEtoY1hvbjdmYUVhSDB5enFSNGRXeEhBemNBREpsR0xWWTFR?oc=5",
-   "date": "2026-11-26",
+   "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxONHY2ckdwc2k1NThPRy1GSWthODQxWm04anFPYXFORm5seWhQeGlvTTZ0TWtGdkZMTmRjUEFEcDBWQW9zYnl2UEVKWXRWcVpXZC0yb2pYOWtJY3o4R1BuMzc1U0FBLVZSZ2FRNmMtc3lrd3lzRHVlY1ZheTJmakFPWUtsX1pvRXR3N1YzZ3U0emlOMFFzYXdYQTQzOEJiUjdmaXc?oc=5",
+   "date": "2026-11-27",
    "source": "Google Новости · Республика Карелия",
    "source_id": "gnews_kar",
    "rank": 4,
-   "person": "",
+   "person": "Кеми Фактор",
    "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3401,
-  "items_fresh": 3214,
-  "detected": 101,
-  "relevance_accepted": 80,
-  "relevance_rejected": 21,
+  "items_received": 3353,
+  "items_fresh": 3176,
+  "detected": 105,
+  "relevance_accepted": 83,
+  "relevance_rejected": 22,
   "region_rejected": 1,
-  "candidates": 79,
+  "candidates": 82,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 13,
+   "missing_regional_event_anchor": 14,
    "foreign_event_geography_overrides_org_dictionary": 2,
    "proceeding_without_explicit_region": 2,
    "neighbouring_region_not_subject_region": 1,
@@ -105,9 +90,14 @@
     "source": "Google Новости · Санкт-Петербург"
    },
    {
+    "reason": "regional_deputy_appointee_not_identified",
+    "title": "Врио главы Мурманской области назначена заместитель губернатора",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
     "reason": "missing_regional_event_anchor",
-    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
-    "source": "Google Новости · Архангельская область"
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -115,19 +105,14 @@
     "source": "Google Новости · Архангельская область"
    },
    {
-    "reason": "foreign_event_geography_overrides_org_dictionary",
-    "title": "Официально: Сергей Салмин возглавил «Оренбург Водоканал»",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
     "reason": "missing_regional_event_anchor",
-    "title": "Председатель областного суда переназначен на второй срок",
-    "source": "Google Новости · Калининградская область"
+    "title": "Генерал ФСБ возглавил группу по прозрачности компаний ТЭК с госучастием",
+    "source": "Google Новости · Архангельская область"
    }
   ],
-  "not_detected": 3113,
-  "duplicates": 77,
-  "new_events": 2,
+  "not_detected": 3071,
+  "duplicates": 81,
+  "new_events": 1,
   "sources": [
    {
     "id": "kremlin",
@@ -151,8 +136,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 93",
+    "items": 93
    },
    {
     "id": "interfax",
@@ -161,8 +146,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 108",
-    "items": 108
+    "status": "rss 115",
+    "items": 115
    },
    {
     "id": "vedomosti",
@@ -211,8 +196,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 75",
-    "items": 75
+    "status": "html 76",
+    "items": 76
    },
    {
     "id": "genproc_78",
@@ -236,8 +221,8 @@
    },
    {
     "id": "47news",
-    "status": "html 117",
-    "items": 117
+    "status": "html 116",
+    "items": 116
    },
    {
     "id": "online47",
@@ -281,8 +266,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 47",
-    "items": 47
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "krassever",
@@ -351,8 +336,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 1",
-    "items": 1
+    "status": "html 6",
+    "items": 6
    },
    {
     "id": "genproc_10",
@@ -361,8 +346,8 @@
    },
    {
     "id": "pln",
-    "status": "html 85",
-    "items": 85
+    "status": "rss 4",
+    "items": 4
    },
    {
     "id": "informpskov",
@@ -426,8 +411,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "bport_tg",
@@ -451,8 +436,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "lentv24_tg",
@@ -466,8 +451,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 5",
-    "items": 5
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "komiinform_tg",
@@ -501,23 +486,23 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 26",
-    "items": 26
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "gnews_lo",
-    "status": "rss 39",
-    "items": 39
+    "status": "rss 19",
+    "items": 19
    },
    {
     "id": "gnews_arh",
-    "status": "rss 47",
-    "items": 47
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_vol",
-    "status": "rss 10",
-    "items": 10
+    "status": "rss 21",
+    "items": 21
    },
    {
     "id": "gnews_klg",
@@ -536,8 +521,8 @@
    },
    {
     "id": "gnews_psk",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 55",
+    "items": 55
    },
    {
     "id": "gnews_komi",
@@ -546,8 +531,8 @@
    },
    {
     "id": "gnews_nov",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 47",
+    "items": 47
    },
    {
     "id": "rosbalt",

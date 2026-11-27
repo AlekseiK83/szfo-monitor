@@ -2864,7 +2864,25 @@ def notify():
         >= len(messages) for chat in chat_ids
     ):
         print("Telegram: это сообщение уже отправлено всем получателям.")
-    return 1 if failed else 0
+    if failed:
+        # Недоступные личные чаты не должны делать весь сбор новостей красным,
+        # когда дайджест действительно доставлен другим адресатам.
+        # Канал/группа (отрицательный chat_id) остаётся обязательным адресатом:
+        # её сбой или отсутствие хотя бы одной полной доставки — ошибка.
+        failed_chats = [chat for chat, (ok, _info) in report.items() if not ok]
+        if any(chat.startswith("-") for chat in failed_chats):
+            print("::error::Telegram: не доставлено в канал или группу; проверьте права бота.")
+            return 1
+        fully_delivered = any(
+            int(completed.get(hashlib.sha256(f"{token}:{chat}".encode("utf-8")).hexdigest()[:24], 0))
+            >= len(messages) for chat in chat_ids
+        )
+        if not fully_delivered:
+            print("::error::Telegram: ни один получатель не получил полный дайджест.")
+            return 1
+        print(f"::warning::Telegram: {len(failed_chats)} личных чатов недоступны; "
+              "проверьте /start и TELEGRAM_CHAT_ID. Доставленные сообщения не повторяем.")
+    return 0
 
 
 

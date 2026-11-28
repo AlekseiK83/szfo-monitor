@@ -2,53 +2,48 @@
  "date": "2026-11-28",
  "new": [
   {
-   "type": "status",
+   "type": "anniversary",
    "level": "head",
-   "org_class": "company",
-   "region": "Калининградская область",
-   "title": "Биатлонист Корнев стал победителем спринта на этапе Кубка Содружества",
-   "summary": "",
-   "link": "https://ria.ru/20261128/kornev-2134577108.html",
+   "org_class": "podved",
+   "region": "Санкт-Петербург",
+   "title": "Петербург отмечает 120-летие Героя Социалистического Труда, лауреата нескольких государственных премий СССР и РФ, академика Дмитрия Лихачёва обширной программой.",
+   "summary": "Петербург отмечает 120-летие Героя Социалистического Труда, лауреата нескольких государственных премий СССР и РФ, академика Дмитрия Лихачёва обширной программой. Год петербургской культуры проходит под эгидой в том числе этой знаковой даты, к которой приурочены научные конференции, выставки и мультимедийные проекты.\n\nИмя Дмитрия Сергеевича Лихачёва – одного из крупнейших отечественных филологов, к",
+   "link": "https://t.me/a_beglov/15572",
    "date": "2026-11-28",
-   "source": "РИА Новости",
-   "source_id": "ria",
-   "rank": 2,
-   "person": "Биатлонист Корнев",
-   "orgs": [
-    "Содружество"
-   ]
+   "source": "Александр Беглов (Telegram)",
+   "source_id": "spb_beglov_tg",
+   "rank": 1,
+   "person": "Героя Социалистического",
+   "orgs": []
   },
   {
-   "type": "ownership",
+   "type": "status",
    "level": "head",
-   "org_class": "business",
-   "region": "Ленинградская область",
-   "title": "Подрядчику Ленинградской АЭС грозит банкротство",
-   "summary": "",
-   "link": "https://spbdnevnik.ru/news/2026-11-28/podriadciku-leningradskoi-aes-grozit-bankrotstvo",
+   "org_class": "gov",
+   "region": "Псковская область",
+   "title": "Проект из Пушкинских Гор победил во всероссийской программе «Городские интонации»",
+   "summary": "Проект предпринимателей из Пушкинских Гор «Горы Вдохновения» стал победителем всероссийской программы «Городские интонации», сообщил губернатор Псковской области Михаил Ведерников в своём канале на платформе MAX. \n\n \n\n Награду автору проекта Ирине Орландини-Авруцкой вручил министр строительства и жилищно-коммунального хозяйства РФ Ирек Файзуллин. Программа реализуется при поддержке Минстроя России",
+   "link": "https://informpskov.ru/news/524121.html",
    "date": "2026-11-28",
-   "source": "Петербургский дневник",
-   "source_id": "spbdnevnik",
+   "source": "ПАИ",
+   "source_id": "informpskov",
    "rank": 3,
-   "person": "",
-   "orgs": [
-    "Ленинградская АЭС",
-    "Ленинградской АЭС"
-   ]
+   "person": "Пушкинских Гор",
+   "orgs": []
   }
  ],
  "diagnostics": {
-  "items_received": 3396,
-  "items_fresh": 3220,
-  "detected": 108,
+  "items_received": 3398,
+  "items_fresh": 3240,
+  "detected": 107,
   "relevance_accepted": 85,
-  "relevance_rejected": 23,
+  "relevance_rejected": 22,
   "region_rejected": 1,
   "candidates": 84,
   "rejection_reasons": {
    "missing_regional_event_anchor": 12,
-   "foreign_event_geography_overrides_org_dictionary": 5,
-   "regional_deputy_appointee_not_identified": 4,
+   "foreign_event_geography_overrides_org_dictionary": 6,
+   "regional_deputy_appointee_not_identified": 2,
    "proceeding_without_explicit_region": 1,
    "election_date_is_not_governor_departure": 1
   },
@@ -67,6 +62,16 @@
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "Владимир Путин провёл встречу с Президентом Казахстана Касым-Жомартом Токаевым, который прибыл в Москву с рабочим визитом",
     "source": "Кремль. Новости (Telegram)"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Саша Золотовицкий возглавит театр \"Практика\"",
+    "source": "ТАСС"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Александр Золотовицкий возглавит театр \"Практика\"",
+    "source": "РИА Новости"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -90,11 +95,6 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Азиз Кажденбек возглавил управление внутренней политики Алматы",
-    "source": "Google Новости · Санкт-Петербург"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
     "title": "Александр Беглов стал почетным гражданином Ханоя",
     "source": "Google Новости · Санкт-Петербург"
    },
@@ -104,18 +104,13 @@
     "source": "Google Новости · Санкт-Петербург"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
-    "source": "Google Новости · Ленинградская область"
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "Ушел из жизни почетный гражданин Самарской области Владимир Ощепков",
+    "source": "Google Новости · Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
     "title": "Александр Беглов стал почетным гражданином Ханоя",
-    "source": "Google Новости · Ленинградская область"
-   },
-   {
-    "reason": "regional_deputy_appointee_not_identified",
-    "title": "Врио главы Мурманской области назначена заместитель губернатора",
     "source": "Google Новости · Ленинградская область"
    },
    {
@@ -129,7 +124,7 @@
     "source": "Google Новости · Архангельская область"
    }
   ],
-  "not_detected": 3112,
+  "not_detected": 3133,
   "duplicates": 82,
   "new_events": 2,
   "sources": [
@@ -150,13 +145,13 @@
    },
    {
     "id": "tass",
-    "status": "rss 99",
-    "items": 99
+    "status": "rss 100",
+    "items": 100
    },
    {
     "id": "ria",
-    "status": "rss 92",
-    "items": 92
+    "status": "rss 98",
+    "items": 98
    },
    {
     "id": "interfax",
@@ -165,8 +160,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 107",
-    "items": 107
+    "status": "rss 116",
+    "items": 116
    },
    {
     "id": "vedomosti",
@@ -205,8 +200,8 @@
    },
    {
     "id": "spb_beglov_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "dp",
@@ -215,8 +210,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 75",
-    "items": 75
+    "status": "html 72",
+    "items": 72
    },
    {
     "id": "genproc_78",
@@ -230,8 +225,8 @@
    },
    {
     "id": "lo_tg",
-    "status": "telegram 4",
-    "items": 4
+    "status": "telegram 5",
+    "items": 5
    },
    {
     "id": "lo_zaks",
@@ -255,13 +250,13 @@
    },
    {
     "id": "arh_gub_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 4",
+    "items": 4
    },
    {
     "id": "29ru",
-    "status": "rss 94",
-    "items": 94
+    "status": "rss 95",
+    "items": 95
    },
    {
     "id": "region29",
@@ -270,8 +265,8 @@
    },
    {
     "id": "news29",
-    "status": "html 24",
-    "items": 24
+    "status": "html 25",
+    "items": 25
    },
    {
     "id": "genproc_29",
@@ -280,13 +275,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 12",
+    "items": 12
    },
    {
     "id": "newsvo",
-    "status": "rss 48",
-    "items": 48
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "krassever",
@@ -305,13 +300,13 @@
    },
    {
     "id": "klops",
-    "status": "html 31",
-    "items": 31
+    "status": "html 26",
+    "items": 26
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 93",
-    "items": 93
+    "status": "rss 79",
+    "items": 79
    },
    {
     "id": "genproc_39",
@@ -320,8 +315,8 @@
    },
    {
     "id": "mur_gov",
-    "status": "html 58",
-    "items": 58
+    "status": "html 57",
+    "items": 57
    },
    {
     "id": "mur_gub_tg",
@@ -355,8 +350,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 8",
-    "items": 8
+    "status": "html 13",
+    "items": 13
    },
    {
     "id": "genproc_10",
@@ -365,8 +360,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 9",
-    "items": 9
+    "status": "rss 23",
+    "items": 23
    },
    {
     "id": "informpskov",
@@ -430,8 +425,8 @@
    },
    {
     "id": "fontanka_tg",
-    "status": "telegram 11",
-    "items": 11
+    "status": "telegram 14",
+    "items": 14
    },
    {
     "id": "bport_tg",
@@ -440,8 +435,8 @@
    },
    {
     "id": "rusever_tg",
-    "status": "telegram 16",
-    "items": 16
+    "status": "telegram 17",
+    "items": 17
    },
    {
     "id": "first_arctic_tg",
@@ -455,8 +450,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 7",
-    "items": 7
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "lentv24_tg",
@@ -470,8 +465,8 @@
    },
    {
     "id": "informpskov_tg",
-    "status": "telegram 15",
-    "items": 15
+    "status": "telegram 16",
+    "items": 16
    },
    {
     "id": "komiinform_tg",
@@ -485,8 +480,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 8",
-    "items": 8
+    "status": "telegram 9",
+    "items": 9
    },
    {
     "id": "mchs_10_tg",
@@ -505,13 +500,13 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 52",
+    "items": 52
    },
    {
     "id": "gnews_lo",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 22",
+    "items": 22
    },
    {
     "id": "gnews_arh",
@@ -520,8 +515,8 @@
    },
    {
     "id": "gnews_vol",
-    "status": "rss 15",
-    "items": 15
+    "status": "rss 24",
+    "items": 24
    },
    {
     "id": "gnews_klg",
@@ -535,23 +530,23 @@
    },
    {
     "id": "gnews_kar",
+    "status": "rss 47",
+    "items": 47
+   },
+   {
+    "id": "gnews_psk",
     "status": "rss 28",
     "items": 28
    },
    {
-    "id": "gnews_psk",
-    "status": "rss 51",
-    "items": 51
-   },
-   {
     "id": "gnews_komi",
-    "status": "rss 16",
-    "items": 16
+    "status": "rss 24",
+    "items": 24
    },
    {
     "id": "gnews_nov",
-    "status": "rss 37",
-    "items": 37
+    "status": "rss 26",
+    "items": 26
    },
    {
     "id": "rosbalt",

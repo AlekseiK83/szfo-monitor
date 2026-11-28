@@ -1,51 +1,18 @@
 {
  "date": "2026-11-28",
- "new": [
-  {
-   "type": "anniversary",
-   "level": "head",
-   "org_class": "podved",
-   "region": "Санкт-Петербург",
-   "title": "Петербург отмечает 120-летие Героя Социалистического Труда, лауреата нескольких государственных премий СССР и РФ, академика Дмитрия Лихачёва обширной программой.",
-   "summary": "Петербург отмечает 120-летие Героя Социалистического Труда, лауреата нескольких государственных премий СССР и РФ, академика Дмитрия Лихачёва обширной программой. Год петербургской культуры проходит под эгидой в том числе этой знаковой даты, к которой приурочены научные конференции, выставки и мультимедийные проекты.\n\nИмя Дмитрия Сергеевича Лихачёва – одного из крупнейших отечественных филологов, к",
-   "link": "https://t.me/a_beglov/15572",
-   "date": "2026-11-28",
-   "source": "Александр Беглов (Telegram)",
-   "source_id": "spb_beglov_tg",
-   "rank": 1,
-   "person": "Героя Социалистического",
-   "orgs": []
-  },
-  {
-   "type": "status",
-   "level": "head",
-   "org_class": "gov",
-   "region": "Псковская область",
-   "title": "Проект из Пушкинских Гор победил во всероссийской программе «Городские интонации»",
-   "summary": "Проект предпринимателей из Пушкинских Гор «Горы Вдохновения» стал победителем всероссийской программы «Городские интонации», сообщил губернатор Псковской области Михаил Ведерников в своём канале на платформе MAX. \n\n \n\n Награду автору проекта Ирине Орландини-Авруцкой вручил министр строительства и жилищно-коммунального хозяйства РФ Ирек Файзуллин. Программа реализуется при поддержке Минстроя России",
-   "link": "https://informpskov.ru/news/524121.html",
-   "date": "2026-11-28",
-   "source": "ПАИ",
-   "source_id": "informpskov",
-   "rank": 3,
-   "person": "Пушкинских Гор",
-   "orgs": []
-  }
- ],
+ "new": [],
  "diagnostics": {
-  "items_received": 3398,
-  "items_fresh": 3240,
-  "detected": 107,
-  "relevance_accepted": 85,
-  "relevance_rejected": 22,
+  "items_received": 3305,
+  "items_fresh": 3148,
+  "detected": 60,
+  "relevance_accepted": 42,
+  "relevance_rejected": 18,
   "region_rejected": 1,
-  "candidates": 84,
+  "candidates": 41,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 12,
-   "foreign_event_geography_overrides_org_dictionary": 6,
-   "regional_deputy_appointee_not_identified": 2,
-   "proceeding_without_explicit_region": 1,
-   "election_date_is_not_governor_departure": 1
+   "missing_regional_event_anchor": 11,
+   "foreign_event_geography_overrides_org_dictionary": 5,
+   "regional_deputy_appointee_not_identified": 2
   },
   "rejected_examples": [
    {
@@ -79,6 +46,11 @@
     "source": "Коммерсантъ Санкт-Петербург"
    },
    {
+    "reason": "missing_regional_event_anchor",
+    "title": "Новым худруком театра «Практика» станет Александр Золотовицкий",
+    "source": "Ведомости"
+   },
+   {
     "reason": "foreign_event_geography_overrides_org_dictionary",
     "title": "У тюменского завода «Фармасинтез» сменился гендиректор",
     "source": "АБН24"
@@ -110,23 +82,18 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
     "source": "Google Новости · Ленинградская область"
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Агентство государственной противопожарной службы возглавил Андрей Варюхин",
-    "source": "Google Новости · Архангельская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
-    "source": "Google Новости · Архангельская область"
+    "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Ленинградская область"
    }
   ],
-  "not_detected": 3133,
-  "duplicates": 82,
-  "new_events": 2,
+  "not_detected": 3088,
+  "duplicates": 41,
+  "new_events": 0,
   "sources": [
    {
     "id": "kremlin",
@@ -150,8 +117,8 @@
    },
    {
     "id": "ria",
-    "status": "rss 98",
-    "items": 98
+    "status": "rss 97",
+    "items": 97
    },
    {
     "id": "interfax",
@@ -210,8 +177,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 72",
-    "items": 72
+    "status": "html 70",
+    "items": 70
    },
    {
     "id": "genproc_78",
@@ -240,8 +207,8 @@
    },
    {
     "id": "online47",
-    "status": "html 31",
-    "items": 31
+    "status": "html 30",
+    "items": 30
    },
    {
     "id": "genproc_47",
@@ -275,13 +242,13 @@
    },
    {
     "id": "vol_gub_tg",
-    "status": "telegram 12",
-    "items": 12
+    "status": "telegram 13",
+    "items": 13
    },
    {
     "id": "newsvo",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 50",
+    "items": 50
    },
    {
     "id": "krassever",
@@ -305,8 +272,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 79",
-    "items": 79
+    "status": "rss 78",
+    "items": 78
    },
    {
     "id": "genproc_39",
@@ -350,8 +317,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 13",
-    "items": 13
+    "status": "html 14",
+    "items": 14
    },
    {
     "id": "genproc_10",
@@ -360,8 +327,8 @@
    },
    {
     "id": "pln",
-    "status": "rss 23",
-    "items": 23
+    "status": "rss 25",
+    "items": 25
    },
    {
     "id": "informpskov",
@@ -380,8 +347,8 @@
    },
    {
     "id": "bnkomi",
-    "status": "rss 20",
-    "items": 20
+    "status": "error: ReadTimeout",
+    "items": 0
    },
    {
     "id": "bnkomi_tg",
@@ -480,8 +447,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 10",
+    "items": 10
    },
    {
     "id": "mchs_10_tg",
@@ -505,38 +472,38 @@
    },
    {
     "id": "gnews_lo",
-    "status": "rss 22",
-    "items": 22
+    "status": "rss 49",
+    "items": 49
    },
    {
     "id": "gnews_arh",
-    "status": "rss 51",
-    "items": 51
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_vol",
-    "status": "rss 24",
-    "items": 24
+    "status": "rss 14",
+    "items": 14
    },
    {
     "id": "gnews_klg",
-    "status": "rss 30",
-    "items": 30
+    "status": "rss 58",
+    "items": 58
    },
    {
     "id": "gnews_mur",
-    "status": "rss 100",
-    "items": 100
+    "status": "error: HTTP 429",
+    "items": 0
    },
    {
     "id": "gnews_kar",
-    "status": "rss 47",
-    "items": 47
+    "status": "rss 27",
+    "items": 27
    },
    {
     "id": "gnews_psk",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 52",
+    "items": 52
    },
    {
     "id": "gnews_komi",
@@ -562,6 +529,17 @@
   "trace_file": "data/news/last_run_trace.json"
  },
  "sources_total": 86,
- "sources_failed": 0,
- "failed": []
+ "sources_failed": 2,
+ "failed": [
+  {
+   "id": "bnkomi",
+   "name": "БНК",
+   "status": "error: ReadTimeout"
+  },
+  {
+   "id": "gnews_mur",
+   "name": "Google Новости · Мурманская область",
+   "status": "error: HTTP 429"
+  }
+ ]
 }

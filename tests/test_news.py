@@ -1043,3 +1043,106 @@ class TestSportsFalsePositive20261128(unittest.TestCase):
         kept, seen = nm.reconcile([event], cfg)
         self.assertEqual(kept, [])
         self.assertEqual(seen, {})
+
+class TestHumanAnniversaryNoise20261128(unittest.TestCase):
+    """Памятные даты людей не становятся юбилеями организаций по фону текста."""
+
+    LICHACHEV_TITLE = (
+        "Петербург отмечает 120-летие Героя Социалистического Труда, "
+        "лауреата нескольких государственных премий СССР и РФ, "
+        "академика Дмитрия Лихачёва обширной программой."
+    )
+    LICHACHEV_SUMMARY = (
+        "Год петербургской культуры проходит под эгидой этой знаковой даты, "
+        "к которой приурочены научные конференции, выставки и мультимедийные проекты."
+    )
+
+    def test_lichachev_exact_publication_is_not_event(self):
+        self.assertIsNone(nm.detect_all(self.LICHACHEV_TITLE, self.LICHACHEV_SUMMARY, ORGS))
+
+    def test_academician_is_not_an_academy(self):
+        self.assertIsNone(nm.classify_org("Академика Дмитрия Лихачёва чествуют в Петербурге"))
+        self.assertEqual(nm.classify_org("Российская академия наук отмечает юбилей"), "podved")
+        self.assertEqual(nm.classify_org("Юбилей Академии художеств"), "podved")
+
+    def test_named_personal_anniversary_does_not_inherit_org_from_summary(self):
+        samples = (
+            ("Петербург отмечает 120-летие Дмитрия Лихачёва",
+             "Музей и университет готовят выставки о филологе."),
+            ("120-летие Дмитрия Лихачёва отметили выставками в музее Петербурга",
+             "В выставке участвовал университет."),
+            ("Петербург отмечает 120-летие академика Дмитрия Лихачёва",
+             "В музеях и библиотеках пройдут научные конференции."),
+            ("В Калининграде отметили 110-летие композитора Игоря Стравинского",
+             "В городской филармонии и университете состоялись мероприятия."),
+        )
+        for title, summary in samples:
+            with self.subTest(title=title):
+                self.assertTrue(nm.anniversary_person_subject(title))
+                self.assertIsNone(nm.detect_all(title, summary, ORGS))
+
+    def test_corporate_organizer_does_not_make_honoree_an_institution(self):
+        title = "Севмаш организовал конференцию к 120-летию академика Дмитрия Лихачёва"
+        self.assertTrue(nm.anniversary_person_subject(title))
+        self.assertIsNone(nm.detect_all(title, "В программе участвуют музеи и университеты.", ORGS))
+
+    def test_personal_anniversary_in_summary_alone_is_not_institution_milestone(self):
+        title = "Музей Петербурга готовит масштабную программу памяти учёного"
+        summary = "К 120-летию Дмитрия Лихачёва готовят выставку и серию лекций."
+        self.assertIsNone(nm.detect_all(title, summary, ORGS))
+
+    def test_historical_award_in_biography_does_not_become_new_title(self):
+        title = "Петербург отмечает 120-летие академика Дмитрия Лихачёва"
+        summary = (
+            "Ранее учёный был удостоен звания почётного гражданина Петербурга. "
+            "Юбилей отмечают выставками в музеях и университетах."
+        )
+        self.assertIsNone(nm.detect_all(title, summary, ORGS))
+
+    def test_important_institution_anniversaries_still_pass(self):
+        samples = (
+            "Архангельская областная клиническая больница отмечает 80-летие",
+            "Петрозаводскому государственному университету исполнилось 85 лет",
+            "Севмаш отметил 85-летие со дня основания",
+            "Академия наук отмечает 100-летие",
+            "В Санкт-Петербурге отметили 120-летие Академии художеств",
+        )
+        for title in samples:
+            with self.subTest(title=title):
+                found = nm.detect_all(title, "", ORGS)
+                self.assertIsNotNone(found, title)
+                self.assertEqual(found["type"], "anniversary")
+
+    def test_institution_named_after_person_still_has_anniversary(self):
+        title = "Государственный университет имени Дмитрия Лихачёва отметил 125-летие"
+        found = nm.detect_all(title, "", ORGS)
+        self.assertIsNotNone(found)
+        self.assertEqual(found["type"], "anniversary")
+        self.assertFalse(nm.anniversary_person_subject(title))
+
+    def test_real_new_state_title_and_industrial_launch_remain(self):
+        title = "Ректору университета присвоено звание почётного гражданина Петербурга"
+        self.assertEqual(nm.detect_all(title, "", ORGS)["type"], "title")
+        launch = "Севмаш запустил новую производственную линию к 120-летию академика Дмитрия Лихачёва"
+        self.assertEqual(nm.detect_all(launch, "", ORGS)["type"], "launch")
+
+    def test_reconcile_removes_saved_personal_anniversary_not_real_company(self):
+        false_event = {
+            "date": "2026-11-28", "title": self.LICHACHEV_TITLE,
+            "summary": self.LICHACHEV_SUMMARY,
+            "region": "Санкт-Петербург", "source_id": "beglov",
+            "type": "anniversary", "level": "head", "rank": 2,
+            "orgs": [], "person": "", "link": "https://t.me/a_beglov/15572",
+        }
+        true_event = {
+            "date": "2026-11-28", "title": "Севмаш отметил 85-летие со дня основания",
+            "summary": "", "region": "Архангельская область", "source_id": "test_press",
+            "type": "anniversary", "level": "head", "rank": 2,
+            "orgs": ["Севмаш"], "person": "", "link": "https://example.com/sevmash",
+        }
+        cfg = {"organizations": ORGS, "sources": [
+            {"id": "beglov", "region": "Санкт-Петербург", "type": "telegram", "rank": 2},
+            {"id": "test_press", "region": "Архангельская область", "type": "rss", "rank": 2},
+        ]}
+        kept, _ = nm.reconcile([false_event, true_event], cfg)
+        self.assertEqual([e["title"] for e in kept], [true_event["title"]])

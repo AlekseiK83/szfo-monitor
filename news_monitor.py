@@ -133,7 +133,7 @@ ORG_FORCE = re.compile(
     r"военн\w+\s+округ|пограничн\w+\s+управлени|Росфинмониторинг|казначейств|Роскомнадзор|Росстат|Ространснадзор|Росавиаци|Росморречфлот)", re.I)
 ORG_PODVED = re.compile(
     r"\b(?:больниц|клиническ|поликлиник|медицинск\w+\s+(?:центр|учрежден)|медцентр|диспансер|университет|"
-    r"институт|академи|\bвуз|театр|филармони|музе[йяею]|библиотек|водоканал|фонд\w*\s+капитальн|"
+    r"институт|академи(?:я|и|ю|ей|ям|ями|ях|й|ческ\w*)|\bвуз|театр|филармони|музе[йяею]|библиотек|водоканал|фонд\w*\s+капитальн|"
     r"фонд\w*\s+капремонт|региональн\w+\s+оператор|аэропорт|\bпорт[а-я]*\b|метрополитен|\bГУП\b|\bГБУ\b|"
     r"\bГАУ\b|\bМФЦ\b|центр\w*\s+занятост|\bТЭК\b|корпораци\w+\s+развити|агентств\w+\s+(?:инвестиц|развити)|"
     r"телеканал|\bГТРК\b|\bМУП\b|\bГКУ\b|стадион|спортшкол|дворц|ледов)", re.I)
@@ -195,6 +195,60 @@ PERSON_ANNIV = re.compile(r"\b(?:вологжан|петербурж|архан�
                           r"петрозаводчан|жител\w*|долгожител\w*|ветеран\w*|пенсионер\w*|блокадни\w*|труженик|бабушк|дедушк|"
                           r"[А-ЯЁ][а-яё]+[еу]\s+[А-ЯЁ][а-яё]+(?:ой|ову|еву|ину|ской|скому|ичу|ичне)\b|(?:ович|евич|овн|евн)[ауе]?\b)", re.I)
 ANNIVERSARY_CTX = re.compile(r"\b(?:юбиле|отмеча|отметил|отпраздн|праздну|исполн(?:яется|илось|ится)|годовщин|со\s+дня\s+(?:основания|создания|образования))", re.I)
+# A person's anniversary is not an anniversary of an institution, even if the
+# source later mentions a museum, academy or university hosting commemorations.
+ANNIVERSARY_PERSON_ROLE = re.compile(
+    r"\b(?:академик\w*|уч[её]н\w*|филолог\w*|писател\w*|поэт\w*|"
+    r"композитор\w*|музыкант\w*|режисс[её]р\w*|акт[её]р\w*|актрис\w*|"
+    r"художник\w*|архитектор\w*|историк\w*|философ\w*|педагог\w*|"
+    r"профессор\w*|геро[йяею]\w*|лауреат\w*|ветеран\w*|спортсмен\w*|"
+    r"тренер\w*|основател\w*|создател\w*|"
+    r"губернатор\w*|ректор\w*|директор\w*|руководител\w*|"
+    r"драматург\w*|деятел\w*\s+(?:науки|культур\w*|искусств\w*)|"
+    r"общественн\w*\s+деятел\w*)\b", re.I)
+ANNIVERSARY_PERSON_NAME = re.compile(
+    r"^\s*(?:[А-ЯЁ][а-яё]+\s+){1,2}[А-ЯЁ][а-яё]+\b")
+ANNIVERSARY_INSTITUTION = re.compile(
+    r"\b(?:правительств\w*|министерств\w*|администраци\w*|"
+    r"департамент\w*|ведомств\w*|комитет\w*|госкомитет\w*)\b", re.I)
+
+
+def anniversary_person_subject(title):
+    """True when the numbered anniversary is *of a person*, not an institution.
+
+    Inspect the headline's grammatical subject, not its article summary: a
+    museum organising a memorial event does not become the anniversary owner.
+    A named institution immediately after the age wins over a later reference
+    to the person after whom it is named ("academy named after X").
+    """
+    title = normalize(title)
+    match = ANNIVERSARY.search(title)
+    if not match:
+        return False
+    after = title[match.end():match.end() + 180]
+    role = ANNIVERSARY_PERSON_ROLE.search(after)
+    institution_matches = [m for regex in (ORG_PODVED, ORG_BUSINESS, ORG_FORCE,
+                                            ANNIVERSARY_INSTITUTION)
+                           if (m := regex.search(after))]
+    first_institution = min((m.start() for m in institution_matches), default=None)
+    if role and (first_institution is None or role.start() < first_institution):
+        return True
+    # "120-летие Дмитрия Лихачёва" versus "120-летие Академии художеств".
+    name_match = ANNIVERSARY_PERSON_NAME.match(after)
+    if name_match and (first_institution is None or first_institution >= name_match.end()):
+        return True
+    # "Академик Дмитрий Лихачёв: 120-летие" (without "со дня рождения").
+    before = title[:match.start()]
+    if not after.strip() and ANNIVERSARY_PERSON_ROLE.search(before):
+        return True
+    return False
+
+
+def anniversary_org_in_headline(title, organizations):
+    """Require an institution in the headline, not incidental background text."""
+    return bool(find_org_names(title, organizations)
+                or ORG_PODVED.search(title) or ORG_BUSINESS.search(title)
+                or ORG_FORCE.search(title) or ANNIVERSARY_INSTITUTION.search(title))
 VISIT = re.compile(r"\b(?:Путин|Президент\w*\s+(?:России|РФ|Российской)|Мишустин|премьер-министр|председател\w+\s+правительства\s+(?:России|РФ)|"
                    r"полпред|полномочн\w+\s+представител|Матвиенко|Володин|Патриарх|Патриарх\w*\s+Кирилл|министр\w*\s+(?:\S+\s+){0,3}?(?:России|РФ)|"
                    r"глав\w+\s+(?:Минпромторга|Минэнерго|Минздрава|Минобрнауки|Минтранса|Минстроя|Минсельхоза|Минкульта|МЧС\s+России|МВД\s+России|"
@@ -415,7 +469,8 @@ def detect(title, summary, organizations):
     # Не превращать новость о пособиях/пенсиях в новое награждение только
     # потому, что в её аннотации сказано «ранее присвоено звание».
     historical_benefits = bool(SOCIAL_BENEFITS_HEADLINE.search(title) and not tv_title)
-    if tv and not historical_benefits and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
+    if tv and not historical_benefits and not (anniversary_person_subject(title) and not tv_title) \
+            and TITLE_NOUN.search(head) and not NAME_GIVING.search(head) \
             and (not WEAK_TITLE_VERB.fullmatch(tv.group(0)) or STRONG_TITLE_NOUN.search(head)):
         # Должность комментатора из другой фразы аннотации — не должность
         # человека, которому присваивают звание.
@@ -485,8 +540,10 @@ def detect_extra(title, summary, organizations, region_hint=None):
         return {"type": "visit", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 3. Круглый юбилей организации (25, 30, 40, 50 … лет)
-    am = ANNIVERSARY.search(lead)
-    if am and ANNIVERSARY_CTX.search(head) and known and not PERSON_ANNIV.search(lead) and not HISTORIC_ANNIV.search(head) \
+    am = ANNIVERSARY.search(title)
+    if am and ANNIVERSARY_CTX.search(title) and known and anniversary_org_in_headline(title, organizations) \
+            and not anniversary_person_subject(title) \
+            and not PERSON_ANNIV.search(lead) and not HISTORIC_ANNIV.search(head) \
             and not re.search(r"\b(?:фестивал\w*|концерт\w*|шоу|квест\w*|праздничн\w*\s+конкурс\w*)\b", title, re.I) \
             and not re.search(r"\b(?:военн\w+\s+оркестр\w*|оркестр\w*\s+(?:штаба|военн\w+)|оркестр\w*\s+Росгварди\w*)\b", title, re.I) \
             and not re.search(r"^(?:режисс[её]р|акт[её]р|артист|писатель|художник|музыкант|певец|певица|драматург)\b.{0,95}\b(?:отмечает|отметил|празднует|исполнилось|исполняется)\b", title, re.I) \
@@ -520,7 +577,8 @@ def detect_extra(title, summary, organizations, region_hint=None):
         return {"type": "launch", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 5. Государственная или региональная награда организации либо её руководителю
-    if ORG_AWARD.search(lead) and ORG_AWARD_NOUN.search(head) and orgs:
+    if ORG_AWARD.search(lead) and ORG_AWARD_NOUN.search(head) and orgs \
+            and (not anniversary_person_subject(title) or ORG_AWARD.search(title)):
         return {"type": "award", "level": "head", "org_class": org_class or "company", "orgs": orgs}
 
     # 6. Федеральный статус, рейтинг, победа во всероссийском конкурсе

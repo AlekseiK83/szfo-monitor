@@ -979,3 +979,67 @@ class TestProactiveEventQualityRelease(unittest.TestCase):
                                       "TELEGRAM_CHAT_ID": "11,-1001234567890"}), \
                  patch.object(nm, "RUN_SUMMARY", path):
                 self.assertEqual(nm.notify(), 1)
+
+
+class TestSportsFalsePositive20261128(unittest.TestCase):
+    """Случай Кубка Содружества: спорт не является статусом предприятия СЗФО."""
+
+    def setUp(self):
+        self.organizations = {
+            "Калининградская область": ["Содружество", "ГК Содружество"],
+            "Санкт-Петербург": ["ГК Балтика"],
+        }
+        self.sports_title = (
+            "Биатлонист Корнев стал победителем спринта на этапе Кубка Содружества"
+        )
+
+    def test_biathlon_sprint_not_significant(self):
+        self.assertTrue(nm.routine_sports_result(self.sports_title))
+        self.assertIsNone(nm.detect_all(self.sports_title, "", self.organizations))
+
+    def test_cup_name_not_kaliningrad_company(self):
+        self.assertEqual(nm.find_org_names(self.sports_title, self.organizations), [])
+
+    def test_other_sports_results_are_not_statuses(self):
+        sports_titles = (
+            "Биатлонистка выиграла спринт на этапе Кубка России",
+            "Футболисты стали победителями турнира в Санкт-Петербурге",
+            "Хоккеист одержал победу в матче чемпионата России",
+            "Лыжник занял первое место в гонке на первенстве страны",
+        )
+        for title in sports_titles:
+            with self.subTest(title=title):
+                self.assertIsNone(nm.detect_all(title, "", self.organizations))
+
+    def test_real_company_sodruzhestvo_kept(self):
+        title = "ГК Содружество получила статус системообразующего предприятия Калининградской области"
+        detected = nm.detect_all(title, "", self.organizations)
+        self.assertIsNotNone(detected)
+        self.assertEqual(detected["type"], "status")
+        self.assertIn(("Калининградская область", "ГК Содружество"), detected["orgs"])
+
+    def test_person_who_used_to_be_athlete_can_be_appointed(self):
+        title = "Бывший биатлонист назначен министром спорта Мурманской области"
+        self.assertFalse(nm.routine_sports_result(title))
+        detected = nm.detect_all(title, "", self.organizations)
+        self.assertIsNotNone(detected)
+        self.assertEqual(detected["type"], "appointment")
+
+    def test_official_award_of_athlete_not_suppressed_by_sports_guard(self):
+        title = "Президент наградил биатлониста государственной наградой за победу на Кубке"
+        self.assertFalse(nm.routine_sports_result(title))
+
+    def test_reconcile_removes_already_published_sports_result(self):
+        event = {
+            "date": "2026-11-28", "title": self.sports_title, "summary": "",
+            "region": "Калининградская область", "source_id": "gnews_kaliningrad",
+            "type": "status", "level": "head", "rank": 3,
+            "orgs": ["Содружество"], "person": "",
+            "link": "https://ria.ru/20261128/kornev-2134577108.html",
+        }
+        cfg = {"organizations": self.organizations,
+               "sources": [{"id": "gnews_kaliningrad", "region": "Калининградская область",
+                            "type": "rss", "rank": 3}]}
+        kept, seen = nm.reconcile([event], cfg)
+        self.assertEqual(kept, [])
+        self.assertEqual(seen, {})

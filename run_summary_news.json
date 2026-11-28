@@ -4,81 +4,53 @@
   {
    "type": "status",
    "level": "head",
-   "org_class": "gov",
-   "region": "Новгородская область",
-   "title": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»",
-   "summary": "Губернатор Александр Дронов встретился с семьёй Шемякиных, которые стали победителями конкурса «Семья года»\n \n «Сегодня встретился с Михаилом и Натальей и лично поздравил их с победой во всероссийском конкурсе «Семья года». Они стали лучшими в номинации «Многодетная семья». Всего в семье воспитывают семерых детей.\n \nШемякины — хороший пример семьи, в которой берегут традиционные ценности. Рад, что",
-   "link": "https://t.me/novgorodinfo/11451",
-   "date": "2026-11-27",
-   "source": "Официально 53. Новгородская область (Telegram)",
-   "source_id": "nov_official_tg",
-   "rank": 1,
-   "person": "",
-   "orgs": []
-  },
-  {
-   "type": "anniversary",
-   "level": "head",
-   "org_class": "force",
-   "region": "Ленинградская область",
-   "title": "Мировая юстиция Ленинградской области отмечает 25-летие со дня образования",
-   "summary": "Сегодня, 27 ноября 2026 года, в конференц-зале Ленинградского областного суда состоялось торжественное собрание, приуроченное к 25-летию мировой юстиции региона. 27 ноября 2026",
-   "link": "https://lenobl.ru/ru/dlya-smi/news/100532/",
-   "date": "2026-11-28",
-   "source": "Правительство Ленинградской области",
-   "source_id": "lo_gov",
-   "rank": 1,
-   "person": "",
-   "orgs": []
-  },
-  {
-   "type": "visit",
-   "level": "head",
    "org_class": "company",
-   "region": "Архангельская область",
-   "title": "Путин приехал в Северодвинск для поднятия флага над подлодкой «Пермь»: объясняем, что это за корабль",
-   "summary": "Крейсер заложили на Севмаше 10 лет назад",
-   "link": "https://29.ru/text/politics/2026/11/27/76796693/",
-   "date": "2026-11-27",
-   "source": "29.ru",
-   "source_id": "29ru",
-   "rank": 3,
-   "person": "",
+   "region": "Калининградская область",
+   "title": "Биатлонист Корнев стал победителем спринта на этапе Кубка Содружества",
+   "summary": "",
+   "link": "https://ria.ru/20261128/kornev-2134577108.html",
+   "date": "2026-11-28",
+   "source": "РИА Новости",
+   "source_id": "ria",
+   "rank": 2,
+   "person": "Биатлонист Корнев",
    "orgs": [
-    "Севмаш"
+    "Содружество"
    ]
   },
   {
-   "type": "anniversary",
+   "type": "ownership",
    "level": "head",
-   "org_class": "podved",
-   "region": "Калининградская область",
-   "title": "Калининградский музтеатр отметит 25-летие юбилейным балом",
-   "summary": "Праздничный бал пройдёт 18–20 декабря, на сцене выступит вся труппа театра.",
-   "link": "https://www.newkaliningrad.ru/afisha/theatre/news/24171352-kaliningradskiy-muzteatr-otmetit-25-letie-yubileynym-balom.html",
-   "date": "2026-11-27",
-   "source": "Новый Калининград",
-   "source_id": "newkaliningrad",
+   "org_class": "business",
+   "region": "Ленинградская область",
+   "title": "Подрядчику Ленинградской АЭС грозит банкротство",
+   "summary": "",
+   "link": "https://spbdnevnik.ru/news/2026-11-28/podriadciku-leningradskoi-aes-grozit-bankrotstvo",
+   "date": "2026-11-28",
+   "source": "Петербургский дневник",
+   "source_id": "spbdnevnik",
    "rank": 3,
    "person": "",
-   "orgs": []
+   "orgs": [
+    "Ленинградская АЭС",
+    "Ленинградской АЭС"
+   ]
   }
  ],
  "diagnostics": {
-  "items_received": 3407,
-  "items_fresh": 3222,
-  "detected": 95,
-  "relevance_accepted": 79,
-  "relevance_rejected": 16,
-  "region_rejected": 0,
-  "candidates": 79,
+  "items_received": 3396,
+  "items_fresh": 3220,
+  "detected": 108,
+  "relevance_accepted": 85,
+  "relevance_rejected": 23,
+  "region_rejected": 1,
+  "candidates": 84,
   "rejection_reasons": {
-   "missing_regional_event_anchor": 9,
-   "foreign_event_geography_overrides_org_dictionary": 3,
-   "neighbouring_region_not_subject_region": 1,
+   "missing_regional_event_anchor": 12,
+   "foreign_event_geography_overrides_org_dictionary": 5,
+   "regional_deputy_appointee_not_identified": 4,
    "proceeding_without_explicit_region": 1,
-   "election_date_is_not_governor_departure": 1,
-   "regional_deputy_appointee_not_identified": 1
+   "election_date_is_not_governor_departure": 1
   },
   "rejected_examples": [
    {
@@ -102,9 +74,9 @@
     "source": "Коммерсантъ Санкт-Петербург"
    },
    {
-    "reason": "missing_regional_event_anchor",
-    "title": "Военнослужащие Уральского округа Росгвардии удостоены государственных наград",
-    "source": "Росгвардия"
+    "reason": "foreign_event_geography_overrides_org_dictionary",
+    "title": "У тюменского завода «Фармасинтез» сменился гендиректор",
+    "source": "АБН24"
    },
    {
     "reason": "foreign_event_geography_overrides_org_dictionary",
@@ -117,9 +89,9 @@
     "source": "Александр Цыбульский (Telegram)"
    },
    {
-    "reason": "neighbouring_region_not_subject_region",
-    "title": "Президент отправил в отставку арестованного губернатора соседней с Поморьем области",
-    "source": "news29.ru"
+    "reason": "missing_regional_event_anchor",
+    "title": "Азиз Кажденбек возглавил управление внутренней политики Алматы",
+    "source": "Google Новости · Санкт-Петербург"
    },
    {
     "reason": "missing_regional_event_anchor",
@@ -127,8 +99,23 @@
     "source": "Google Новости · Санкт-Петербург"
    },
    {
+    "reason": "regional_deputy_appointee_not_identified",
+    "title": "Врио главы Мурманской области назначена заместитель губернатора",
+    "source": "Google Новости · Санкт-Петербург"
+   },
+   {
+    "reason": "missing_regional_event_anchor",
+    "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
+    "source": "Google Новости · Ленинградская область"
+   },
+   {
     "reason": "missing_regional_event_anchor",
     "title": "Александр Беглов стал почетным гражданином Ханоя",
+    "source": "Google Новости · Ленинградская область"
+   },
+   {
+    "reason": "regional_deputy_appointee_not_identified",
+    "title": "Врио главы Мурманской области назначена заместитель губернатора",
     "source": "Google Новости · Ленинградская область"
    },
    {
@@ -138,28 +125,13 @@
    },
    {
     "reason": "missing_regional_event_anchor",
-    "title": "Председатель областного суда переназначен на второй срок",
-    "source": "Google Новости · Калининградская область"
-   },
-   {
-    "reason": "proceeding_without_explicit_region",
-    "title": "Суд в Москве арестовал губернатора Мурманской области Андрея Чибиса",
-    "source": "Google Новости · Мурманская область"
-   },
-   {
-    "reason": "missing_regional_event_anchor",
-    "title": "Больше не губернатор. Андрея Чибиса освободили от должности",
-    "source": "Google Новости · Мурманская область"
-   },
-   {
-    "reason": "election_date_is_not_governor_departure",
-    "title": "В Мурманской области назвали дату выборов нового губернатора после отставки Андрея Чибиса",
-    "source": "Google Новости · Мурманская область"
+    "title": "Новак возглавил правительственную подкомиссию по развитию цифровых платформ",
+    "source": "Google Новости · Архангельская область"
    }
   ],
-  "not_detected": 3127,
-  "duplicates": 75,
-  "new_events": 4,
+  "not_detected": 3112,
+  "duplicates": 82,
+  "new_events": 2,
   "sources": [
    {
     "id": "kremlin",
@@ -178,13 +150,13 @@
    },
    {
     "id": "tass",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 99",
+    "items": 99
    },
    {
     "id": "ria",
-    "status": "rss 100",
-    "items": 100
+    "status": "rss 92",
+    "items": 92
    },
    {
     "id": "interfax",
@@ -193,8 +165,8 @@
    },
    {
     "id": "kommersant_spb",
-    "status": "rss 103",
-    "items": 103
+    "status": "rss 107",
+    "items": 107
    },
    {
     "id": "vedomosti",
@@ -243,8 +215,8 @@
    },
    {
     "id": "spbdnevnik",
-    "status": "html 72",
-    "items": 72
+    "status": "html 75",
+    "items": 75
    },
    {
     "id": "genproc_78",
@@ -273,8 +245,8 @@
    },
    {
     "id": "online47",
-    "status": "html 29",
-    "items": 29
+    "status": "html 31",
+    "items": 31
    },
    {
     "id": "genproc_47",
@@ -288,8 +260,8 @@
    },
    {
     "id": "29ru",
-    "status": "rss 90",
-    "items": 90
+    "status": "rss 94",
+    "items": 94
    },
    {
     "id": "region29",
@@ -313,8 +285,8 @@
    },
    {
     "id": "newsvo",
-    "status": "rss 47",
-    "items": 47
+    "status": "rss 48",
+    "items": 48
    },
    {
     "id": "krassever",
@@ -338,8 +310,8 @@
    },
    {
     "id": "newkaliningrad",
-    "status": "rss 101",
-    "items": 101
+    "status": "rss 93",
+    "items": 93
    },
    {
     "id": "genproc_39",
@@ -383,8 +355,8 @@
    },
    {
     "id": "stolicaonego",
-    "status": "html 1",
-    "items": 1
+    "status": "html 8",
+    "items": 8
    },
    {
     "id": "genproc_10",
@@ -393,8 +365,8 @@
    },
    {
     "id": "pln",
-    "status": "html 85",
-    "items": 85
+    "status": "rss 9",
+    "items": 9
    },
    {
     "id": "informpskov",
@@ -483,8 +455,8 @@
    },
    {
     "id": "online47_tg",
-    "status": "telegram 6",
-    "items": 6
+    "status": "telegram 7",
+    "items": 7
    },
    {
     "id": "lentv24_tg",
@@ -513,8 +485,8 @@
    },
    {
     "id": "vol_gov2_tg",
-    "status": "telegram 9",
-    "items": 9
+    "status": "telegram 8",
+    "items": 8
    },
    {
     "id": "mchs_10_tg",
@@ -533,23 +505,23 @@
    },
    {
     "id": "gnews_spb",
-    "status": "rss 19",
-    "items": 19
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "gnews_lo",
-    "status": "rss 49",
-    "items": 49
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "gnews_arh",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "gnews_vol",
-    "status": "rss 23",
-    "items": 23
+    "status": "rss 15",
+    "items": 15
    },
    {
     "id": "gnews_klg",
@@ -563,13 +535,13 @@
    },
    {
     "id": "gnews_kar",
-    "status": "rss 50",
-    "items": 50
+    "status": "rss 28",
+    "items": 28
    },
    {
     "id": "gnews_psk",
-    "status": "rss 27",
-    "items": 27
+    "status": "rss 51",
+    "items": 51
    },
    {
     "id": "gnews_komi",
@@ -578,8 +550,8 @@
    },
    {
     "id": "gnews_nov",
-    "status": "rss 28",
-    "items": 28
+    "status": "rss 37",
+    "items": 37
    },
    {
     "id": "rosbalt",

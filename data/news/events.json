@@ -1,5 +1,23 @@
 [
  {
+  "type": "ownership",
+  "level": "head",
+  "org_class": "business",
+  "region": "Ленинградская область",
+  "title": "Подрядчику Ленинградской АЭС грозит банкротство",
+  "summary": "",
+  "link": "https://spbdnevnik.ru/news/2026-11-28/podriadciku-leningradskoi-aes-grozit-bankrotstvo",
+  "date": "2026-11-28",
+  "source": "Петербургский дневник",
+  "source_id": "spbdnevnik",
+  "rank": 3,
+  "person": "",
+  "orgs": [
+   "Ленинградская АЭС",
+   "Ленинградской АЭС"
+  ]
+ },
+ {
   "type": "anniversary",
   "level": "head",
   "org_class": "force",
@@ -13,6 +31,23 @@
   "rank": 1,
   "person": "",
   "orgs": []
+ },
+ {
+  "type": "status",
+  "level": "head",
+  "org_class": "company",
+  "region": "Калининградская область",
+  "title": "Биатлонист Корнев стал победителем спринта на этапе Кубка Содружества",
+  "summary": "",
+  "link": "https://ria.ru/20261128/kornev-2134577108.html",
+  "date": "2026-11-28",
+  "source": "РИА Новости",
+  "source_id": "ria",
+  "rank": 2,
+  "person": "Биатлонист Корнев",
+  "orgs": [
+   "Содружество"
+  ]
  },
  {
   "type": "status",

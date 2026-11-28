@@ -335,11 +335,26 @@ def org_pattern(name):
     return pat
 
 
+# «Кубок Содружества» — спортивный турнир, а не компания
+# «Содружество» из справочника организаций Калининградской области.
+_NONCOMPANY_SODRUZHESTVO = re.compile(
+    r"\b(?:кубк\w*|турнир\w*|чемпионат\w*)\s+[«\"']?содружеств\w*\b", re.I,
+)
+_COMPANY_SODRUZHESTVO = re.compile(
+    r"\b(?:ГК|групп\w*\s+компан\w*|компан\w*|агрохолдинг\w*)\s+[«\"']?содружеств\w*\b", re.I,
+)
+
+
 def find_org_names(text, organizations):
     """Названия организаций из словаря, упомянутые в тексте → [(регион, название)]."""
     found = []
     for region, names in organizations.items():
         for name in names:
+            # Результаты Кубка Содружества не относятся к одноимённой компании.
+            if (name.casefold() == "содружество"
+                    and _NONCOMPANY_SODRUZHESTVO.search(text)
+                    and not _COMPANY_SODRUZHESTVO.search(text)):
+                continue
             if org_pattern(name).search(text):
                 found.append((region, name))
     return found
@@ -620,7 +635,39 @@ def national_rector_award(title):
                 and RECTOR_INSTITUTION.search(t))
 
 
+# Спортивный результат не равен кадровому назначению, государственной награде
+# или федеральному статусу организации. Нужны одновременно спортивная тема,
+# соревнование и сам результат — слово «победитель» само по себе не запрещено.
+_SPORTS_CONTEXT = re.compile(
+    r"\b(?:биатлон\w*|биатлонист\w*|лыжник\w*|лыжниц\w*|"
+    r"футбол\w*|хокке\w*|теннис\w*|пловц\w*|пловец\w*|плавани\w*|"
+    r"фигурист\w*|легкоатлет\w*|баскетбол\w*|волейбол\w*|"
+    r"спортсмен\w*|спринт\w*|забег\w*|масс[- ]?старт\w*|"
+    r"велогонк\w*|лыжн\w*\s+гонк\w*)\b", re.I,
+)
+_SPORTS_COMPETITION = re.compile(
+    r"\b(?:кубк\w*|чемпионат\w*|первенств\w*|турнир\w*|"
+    r"соревновани\w*|спринт\w*|гонк\w*|матч\w*|этап\w*|забег\w*)\b", re.I,
+)
+_SPORTS_VICTORY = re.compile(
+    r"\b(?:стал[аи]?\s+(?:победител\w*|приз[её]р\w*|чемпион\w*)|"
+    r"выиграл[аи]?\s+(?:\S+\s+){0,3}?(?:спринт\w*|гонк\w*|матч\w*|турнир\w*|кубк\w*|чемпионат\w*)|"
+    r"одержал[аи]?\s+побед\w*|победил[аи]?\s+(?:в|на)\b|"
+    r"занял[аи]?\s+(?:перв\w*|втор\w*|треть\w*|\d+-?[её]?)\s+мест\w*|"
+    r"завоевал[аи]?\s+(?:золот\w*|серебр\w*|бронз\w*|медал\w*))", re.I,
+)
+
+
+def routine_sports_result(title):
+    """Подавлять результаты спортивных стартов, но не назначения и госнаграды."""
+    title = normalize(title or "")
+    return bool(_SPORTS_CONTEXT.search(title) and _SPORTS_COMPETITION.search(title)
+                and _SPORTS_VICTORY.search(title))
+
+
 def detect_all(title, summary, organizations):
+    if routine_sports_result(title):
+        return None
     # Подтверждённое процессуальное событие о должностном лице сохраняем.
     proceeding = detect_proceedings(title, summary)
     if proceeding:
